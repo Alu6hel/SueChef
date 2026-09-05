@@ -381,6 +381,31 @@ export const HomeDashboard: React.FC = () => {
           ))}
         </div>
       </section>
+
+      {/* Prominent Legal Self-Help Disclaimer & Non-Attorney Notice */}
+      <section className="bg-[var(--bg-card)] border-2 border-amber-500/30 p-5 md:p-6 custom-geometry shadow-md relative overflow-hidden">
+        <div className="flex flex-col sm:flex-row items-start gap-4">
+          <div className="w-10 h-10 rounded-lg bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-[var(--accent-gold)] shrink-0 mt-0.5">
+            <Scale className="w-5 h-5" />
+          </div>
+          <div className="space-y-2 text-xs text-[var(--text-muted)] leading-relaxed">
+            <div className="flex flex-wrap items-center gap-2">
+              <h3 className="font-serif font-bold text-sm text-[var(--text-main)]">
+                Important Legal Disclaimer &amp; Self-Help Notice
+              </h3>
+              <span className="text-[10px] font-mono px-2 py-0.5 bg-amber-950/60 text-amber-300 border border-amber-500/30 font-bold uppercase rounded">
+                Not a Substitute for an Attorney
+              </span>
+            </div>
+            <p>
+              <strong>SueChef is a legal technology self-help workflow tool</strong> designed to assist self-represented (pro se) claimants in organizing evidence, calculating statutory damage formulas, and structuring court-compliant paperwork. <strong>SueChef is not a law firm, does not provide formal legal representation or tailored legal advice, and does not establish an attorney-client relationship.</strong>
+            </p>
+            <p>
+              All statutory multipliers, interest rates, and procedural checklists are derived from publicly accessible state civil codes and court rules. Actual legal results depend on individual case facts, local court local rules, and judicial discretion. If you require legal counsel, representation in court, or advice regarding complex legal strategies, please consult a licensed attorney in your jurisdiction or utilize our <strong><button type="button" onClick={() => { sound.playClick(); setActiveWorkstation('legal-services'); }} className="text-[var(--accent-gold)] underline font-semibold hover:opacity-80">Verified Legal Aid Directory</button></strong>.
+            </p>
+          </div>
+        </div>
+      </section>
     </div>
   );
 };

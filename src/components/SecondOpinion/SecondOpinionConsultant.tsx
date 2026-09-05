@@ -449,6 +449,17 @@ Certified by SueChef Privacy-First Pro Se Legal Suite
           </div>
         </div>
       )}
+
+      {/* Second Opinion Legal Disclaimer */}
+      <div className="p-4 bg-[var(--bg-card)] border border-amber-500/30 custom-geometry text-xs text-[var(--text-muted)] space-y-1">
+        <div className="flex items-center gap-2 text-[var(--accent-gold)] font-bold">
+          <Scale className="w-4 h-4" />
+          <span>Notice Regarding AI Second Opinion Evaluation:</span>
+        </div>
+        <p>
+          This evaluation memorandum is a diagnostic self-help analysis produced from user-supplied factual data and statutory formulas. It does not constitute formal legal advice, representation, or a guarantee of trial outcome. For formal representation or complex legal questions, consult a licensed attorney.
+        </p>
+      </div>
     </div>
   );
 };

@@ -351,6 +351,10 @@ export const DisputeIntakeWizard: React.FC = () => {
             <ArrowRight className="w-4 h-4" />
           </button>
         </div>
+
+        <p className="text-[11px] font-mono text-center text-[var(--text-muted)] border-t border-[var(--border-color)]/60 pt-3">
+          ⚖️ <strong>Legal Notice:</strong> SueChef provides self-help dispute tools and calculations. It is not a law firm and is not a substitute for formal attorney advice.
+        </p>
       </form>
 
       {/* Success Intake Modal */}
