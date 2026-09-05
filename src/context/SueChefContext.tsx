@@ -9,6 +9,7 @@ import {
   DamageItem
 } from '../types';
 import { createDefaultCase } from '../services/defaultCase';
+import { DISPUTE_BLUEPRINTS } from '../services/disputeTemplates';
 import { CryptoDbService } from '../services/cryptoDb';
 import { sound } from '../services/soundEngine';
 
@@ -21,6 +22,8 @@ interface SueChefContextType {
   setActiveWorkstation: (id: WorkstationId) => void;
   activeCase: CaseFile;
   updateActiveCase: (updater: (prev: CaseFile) => CaseFile) => void;
+  loadBlueprint: (blueprintId: string) => void;
+  createNewCase: (title: string, state: string, category: string) => void;
   soundEnabled: boolean;
   toggleSound: () => void;
   panicWipe: () => Promise<void>;
@@ -31,6 +34,12 @@ interface SueChefContextType {
   recalculateMeritScore: () => number;
   addEvidence: (evidence: Omit<EvidenceItem, 'id' | 'sha256Hash'>) => Promise<void>;
   updateParagraph: (id: string, newContent: string) => void;
+  isCaseManagerOpen: boolean;
+  setIsCaseManagerOpen: (open: boolean) => void;
+  isQuickSearchOpen: boolean;
+  setIsQuickSearchOpen: (open: boolean) => void;
+  isTourOpen: boolean;
+  setIsTourOpen: (open: boolean) => void;
 }
 
 const SueChefContext = createContext<SueChefContextType | undefined>(undefined);
@@ -47,6 +56,11 @@ export const SueChefProvider: React.FC<{ children: ReactNode }> = ({ children })
   const [activeWorkstation, setActiveWorkstationState] = useState<WorkstationId>('claim-kitchen');
   const [activeCase, setActiveCase] = useState<CaseFile>(() => createDefaultCase());
   const [soundEnabled, setSoundEnabled] = useState<boolean>(true);
+  
+  // Modals
+  const [isCaseManagerOpen, setIsCaseManagerOpen] = useState<boolean>(false);
+  const [isQuickSearchOpen, setIsQuickSearchOpen] = useState<boolean>(false);
+  const [isTourOpen, setIsTourOpen] = useState<boolean>(false);
 
   // Apply theme classes to document root
   useEffect(() => {
@@ -76,6 +90,18 @@ export const SueChefProvider: React.FC<{ children: ReactNode }> = ({ children })
     root.classList.add(`geom-${cornerGeometry}`);
     localStorage.setItem('suechef_geometry', cornerGeometry);
   }, [cornerGeometry]);
+
+  // Global keyboard shortcuts (Ctrl+K or Cmd+K)
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
+        e.preventDefault();
+        setIsQuickSearchOpen(prev => !prev);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
 
   // Auto-save active case to encrypted IndexedDB on changes
   useEffect(() => {
@@ -114,11 +140,41 @@ export const SueChefProvider: React.FC<{ children: ReactNode }> = ({ children })
     });
   };
 
+  const loadBlueprint = (blueprintId: string) => {
+    const found = DISPUTE_BLUEPRINTS.find(b => b.id === blueprintId);
+    if (found) {
+      setActiveCase(found.caseData);
+      setIsCaseManagerOpen(false);
+      sound.playGavelStrike();
+    }
+  };
+
+  const createNewCase = (title: string, state: string, category: string) => {
+    const base = createDefaultCase();
+    const newCase: CaseFile = {
+      ...base,
+      id: `case_${Date.now()}`,
+      title: title || 'New Dispute Matter',
+      state: state || 'CA',
+      claimEvaluation: {
+        ...base.claimEvaluation,
+        category: category as any,
+        damages: [],
+        elements: []
+      },
+      evidenceList: [],
+      serviceRecords: [],
+      solDocket: []
+    };
+    setActiveCase(newCase);
+    setIsCaseManagerOpen(false);
+    sound.playGavelStrike();
+  };
+
   // Total Damages
   const totalDamages = activeCase.claimEvaluation.damages.reduce((acc, d) => acc + (d.amount || 0), 0);
 
   // Estimated Paralegal & Attorney Intake Billable Hours Saved
-  // Based on standard $350/hr associate rate and $175/hr paralegal intake (avg 18 billable hours for full complaint, exhibits, and timeline)
   const estimatedParalegalSavings = 18 * 275; // $4,950 estimated savings
 
   const recalculateMeritScore = (): number => {
@@ -127,7 +183,6 @@ export const SueChefProvider: React.FC<{ children: ReactNode }> = ({ children })
     const satisfied = activeCase.claimEvaluation.elements.filter(e => e.isSatisfied).length;
     const baseRatio = satisfied / totalElements;
     
-    // Check if damages are documented
     const hasDamages = activeCase.claimEvaluation.damages.length > 0;
     const hasEvidence = activeCase.evidenceList.length > 0;
     
@@ -201,6 +256,8 @@ export const SueChefProvider: React.FC<{ children: ReactNode }> = ({ children })
         setActiveWorkstation,
         activeCase,
         updateActiveCase,
+        loadBlueprint,
+        createNewCase,
         soundEnabled,
         toggleSound,
         panicWipe,
@@ -210,7 +267,13 @@ export const SueChefProvider: React.FC<{ children: ReactNode }> = ({ children })
         estimatedParalegalSavings,
         recalculateMeritScore,
         addEvidence,
-        updateParagraph
+        updateParagraph,
+        isCaseManagerOpen,
+        setIsCaseManagerOpen,
+        isQuickSearchOpen,
+        setIsQuickSearchOpen,
+        isTourOpen,
+        setIsTourOpen
       }}
     >
       {children}

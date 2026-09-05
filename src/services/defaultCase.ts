@@ -131,8 +131,8 @@ export function createDefaultCase(): CaseFile {
         id: 'sol_1',
         title: 'Statute of Limitations: Security Deposit Bad Faith & Breach',
         category: 'security_deposit',
-        triggerDate: '2025-08-21', // 21 days after July 31 move-out
-        statutoryLimitYears: 4, // 4 years for written contract in CA
+        triggerDate: '2025-08-21',
+        statutoryLimitYears: 4,
         expirationDate: '2029-08-21',
         tollingDays: 0,
         tollingNotes: ['No tolling factors currently applied.'],
@@ -145,7 +145,7 @@ export function createDefaultCase(): CaseFile {
         title: 'Pre-Litigation Demand Letter Response Window',
         category: 'security_deposit',
         triggerDate: '2025-09-01',
-        statutoryLimitYears: 0.04, // 14 days
+        statutoryLimitYears: 0.04,
         expirationDate: '2025-09-15',
         tollingDays: 0,
         tollingNotes: ['14-Day Formal Cure Notice period.'],
@@ -355,7 +355,7 @@ export function createDefaultCase(): CaseFile {
         defendantName: 'Vanguard Property Management LLC',
         serviceMethod: 'statutory_agent',
         filingDate: '2025-09-05',
-        deadlineDate: '2025-12-04', // 90 days
+        deadlineDate: '2025-12-04',
         daysRemaining: 90,
         status: 'in_progress',
         affidavitSigned: false,
@@ -368,6 +368,183 @@ export function createDefaultCase(): CaseFile {
             success: true,
             notes: 'Personal delivery of Summons, Complaint, and Exhibit Binder to intake officer Brenda Vance.',
             gpsCoords: '38.6142° N, 121.5034° W'
+          }
+        ]
+      }
+    ],
+    discovery: {
+      interrogatories: [
+        {
+          id: 'rog_1',
+          number: 1,
+          category: 'interrogatory',
+          questionText: 'State the exact date, time, and method by which Defendant received the keys and physical possession of the subject rental property from Plaintiff.',
+          targetObjective: 'Lock in the exact start date of the mandatory 21-day statutory clock under Cal. Civ. Code § 1950.5(g)(1).',
+          objectionRiskNotes: 'Standard identification question. Any objection for vagueness will be overruled.'
+        },
+        {
+          id: 'rog_2',
+          number: 2,
+          category: 'interrogatory',
+          questionText: 'Identify each individual employee or contractor who performed an inspection of the subject premises between July 31, 2025 and August 21, 2025.',
+          targetObjective: 'Discover potential defense witnesses and expose lack of timely move-out inspection.',
+          objectionRiskNotes: 'Directly relevant to whether landlord had legitimate basis to withhold funds.'
+        },
+        {
+          id: 'rog_3',
+          number: 3,
+          category: 'interrogatory',
+          questionText: 'State whether Defendant deposited Plaintiff’s $3,200.00 security deposit into a segregated trust or escrow account, and state the bank name and account number.',
+          targetObjective: 'Establish commingling of funds to support statutory bad-faith claim.',
+          objectionRiskNotes: 'Defendant may assert privacy objection; narrow to account title and bank name.'
+        }
+      ],
+      rfps: [
+        {
+          id: 'rfp_1',
+          number: 1,
+          category: 'rfp',
+          questionText: 'Produce all written communications, including emails, text messages, and internal property management notes, concerning Plaintiff’s security deposit.',
+          targetObjective: 'Uncover smoking-gun internal admissions demonstrating intentional delay in refunding.',
+          objectionRiskNotes: 'Narrowly tailored in time (July 1, 2025 to present).'
+        },
+        {
+          id: 'rfp_2',
+          number: 2,
+          category: 'rfp',
+          questionText: 'Produce all itemized contractor invoices, receipts, and canceled checks for any alleged repairs or painting performed on the subject unit after July 31, 2025.',
+          targetObjective: 'Prove that landlord never actually paid for claimed repairs or inflated costs.',
+          objectionRiskNotes: 'Mandatory under Cal. Civ. Code § 1950.5(g)(2).'
+        }
+      ],
+      rfas: [
+        {
+          id: 'rfa_1',
+          number: 1,
+          category: 'rfa',
+          questionText: 'Admit that Defendant did not mail or deliver an itemized security deposit deduction statement to Plaintiff on or before August 21, 2025.',
+          targetObjective: 'FORCE ADMISSION of statutory violation. If ignored for 30 days, deemed admitted by law!',
+          objectionRiskNotes: 'Clear, concise, single-issue statement.'
+        },
+        {
+          id: 'rfa_2',
+          number: 2,
+          category: 'rfa',
+          questionText: 'Admit that Plaintiff paid the sum of $3,200.00 as a refundable deposit under the subject lease agreement.',
+          targetObjective: 'Conclusively establish principal damages sum before trial.',
+          objectionRiskNotes: 'Undisputable fact supported by bank wire receipt Exhibit B.'
+        }
+      ],
+      subpoenas: [
+        {
+          id: 'sub_1',
+          thirdPartyName: 'JPMorgan Chase Bank, N.A.',
+          thirdPartyAddress: 'National Subpoena Processing Center, 500 Stanton Christiana Rd, Newark, DE 19713',
+          documentsRequested: 'Certified bank statements and wire receipt records for Vanguard Property Management LLC Account #****4912 for August 1, 2024 and July-August 2025.',
+          relevanceDeclaration: 'Records are necessary to establish receipt and handling of security deposit funds in compliance with California trust accounting standards.',
+          complianceDeadlineDays: 20
+        }
+      ]
+    },
+    trialPrep: {
+      openingStatementDraft: `May it please the Court: My name is Jordan Smith, and I am the Plaintiff in this matter. This case is about a simple, fundamental statutory protection enacted by the California Legislature in Civil Code Section 1950.5. 
+
+On August 1, 2024, I paid a $3,200 security deposit. On July 31, 2025, I surrendered the apartment in immaculate condition and handed over the keys. Under California law, a landlord has an unconditional 21-day deadline to either return the deposit in full or provide an itemized list of lawful deductions with receipts.
+
+The evidence today will show that Day 21 passed on August 21st without a single word from Defendant. When I sent a formal demand letter, they ignored it. Because Defendant acted willfully and in bad faith, California Civil Code Section 1950.5(l) authorizes this Court to award statutory penalties of twice the withheld deposit. I ask the Court for judgment in the amount of $9,600 plus court costs. Thank you.`,
+      closingArgumentDraft: `Your Honor: The defense has offered several excuses today, but none of them change the black-letter law of California. 
+
+Defendant admits receiving my $3,200 deposit. Defendant admits receiving the keys on July 31st. And Defendant admits that no itemized deduction letter was sent within the mandatory 21 days. Under Granberry v. Islay Investments, a landlord who fails to provide a timely itemized statement within 21 days forfeits all right to retain any portion of the security deposit.
+
+Furthermore, their complete disregard of my certified demand letter demonstrates bad faith as defined in Civil Code Section 1950.5(l). I respectfully ask the Court to enter judgment for $3,200 in actual damages, $6,400 in statutory penalties, and $185 in court fees. Thank you.`,
+      teleprompterWpm: 130,
+      witnessOutlines: [
+        {
+          id: 'wit_1',
+          witnessName: 'Jordan Smith (Plaintiff Self-Examination)',
+          witnessRole: 'plaintiff',
+          directQuestions: [
+            'State your name and former address.',
+            'Did you enter into a residential lease with Defendant on August 1, 2024? (Direct attention to Exhibit A).',
+            'How much security deposit did you pay, and how was it paid? (Direct attention to Exhibit B).',
+            'When did you vacate the premises and how were keys returned? (Direct attention to Exhibit C).',
+            'Did you take photographs of the apartment condition before leaving? (Direct attention to Exhibit D).',
+            'Did you receive any itemized statement or refund within 21 days?'
+          ],
+          crossExamTraps: [
+            'If defense asks about normal wear on carpet, emphasize 1-year tenancy and pre-move-in condition.',
+            'If defense asks about demand letter, confirm certified mail tracking receipt Exhibit E.'
+          ],
+          exhibitCitations: ['EXHIBIT A', 'EXHIBIT B', 'EXHIBIT C', 'EXHIBIT D', 'EXHIBIT E']
+        },
+        {
+          id: 'wit_2',
+          witnessName: 'Maria Gomez (Property Manager / Defense Witness)',
+          witnessRole: 'defendant',
+          directQuestions: [],
+          crossExamTraps: [
+            'Cross Q1: Ms. Gomez, you received Plaintiff’s keys in the lockbox on July 31, 2025, correct?',
+            'Cross Q2: You are aware that California law requires an itemized statement within 21 days, correct?',
+            'Cross Q3: You did not mail an itemized statement on or before August 21, 2025, did you?',
+            'Cross Q4: You received Plaintiff’s certified demand letter on September 3rd, correct?',
+            'Cross Q5: As of today, Plaintiff’s $3,200 deposit has still not been returned, has it?'
+          ],
+          exhibitCitations: ['EXHIBIT C', 'EXHIBIT E']
+        }
+      ]
+    },
+    settlement: {
+      claimDamages: 9600,
+      winProbabilityPercent: 85,
+      courtFilingFees: 185,
+      processServiceFees: 75,
+      expertWitnessFees: 0,
+      estimatedTimeValueLoss: 450,
+      openingDemandAnchor: 9600,
+      targetFairSettlement: 6400,
+      walkAwayFloor: 3200
+    },
+    chatThreads: [
+      {
+        id: 'chat_1',
+        title: 'Move-Out & Deposit Inquiry SMS Thread',
+        platform: 'iMessage',
+        participantA: 'Jordan Smith',
+        participantB: 'Maria Gomez (Vanguard Prop Mgr)',
+        messages: [
+          {
+            id: 'm_1',
+            senderName: 'Jordan Smith',
+            isMe: true,
+            timestamp: 'July 31, 2025 • 2:15 PM',
+            content: 'Hi Maria, I have finished deep cleaning Apt 3B and left all 3 sets of keys in the wall lockbox as instructed. Thanks!',
+            isAdmission: false
+          },
+          {
+            id: 'm_2',
+            senderName: 'Maria Gomez',
+            isMe: false,
+            timestamp: 'July 31, 2025 • 2:42 PM',
+            content: 'Got them Jordan! Thank you for leaving the place so clean. We will process your $3,200 deposit refund.',
+            isAdmission: true,
+            highlightNote: 'CRITICAL ADMISSION: Landlord admits apartment was left clean and acknowledges $3,200 refundable deposit.'
+          },
+          {
+            id: 'm_3',
+            senderName: 'Jordan Smith',
+            isMe: true,
+            timestamp: 'August 24, 2025 • 10:05 AM',
+            content: 'Hi Maria, checking in as it has now been 24 days since move-out and I have not received the deposit or any letter.',
+            isAdmission: false
+          },
+          {
+            id: 'm_4',
+            senderName: 'Maria Gomez',
+            isMe: false,
+            timestamp: 'August 24, 2025 • 4:18 PM',
+            content: 'Our corporate accounting is backed up, we will get to it next month.',
+            isAdmission: true,
+            highlightNote: 'ADMISSION OF STATUTORY VIOLATION: Landlord admits failure to comply with 21-day legal window due to internal backlog.'
           }
         ]
       }

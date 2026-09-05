@@ -12,6 +12,9 @@ export type WorkstationId =
   | 'sol-watcher'
   | 'pleading-builder'
   | 'evidence-locker'
+  | 'discovery-studio'
+  | 'trial-prep'
+  | 'settlement-matrix'
   | 'legalese-decoder'
   | 'service-tracker'
   | 'attorney-dossier'
@@ -20,9 +23,12 @@ export type WorkstationId =
 export type DisputeCategory = 
   | 'security_deposit'
   | 'breach_of_contract'
+  | 'contractor_dispute'
+  | 'freelance_unpaid'
+  | 'auto_accident'
   | 'consumer_fraud'
-  | 'property_damage'
   | 'wage_theft'
+  | 'property_damage'
   | 'negligence'
   | 'hoa_neighbor';
 
@@ -160,6 +166,78 @@ export interface LegalTerm {
   exampleSentence: string;
 }
 
+// Discovery Types
+export interface DiscoveryItem {
+  id: string;
+  number: number;
+  questionText: string;
+  targetObjective: string;
+  objectionRiskNotes: string;
+  category: 'interrogatory' | 'rfp' | 'rfa';
+}
+
+export interface SubpoenaRequest {
+  id: string;
+  thirdPartyName: string;
+  thirdPartyAddress: string;
+  documentsRequested: string;
+  relevanceDeclaration: string;
+  complianceDeadlineDays: number;
+}
+
+// Trial Prep Types
+export interface ObjectionScenario {
+  id: string;
+  situation: string;
+  witnessStatement: string;
+  correctObjection: string;
+  ruleCitation: string;
+  explanation: string;
+  distractorOptions: string[];
+}
+
+export interface WitnessOutline {
+  id: string;
+  witnessName: string;
+  witnessRole: 'plaintiff' | 'defendant' | 'expert' | 'eye_witness';
+  directQuestions: string[];
+  crossExamTraps: string[];
+  exhibitCitations: string[];
+}
+
+// Settlement Types
+export interface SettlementCalculation {
+  claimDamages: number;
+  winProbabilityPercent: number;
+  courtFilingFees: number;
+  processServiceFees: number;
+  expertWitnessFees: number;
+  estimatedTimeValueLoss: number;
+  openingDemandAnchor: number;
+  targetFairSettlement: number;
+  walkAwayFloor: number;
+}
+
+// Chat Thread Types
+export interface ChatMessage {
+  id: string;
+  senderName: string;
+  isMe: boolean;
+  timestamp: string;
+  content: string;
+  isAdmission: boolean;
+  highlightNote?: string;
+}
+
+export interface ChatThread {
+  id: string;
+  title: string;
+  platform: 'iMessage' | 'SMS' | 'WhatsApp' | 'Email';
+  participantA: string;
+  participantB: string;
+  messages: ChatMessage[];
+}
+
 export interface CaseFile {
   id: string;
   title: string;
@@ -186,4 +264,29 @@ export interface CaseFile {
   };
   evidenceList: EvidenceItem[];
   serviceRecords: ServiceRecord[];
+  discovery: {
+    interrogatories: DiscoveryItem[];
+    rfps: DiscoveryItem[];
+    rfas: DiscoveryItem[];
+    subpoenas: SubpoenaRequest[];
+  };
+  trialPrep: {
+    witnessOutlines: WitnessOutline[];
+    openingStatementDraft: string;
+    closingArgumentDraft: string;
+    teleprompterWpm: number;
+  };
+  settlement: SettlementCalculation;
+  chatThreads: ChatThread[];
+}
+
+export interface DisputeBlueprint {
+  id: string;
+  title: string;
+  category: DisputeCategory;
+  state: string;
+  damagesSummary: string;
+  estimatedTotal: number;
+  description: string;
+  caseData: CaseFile;
 }

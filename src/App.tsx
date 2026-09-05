@@ -2,6 +2,9 @@ import React from 'react';
 import { SueChefProvider, useSueChef } from './context/SueChefContext';
 import { Header } from './components/Header/Header';
 import { ClaimKitchen } from './components/ClaimKitchen/ClaimKitchen';
+import { DiscoveryStudio } from './components/DiscoveryStudio/DiscoveryStudio';
+import { TrialPrep } from './components/TrialPrep/TrialPrep';
+import { SettlementMatrix } from './components/SettlementMatrix/SettlementMatrix';
 import { SolWatcher } from './components/SolWatcher/SolWatcher';
 import { PleadingBuilder } from './components/PleadingBuilder/PleadingBuilder';
 import { EvidenceLocker } from './components/EvidenceLocker/EvidenceLocker';
@@ -9,6 +12,9 @@ import { LegaleseDecoder } from './components/LegaleseDecoder/LegaleseDecoder';
 import { ServiceTracker } from './components/ServiceTracker/ServiceTracker';
 import { AttorneyDossier } from './components/AttorneyDossier/AttorneyDossier';
 import { SecurityVault } from './components/SecurityVault/SecurityVault';
+import { CaseManagerModal } from './components/CaseManager/CaseManagerModal';
+import { QuickSearchModal } from './components/QuickSearch/QuickSearchModal';
+import { WalkthroughTour } from './components/WalkthroughTour/WalkthroughTour';
 import { 
   ShieldCheck, 
   Scale, 
@@ -25,8 +31,11 @@ const WorkstationRouter: React.FC = () => {
     <div className="min-h-screen flex flex-col bg-[var(--bg-primary)] text-[var(--text-main)] transition-colors">
       <Header />
       
-      <main className="flex-1 pb-16">
+      <main className="flex-1 pb-16 p-4 md:p-6 max-w-7xl w-full mx-auto">
         {activeWorkstation === 'claim-kitchen' && <ClaimKitchen />}
+        {activeWorkstation === 'discovery-studio' && <DiscoveryStudio />}
+        {activeWorkstation === 'trial-prep' && <TrialPrep />}
+        {activeWorkstation === 'settlement-matrix' && <SettlementMatrix />}
         {activeWorkstation === 'sol-watcher' && <SolWatcher />}
         {activeWorkstation === 'pleading-builder' && <PleadingBuilder />}
         {activeWorkstation === 'evidence-locker' && <EvidenceLocker />}
@@ -36,8 +45,13 @@ const WorkstationRouter: React.FC = () => {
         {activeWorkstation === 'security-vault' && <SecurityVault />}
       </main>
 
+      {/* Global Modals & Overlay Tour */}
+      <CaseManagerModal />
+      <QuickSearchModal />
+      <WalkthroughTour />
+
       {/* Fixed Bottom Status Bar */}
-      <footer className="fixed bottom-0 left-0 right-0 z-30 bg-[var(--bg-secondary)] border-t border-[var(--border-color)] px-4 py-1.5 text-xs">
+      <footer className="fixed bottom-0 left-0 right-0 z-30 bg-[var(--bg-secondary)] border-t border-[var(--border-color)] px-4 py-1.5 text-xs shadow-lg">
         <div className="max-w-7xl mx-auto flex items-center justify-between gap-4 font-mono">
           <div className="flex items-center gap-3">
             <span className="flex items-center gap-1.5 text-emerald-400 font-semibold">

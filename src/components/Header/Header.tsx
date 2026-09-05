@@ -17,7 +17,13 @@ import {
   AlertTriangle,
   DollarSign,
   Award,
-  Sparkles
+  Sparkles,
+  FolderSearch,
+  Gavel,
+  Calculator,
+  Search,
+  UserCheck,
+  ChevronDown
 } from 'lucide-react';
 import { ThemeId, CornerGeometry, WorkstationId } from '../../types';
 import { sound } from '../../services/soundEngine';
@@ -35,21 +41,27 @@ export const Header: React.FC = () => {
     toggleSound,
     panicWipe,
     totalDamages,
-    estimatedParalegalSavings
+    estimatedParalegalSavings,
+    setIsCaseManagerOpen,
+    setIsQuickSearchOpen,
+    setIsTourOpen
   } = useSueChef();
 
   const [showThemeModal, setShowThemeModal] = useState(false);
   const [showPanicConfirm, setShowPanicConfirm] = useState(false);
 
   const workstations: { id: WorkstationId; label: string; icon: React.ReactNode; badge?: string }[] = [
-    { id: 'claim-kitchen', label: 'Claim Kitchen', icon: <Flame className="w-4 h-4 text-amber-500" />, badge: `${activeCase.claimEvaluation.meritScore}%` },
-    { id: 'sol-watcher', label: 'SOL Docket', icon: <Hourglass className="w-4 h-4 text-sky-400" /> },
-    { id: 'pleading-builder', label: 'Pleadings & Demand', icon: <FileText className="w-4 h-4 text-emerald-400" /> },
-    { id: 'evidence-locker', label: 'Evidence Locker', icon: <ShieldCheck className="w-4 h-4 text-indigo-400" />, badge: `${activeCase.evidenceList.length}` },
-    { id: 'legalese-decoder', label: 'Legalese Decoder', icon: <BookOpen className="w-4 h-4 text-purple-400" /> },
-    { id: 'service-tracker', label: 'Process Service', icon: <Send className="w-4 h-4 text-teal-400" /> },
-    { id: 'attorney-dossier', label: 'Attorney Hand-Off', icon: <Briefcase className="w-4 h-4 text-amber-400" />, badge: 'Save $5k' },
-    { id: 'security-vault', label: 'Security Vault', icon: <Lock className="w-4 h-4 text-rose-400" /> },
+    { id: 'claim-kitchen', label: 'Claim Kitchen', icon: <Flame className="w-3.5 h-3.5 text-amber-500" />, badge: `${activeCase.claimEvaluation.meritScore}%` },
+    { id: 'discovery-studio', label: 'Discovery Studio', icon: <FolderSearch className="w-3.5 h-3.5 text-primary" />, badge: `${(activeCase.discovery?.interrogatories.length || 0) + (activeCase.discovery?.rfps.length || 0) + (activeCase.discovery?.rfas.length || 0)}` },
+    { id: 'trial-prep', label: 'Trial & Hearing Prep', icon: <Gavel className="w-3.5 h-3.5 text-amber-400" /> },
+    { id: 'settlement-matrix', label: 'Settlement Matrix', icon: <Calculator className="w-3.5 h-3.5 text-emerald-400" /> },
+    { id: 'sol-watcher', label: 'SOL Docket', icon: <Hourglass className="w-3.5 h-3.5 text-sky-400" /> },
+    { id: 'pleading-builder', label: 'Pleadings & Demand', icon: <FileText className="w-3.5 h-3.5 text-emerald-400" /> },
+    { id: 'evidence-locker', label: 'Evidence Locker', icon: <ShieldCheck className="w-3.5 h-3.5 text-indigo-400" />, badge: `${activeCase.evidenceList.length}` },
+    { id: 'legalese-decoder', label: 'Legalese Decoder', icon: <BookOpen className="w-3.5 h-3.5 text-purple-400" /> },
+    { id: 'service-tracker', label: 'Process Service', icon: <Send className="w-3.5 h-3.5 text-teal-400" /> },
+    { id: 'attorney-dossier', label: 'Attorney Dossier', icon: <UserCheck className="w-3.5 h-3.5 text-amber-400" />, badge: 'Save $5k' },
+    { id: 'security-vault', label: 'Security Vault', icon: <Lock className="w-3.5 h-3.5 text-rose-400" /> },
   ];
 
   const themes: { id: ThemeId; name: string; desc: string; color: string }[] = [
@@ -62,50 +74,129 @@ export const Header: React.FC = () => {
 
   return (
     <header className="sticky top-0 z-40 bg-[var(--bg-secondary)] border-b border-[var(--border-color)] px-3 py-2 transition-colors">
-      <div className="flex flex-col lg:flex-row items-center justify-between gap-2 max-w-7xl mx-auto">
+      <div className="flex flex-col gap-2 max-w-7xl mx-auto">
         
-        {/* Brand & Active Case Info */}
-        <div className="flex items-center justify-between w-full lg:w-auto gap-3">
-          <div className="flex items-center gap-2.5">
+        {/* Top Header Row: Brand, Matter Switcher, Global Tools */}
+        <div className="flex items-center justify-between gap-3 w-full">
+          {/* Brand & Matter Switcher Button */}
+          <div className="flex items-center gap-3">
             <div 
               onClick={() => sound.playGavelStrike()}
-              className="w-10 h-10 card-geom bg-[var(--badge-bg)] border border-[var(--badge-border)] flex items-center justify-center cursor-pointer hover:scale-105 active:scale-95 transition-all shadow-md group"
+              className="w-10 h-10 card-geom bg-[var(--badge-bg)] border border-[var(--badge-border)] flex items-center justify-center cursor-pointer hover:scale-105 active:scale-95 transition-all shadow-md group shrink-0"
               title="Click to strike the Gavel"
             >
               <Scale className="w-5 h-5 text-[var(--accent-gold)] group-hover:rotate-12 transition-transform" />
             </div>
+
             <div>
               <div className="flex items-center gap-2">
                 <span className="font-serif font-bold text-lg text-[var(--text-main)] tracking-wide">
                   SueChef
                 </span>
-                <span className="text-[10px] uppercase font-mono px-1.5 py-0.5 card-geom bg-emerald-950/80 border border-emerald-500/30 text-emerald-400 font-semibold">
+                <span className="text-[10px] uppercase font-mono px-1.5 py-0.5 card-geom bg-emerald-950/80 border border-emerald-500/30 text-emerald-400 font-semibold hidden sm:inline">
                   Zero-Cloud Offline
                 </span>
               </div>
-              <p className="text-xs text-[var(--text-muted)] truncate max-w-[240px] md:max-w-xs font-mono">
-                {activeCase.title}
-              </p>
+              
+              {/* Matter Switcher Trigger */}
+              <button
+                onClick={() => { sound.playClick(); setIsCaseManagerOpen(true); }}
+                className="flex items-center gap-1.5 text-xs text-[var(--accent-gold)] hover:text-white font-mono transition-colors text-left group"
+              >
+                <Briefcase className="w-3 h-3 text-[var(--accent-gold)] shrink-0" />
+                <span className="font-bold underline decoration-dotted truncate max-w-[200px] sm:max-w-xs md:max-w-md">
+                  {activeCase.title}
+                </span>
+                <ChevronDown className="w-3 h-3 text-[var(--text-muted)] group-hover:text-white shrink-0" />
+              </button>
             </div>
           </div>
 
-          {/* Quick Metrics (Mobile visible) */}
-          <div className="flex lg:hidden items-center gap-2">
-            <span className="text-xs font-mono font-bold text-emerald-400">
-              ${totalDamages.toLocaleString()}
-            </span>
+          {/* Global Quick Action Toolbar */}
+          <div className="flex items-center gap-2">
+            {/* Quick Search Palette Trigger (Ctrl+K) */}
+            <button
+              onClick={() => { sound.playClick(); setIsQuickSearchOpen(true); }}
+              className="btn-geom flex items-center gap-1.5 px-2.5 py-1.5 text-xs bg-[var(--bg-card)] border border-[var(--border-color)] text-[var(--text-muted)] hover:text-[var(--text-main)] hover:bg-[var(--bg-hover)] transition-all"
+              title="Global Command Palette (Ctrl+K)"
+            >
+              <Search className="w-3.5 h-3.5 text-primary" />
+              <span className="hidden md:inline font-mono">Search / Ctrl+K</span>
+            </button>
+
+            {/* Guided Tour Trigger */}
+            <button
+              onClick={() => { sound.playClick(); setIsTourOpen(true); }}
+              className="btn-geom flex items-center gap-1 px-2.5 py-1.5 text-xs bg-primary/10 border border-primary/30 text-primary hover:bg-primary/20 transition-all font-semibold"
+              title="Launch Guided Interactive Tour"
+            >
+              <Sparkles className="w-3.5 h-3.5 text-amber-400" />
+              <span className="hidden sm:inline font-mono">Tour</span>
+            </button>
+
+            {/* Audio Toggle */}
+            <button
+              onClick={toggleSound}
+              className={`btn-geom p-1.5 border transition-all ${
+                soundEnabled 
+                  ? 'bg-[var(--badge-bg)] border-[var(--badge-border)] text-[var(--accent-gold)]' 
+                  : 'bg-[var(--bg-card)] border-[var(--border-color)] text-[var(--text-muted)] opacity-60'
+              }`}
+              title={soundEnabled ? 'Acoustic feedback enabled' : 'Muted'}
+            >
+              {soundEnabled ? <Volume2 className="w-4 h-4" /> : <VolumeX className="w-4 h-4" />}
+            </button>
+
+            {/* Corner Geometry Switcher */}
+            <button
+              onClick={() => {
+                const nextGeom: CornerGeometry = 
+                  cornerGeometry === 'sharp' ? 'chamfer' : cornerGeometry === 'chamfer' ? 'smooth' : 'sharp';
+                setCornerGeometry(nextGeom);
+              }}
+              className="btn-geom flex items-center gap-1 px-2 py-1.5 text-xs bg-[var(--bg-card)] border border-[var(--border-color)] text-[var(--text-main)] hover:bg-[var(--bg-hover)]"
+              title={`Corner Geometry: ${cornerGeometry.toUpperCase()}`}
+            >
+              <Shapes className="w-3.5 h-3.5 text-[var(--accent-gold)]" />
+              <span className="uppercase text-[10px] font-mono font-semibold hidden sm:inline">{cornerGeometry}</span>
+            </button>
+
+            {/* Theme Palette Modal */}
+            <button
+              onClick={() => {
+                sound.playClick();
+                setShowThemeModal(true);
+              }}
+              className="btn-geom p-1.5 bg-[var(--bg-card)] border border-[var(--border-color)] text-[var(--text-main)] hover:bg-[var(--bg-hover)]"
+              title="Switch Theme Palette"
+            >
+              <Palette className="w-4 h-4 text-[var(--accent-gold)]" />
+            </button>
+
+            {/* Panic Shredder */}
+            <button
+              onClick={() => {
+                sound.playWarningBell();
+                setShowPanicConfirm(true);
+              }}
+              className="btn-geom flex items-center gap-1 px-2 py-1 text-xs font-semibold bg-rose-950/60 border border-rose-600/40 text-rose-300 hover:bg-rose-900/80 transition-all"
+              title="Panic Button: Instantly purge all local data with cryptographic noise"
+            >
+              <AlertTriangle className="w-3.5 h-3.5 text-rose-400" />
+              <span className="hidden sm:inline font-mono">Panic</span>
+            </button>
           </div>
         </div>
 
-        {/* Workstation Tab Bar */}
-        <nav className="flex items-center gap-1 overflow-x-auto w-full lg:w-auto pb-1 lg:pb-0 scrollbar-none">
+        {/* Workstation Tab Bar (Scrollable horizontally) */}
+        <nav className="flex items-center gap-1 overflow-x-auto w-full pb-1 scrollbar-none">
           {workstations.map(ws => {
             const isActive = activeWorkstation === ws.id;
             return (
               <button
                 key={ws.id}
                 onClick={() => setActiveWorkstation(ws.id)}
-                className={`tab-geom flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium whitespace-nowrap transition-all border ${
+                className={`tab-geom flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-medium whitespace-nowrap transition-all border ${
                   isActive 
                     ? 'bg-[var(--accent-gold)] text-slate-950 font-bold border-[var(--accent-gold)] shadow-sm' 
                     : 'bg-[var(--bg-card)] text-[var(--text-muted)] border-[var(--border-color)] hover:bg-[var(--bg-hover)] hover:text-[var(--text-main)]'
@@ -124,61 +215,6 @@ export const Header: React.FC = () => {
             );
           })}
         </nav>
-
-        {/* Global Toolbar Controls */}
-        <div className="flex items-center gap-2 self-end lg:self-auto">
-          {/* Audio Synthesizer Toggle */}
-          <button
-            onClick={toggleSound}
-            className={`btn-geom p-1.5 border transition-all ${
-              soundEnabled 
-                ? 'bg-[var(--badge-bg)] border-[var(--badge-border)] text-[var(--accent-gold)]' 
-                : 'bg-[var(--bg-card)] border-[var(--border-color)] text-[var(--text-muted)] opacity-60'
-            }`}
-            title={soundEnabled ? 'Acoustic feedback enabled' : 'Muted'}
-          >
-            {soundEnabled ? <Volume2 className="w-4 h-4" /> : <VolumeX className="w-4 h-4" />}
-          </button>
-
-          {/* Corner Geometry Switcher */}
-          <button
-            onClick={() => {
-              const nextGeom: CornerGeometry = 
-                cornerGeometry === 'sharp' ? 'chamfer' : cornerGeometry === 'chamfer' ? 'smooth' : 'sharp';
-              setCornerGeometry(nextGeom);
-            }}
-            className="btn-geom flex items-center gap-1 px-2 py-1.5 text-xs bg-[var(--bg-card)] border border-[var(--border-color)] text-[var(--text-main)] hover:bg-[var(--bg-hover)]"
-            title={`Corner Geometry: ${cornerGeometry.toUpperCase()}`}
-          >
-            <Shapes className="w-3.5 h-3.5 text-[var(--accent-gold)]" />
-            <span className="uppercase text-[10px] font-mono font-semibold">{cornerGeometry}</span>
-          </button>
-
-          {/* Theme Palette Modal Button */}
-          <button
-            onClick={() => {
-              sound.playClick();
-              setShowThemeModal(true);
-            }}
-            className="btn-geom p-1.5 bg-[var(--bg-card)] border border-[var(--border-color)] text-[var(--text-main)] hover:bg-[var(--bg-hover)]"
-            title="Switch Theme Palette"
-          >
-            <Palette className="w-4 h-4 text-[var(--accent-gold)]" />
-          </button>
-
-          {/* Panic Shredder Button */}
-          <button
-            onClick={() => {
-              sound.playWarningBell();
-              setShowPanicConfirm(true);
-            }}
-            className="btn-geom flex items-center gap-1 px-2 py-1 text-xs font-semibold bg-rose-950/60 border border-rose-600/40 text-rose-300 hover:bg-rose-900/80 transition-all"
-            title="Panic Button: Instantly purge all local data with cryptographic noise"
-          >
-            <AlertTriangle className="w-3.5 h-3.5 text-rose-400" />
-            <span className="hidden sm:inline font-mono">Panic Shred</span>
-          </button>
-        </div>
       </div>
 
       {/* Theme Selection Modal */}
