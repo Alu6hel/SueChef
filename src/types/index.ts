@@ -12,6 +12,7 @@ export type FontSizeScale = 'normal' | 'large' | 'xlarge';
 export type CountryCode = 'US' | 'GB' | 'CA' | 'AU' | 'NG' | 'DE' | 'GLOBAL';
 
 export type WorkstationId = 
+  | 'home'              // 0. Executive Homepage & Case Overview
   | 'claim-kitchen'     // 1. Build Your Case (Claim Kitchen)
   | 'evidence-locker'   // 2. Proof & Evidence (Evidence Locker)
   | 'pleading-builder'  // 3. Court Papers & Pleadings (28-Line Pleading)

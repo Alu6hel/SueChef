@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { SueChefProvider, useSueChef } from './context/SueChefContext';
 import { Header } from './components/Header/Header';
+import { HomeDashboard } from './components/Home/HomeDashboard';
 import { ClaimKitchen } from './components/ClaimKitchen/ClaimKitchen';
 import { DiscoveryStudio } from './components/DiscoveryStudio/DiscoveryStudio';
 import { TrialPrep } from './components/TrialPrep/TrialPrep';
@@ -67,6 +68,7 @@ const WorkstationRouter: React.FC = () => {
 
         {/* Workstation View Routing */}
         <div className="transition-all duration-200">
+          {activeWorkstation === 'home' && <HomeDashboard />}
           {activeWorkstation === 'claim-kitchen' && <ClaimKitchen />}
           {activeWorkstation === 'evidence-locker' && <EvidenceLocker />}
           {activeWorkstation === 'pleading-builder' && <PleadingBuilder />}

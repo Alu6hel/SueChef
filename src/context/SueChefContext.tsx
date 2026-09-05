@@ -69,7 +69,7 @@ export const SueChefProvider: React.FC<{ children: ReactNode }> = ({ children })
     return (localStorage.getItem('suechef_font_scale') as FontSizeScale) || 'normal';
   });
 
-  const [activeWorkstation, setActiveWorkstationState] = useState<WorkstationId>('claim-kitchen');
+  const [activeWorkstation, setActiveWorkstationState] = useState<WorkstationId>('home');
   const [activeCase, setActiveCase] = useState<CaseFile>(() => createDefaultCase());
   const [soundEnabled, setSoundEnabled] = useState<boolean>(true);
   

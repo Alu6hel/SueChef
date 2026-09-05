@@ -244,11 +244,76 @@ export const SettingsModal: React.FC = () => {
             </div>
           </div>
 
-          {/* Section 4: Data Privacy & Local Backups */}
+          {/* Section 4: Interface & Acoustic Preferences */}
+          <div className="space-y-3 pt-2 border-t border-[var(--border-color)]">
+            <div className="flex items-center gap-2 text-xs font-mono font-bold uppercase text-[var(--accent-gold)]">
+              <Sparkles className="w-4 h-4" />
+              <span>4. Interface & Acoustic Sound</span>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <button
+                onClick={() => {
+                  toggleSound();
+                }}
+                className={`p-3 border custom-geometry flex items-center justify-between text-left transition-all ${
+                  soundEnabled
+                    ? 'bg-[var(--badge-bg)] border-[var(--accent-gold)] ring-1 ring-[var(--accent-gold)]'
+                    : 'bg-[var(--bg-secondary)] border-[var(--border-color)]'
+                }`}
+              >
+                <div className="flex items-center gap-2.5">
+                  {soundEnabled ? (
+                    <Volume2 className="w-4 h-4 text-[var(--accent-gold)]" />
+                  ) : (
+                    <VolumeX className="w-4 h-4 text-[var(--text-muted)]" />
+                  )}
+                  <div>
+                    <div className="text-xs font-bold font-serif text-[var(--text-main)]">
+                      Acoustic Sound Effects
+                    </div>
+                    <div className="text-[10px] text-[var(--text-muted)]">
+                      {soundEnabled ? 'Enabled (Gavel & Chimes)' : 'Muted'}
+                    </div>
+                  </div>
+                </div>
+                <span className="text-[10px] font-mono font-bold text-[var(--accent-gold)]">
+                  {soundEnabled ? 'ON' : 'OFF'}
+                </span>
+              </button>
+
+              <div className="p-3 bg-[var(--bg-secondary)] border border-[var(--border-color)] custom-geometry flex items-center justify-between">
+                <div className="flex items-center gap-2.5">
+                  <Shapes className="w-4 h-4 text-[var(--accent-gold)]" />
+                  <div>
+                    <div className="text-xs font-bold font-serif text-[var(--text-main)]">Corner Geometry</div>
+                    <div className="text-[10px] text-[var(--text-muted)] font-mono">{cornerGeometry}</div>
+                  </div>
+                </div>
+                <div className="flex items-center gap-1">
+                  {(['sharp', 'chamfer', 'smooth'] as CornerGeometry[]).map(geom => (
+                    <button
+                      key={geom}
+                      onClick={() => { sound.playClick(); setCornerGeometry(geom); }}
+                      className={`px-2 py-1 text-[10px] font-mono uppercase font-bold border transition-all ${
+                        cornerGeometry === geom
+                          ? 'bg-[var(--accent-gold)] text-slate-950 border-[var(--accent-gold)]'
+                          : 'bg-[var(--bg-card)] text-[var(--text-muted)] border-[var(--border-color)] hover:text-[var(--text-main)]'
+                      }`}
+                    >
+                      {geom}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Section 5: Data Privacy, Backups & Emergency Wipe */}
           <div className="space-y-3 pt-2 border-t border-[var(--border-color)]">
             <div className="flex items-center gap-2 text-xs font-mono font-bold uppercase text-[var(--accent-gold)]">
               <ShieldCheck className="w-4 h-4" />
-              <span>4. Offline Security & Encrypted Case Backup</span>
+              <span>5. Encrypted Backup & Data Purge</span>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -257,12 +322,12 @@ export const SettingsModal: React.FC = () => {
                 className="flex items-center justify-center gap-2 p-3 bg-[var(--bg-secondary)] border border-[var(--border-color)] hover:border-[var(--accent-gold)] custom-geometry text-xs font-bold text-[var(--text-main)] hover:bg-[var(--bg-hover)] transition-all"
               >
                 <Download className="w-4 h-4 text-[var(--accent-gold)]" />
-                <span>Export Case Backup (.suechef)</span>
+                <span>Export Backup (.suechef)</span>
               </button>
 
               <label className="flex items-center justify-center gap-2 p-3 bg-[var(--bg-secondary)] border border-[var(--border-color)] hover:border-[var(--accent-gold)] custom-geometry text-xs font-bold text-[var(--text-main)] hover:bg-[var(--bg-hover)] transition-all cursor-pointer">
                 <Upload className="w-4 h-4 text-[var(--accent-gold)]" />
-                <span>Restore from Backup</span>
+                <span>Restore Backup File</span>
                 <input
                   type="file"
                   accept=".suechef,.json"
@@ -270,6 +335,23 @@ export const SettingsModal: React.FC = () => {
                   className="hidden"
                 />
               </label>
+            </div>
+
+            {/* Panic Wipe Button */}
+            <div className="pt-2">
+              <button
+                onClick={() => {
+                  if (window.confirm('⚠️ WARNING: Are you sure you want to permanently purge all local cases, evidence, and cached legal documents? This cannot be undone.')) {
+                    sound.playWarningBell();
+                    panicWipe();
+                    setIsSettingsOpen(false);
+                  }
+                }}
+                className="w-full flex items-center justify-center gap-2 p-3 bg-rose-950/40 border border-rose-600/40 text-rose-300 hover:bg-rose-900/60 custom-geometry text-xs font-bold transition-all"
+              >
+                <AlertTriangle className="w-4 h-4 text-rose-400" />
+                <span>Panic Purge: Erase All Local Data & Reset</span>
+              </button>
             </div>
           </div>
         </div>

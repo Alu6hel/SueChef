@@ -13,125 +13,124 @@ import {
   ShieldCheck, 
   Gavel, 
   Calculator, 
-  FolderSearch,
   FileText,
-  Lock,
   Building,
   Lightbulb,
-  MousePointerClick
+  Home,
+  Navigation
 } from 'lucide-react';
 
 interface TourStep {
   id: string;
   stepNumber: number;
+  totalSteps: number;
   title: string;
-  simpleSubtitle: string;
-  whatItDoes: string;
+  subtitle: string;
+  description: string;
   targetWorkstation: WorkstationId;
+  tabLabel: string;
   icon: React.ReactNode;
-  whereToGo: string;
-  whatToDoNext: string;
+  actionTip: string;
 }
 
 const TOUR_STEPS: TourStep[] = [
   {
-    id: 'welcome',
+    id: 'home',
     stepNumber: 1,
-    title: 'Welcome to SueChef Pro',
-    simpleSubtitle: 'Easy Step-by-Step Legal Help for Everyday People',
-    whatItDoes: 'SueChef helps you easily prepare, organize, and win your small claims dispute, security deposit claim, unpaid invoice, or property damage case without paying thousands to lawyers.',
-    targetWorkstation: 'claim-kitchen',
-    icon: <Scale className="w-6 h-6 text-amber-400" />,
-    whereToGo: 'Top Navigation Tab #1: "1. Build Case"',
-    whatToDoNext: 'Click "Take Me to Step 1" below to start building your case elements and check your small claims limit.'
+    totalSteps: 7,
+    title: 'Executive Dashboard & Overview',
+    subtitle: 'Your Central Legal Command Center',
+    description: 'Track your dispute metrics, estimated damages, merit strength percentage, and calculated attorney fee savings all in one clean place.',
+    targetWorkstation: 'home',
+    tabLabel: '🏠 Home',
+    icon: <Home className="w-5 h-5 text-amber-400" />,
+    actionTip: 'Review your case snapshot and launch any litigation workstation with 1 click.'
   },
   {
     id: 'claim-kitchen',
     stepNumber: 2,
-    title: '1. Build Your Case & Check Laws',
-    simpleSubtitle: 'Pick Your Issue & Calculate Your Maximum Damages',
-    whatItDoes: 'Select what happened (e.g. Landlord withheld deposit, Unpaid contractor, Car accident). SueChef checks your state laws, calculates late penalties (2x-3x damages), and rates your case strength.',
+    totalSteps: 7,
+    title: '1. Build Case & Legal Elements',
+    subtitle: 'Damage Calculator & Small Claims Limits',
+    description: 'Select your dispute category, itemize your financial losses, and check your state small claims court dollar caps ($2,500 to $25,000) and statutory late penalties.',
     targetWorkstation: 'claim-kitchen',
-    icon: <Scale className="w-6 h-6 text-amber-400" />,
-    whereToGo: 'Workstation Tab 1: Claim Kitchen (Top Bar)',
-    whatToDoNext: 'Check off the boxes under "Statutory Elements" to verify you have all required legal ingredients to win.'
+    tabLabel: '1. Build Case',
+    icon: <Scale className="w-5 h-5 text-amber-400" />,
+    actionTip: 'Check off prima facie legal elements to ensure your claim meets statutory requirements.'
   },
   {
     id: 'evidence-locker',
     stepNumber: 3,
-    title: '2. Add Your Proof & Photos',
-    simpleSubtitle: 'Receipts, Text Messages, Photos & Contracts',
-    whatItDoes: 'Upload your proof. SueChef creates official SHA-256 digital certificates (Federal Rule 902) and lets you easily black out sensitive private numbers (SSN, bank cards) with 1 click.',
+    totalSteps: 7,
+    title: '2. Evidence Locker & Cryptographic Vault',
+    subtitle: 'Tamper-Proof SHA-256 Digest Verification',
+    description: 'Secure leases, bank wires, inspection photos, and reconstructed SMS threads with Federal Rule of Evidence 902 digital digests and privacy redactions.',
     targetWorkstation: 'evidence-locker',
-    icon: <ShieldCheck className="w-6 h-6 text-amber-400" />,
-    whereToGo: 'Workstation Tab 2: Evidence Locker',
-    whatToDoNext: 'Drag and drop your photos, lease agreements, or receipts to generate certified Exhibit stickers.'
+    tabLabel: '2. Evidence & Proof',
+    icon: <ShieldCheck className="w-5 h-5 text-amber-400" />,
+    actionTip: 'Add receipts or contracts to generate court-certified Exhibit stickers.'
   },
   {
     id: 'pleading-builder',
     stepNumber: 4,
-    title: '3. Official 28-Line Court Papers',
-    simpleSubtitle: 'Print-Ready Small Claims & Judicial Council Pleading Paper',
-    whatItDoes: 'Generates real 28-line numbered court documents, formal legal notices, and verified complaints formatted for your local court clerk.',
+    totalSteps: 7,
+    title: '3. Official 28-Line Court Pleadings',
+    subtitle: 'California Rule 2.105 & Formal Demand Letters',
+    description: 'Generate numbered 28-line civil complaints, 14-day pre-litigation demand letters with statutory interest, and sworn verification affidavits.',
     targetWorkstation: 'pleading-builder',
-    icon: <FileText className="w-6 h-6 text-amber-400" />,
-    whereToGo: 'Workstation Tab 3: 28-Line Pleading',
-    whatToDoNext: 'Review your auto-drafted complaint, click "Print / Export Pleading", and take it directly to the courthouse.'
-  },
-  {
-    id: 'second-opinion',
-    stepNumber: 5,
-    title: '4. AI Case Second Opinion',
-    simpleSubtitle: 'Objective Case Viability & Defense Trap Predictions',
-    whatItDoes: 'Gives you an objective second opinion on your case. Shows what the other person will argue to defend themselves, and gives you the exact legal rebuttal to win.',
-    targetWorkstation: 'second-opinion',
-    icon: <Lightbulb className="w-6 h-6 text-amber-400" />,
-    whereToGo: 'Workstation Tab 5: Second Opinion (New!)',
-    whatToDoNext: 'View your overall Merit Grade, Win Probability %, and predicted counter-strategies.'
+    tabLabel: '3. Court Papers',
+    icon: <FileText className="w-5 h-5 text-amber-400" />,
+    actionTip: 'Click "Print / Save PDF" to produce court-ready filing documents.'
   },
   {
     id: 'settlement-matrix',
-    stepNumber: 6,
-    title: '5. Demand Letter & Settlement Settle',
-    simpleSubtitle: 'Get Paid Before Trial with Rule 408 Letters',
-    whatItDoes: 'Drafts a formal 10-day demand letter with Federal Rule 408 confidentiality protection and calculates your walk-away settlement number.',
+    stepNumber: 5,
+    totalSteps: 7,
+    title: '4. Demand & Settlement Matrix',
+    subtitle: 'Risk Math & Rule 408 Negotiation',
+    description: 'Model your trial expected return (EV) after filing fees and time loss. Generate 3-tier settlement brackets (Anchor, Compromise, Walk-Away Floor).',
     targetWorkstation: 'settlement-matrix',
-    icon: <Calculator className="w-6 h-6 text-amber-400" />,
-    whereToGo: 'Workstation Tab 4: Demand & Settle',
-    whatToDoNext: 'Adjust the probability slider to see your risk-adjusted expected recovery value.'
+    tabLabel: '4. Demand & Settle',
+    icon: <Calculator className="w-5 h-5 text-amber-400" />,
+    actionTip: 'Copy confidential settlement compromise proposals protected under Rule 408.'
+  },
+  {
+    id: 'second-opinion',
+    stepNumber: 6,
+    totalSteps: 7,
+    title: '5. AI Legal Second Opinion',
+    subtitle: 'Objective Merit Grade & Defense Rebuttals',
+    description: 'Get an objective case audit (Grade A-F, Win Probability %), predicted defense arguments from opposing parties, and statutory counter-citations.',
+    targetWorkstation: 'second-opinion',
+    tabLabel: '5. Second Opinion',
+    icon: <Lightbulb className="w-5 h-5 text-amber-400" />,
+    actionTip: 'Read your strategic consultant verdict and predicted opponent traps.'
   },
   {
     id: 'legal-services',
     stepNumber: 7,
-    title: '6. Real-Life Legal Aid & Local Courts',
-    simpleSubtitle: 'Connect to Free Legal Aid Clinics & Court Self-Help Centers',
-    whatItDoes: 'Direct phone numbers, e-filing portals, free legal aid societies, and small claims advisors for your specific country and state.',
+    totalSteps: 7,
+    title: '6. Verified Legal Aid & Court Portals',
+    subtitle: 'Connect to Free Real-Life Legal Help',
+    description: 'Direct phone numbers and intake portals for 131+ pro bono legal aid societies, court fee waivers, and free county small claims advisors.',
     targetWorkstation: 'legal-services',
-    icon: <Building className="w-6 h-6 text-amber-400" />,
-    whereToGo: 'Workstation Tab 6: Legal Services Hub',
-    whatToDoNext: 'Click "Open Official Site" or call the free Small Claims Advisor hotline in your area.'
-  },
-  {
-    id: 'trial-prep',
-    stepNumber: 8,
-    title: '7. Courtroom Practice & Objections',
-    simpleSubtitle: 'Rehearse Opening Argument with Live Teleprompter',
-    whatItDoes: 'Train with real courtroom objection quizzes (Hearsay, Leading) and practice speaking with the adjustable speed teleprompter before your court hearing.',
-    targetWorkstation: 'trial-prep',
-    icon: <Gavel className="w-6 h-6 text-amber-400" />,
-    whereToGo: 'Workstation Tab 8: Trial Prep',
-    whatToDoNext: 'Test your objection skills with the interactive simulator and rehearse your opening speech.'
+    tabLabel: '6. Legal Aid & Courts',
+    icon: <Building className="w-5 h-5 text-amber-400" />,
+    actionTip: 'Search by category or state to find free clinics and official court portals.'
   }
 ];
 
 export const WalkthroughTour: React.FC = () => {
-  const { isTourOpen, setIsTourOpen, setActiveWorkstation } = useSueChef();
+  const { isTourOpen, setIsTourOpen, activeWorkstation, setActiveWorkstation } = useSueChef();
   const [currentStepIdx, setCurrentStepIdx] = useState(0);
 
-  // Sync active workstation whenever step changes
+  // Sync active workstation immediately whenever step changes
   useEffect(() => {
     if (isTourOpen) {
-      setActiveWorkstation(TOUR_STEPS[currentStepIdx].targetWorkstation);
+      const target = TOUR_STEPS[currentStepIdx].targetWorkstation;
+      if (activeWorkstation !== target) {
+        setActiveWorkstation(target);
+      }
     }
   }, [currentStepIdx, isTourOpen]);
 
@@ -147,7 +146,7 @@ export const WalkthroughTour: React.FC = () => {
         handleBack();
       } else if (e.key === 'Escape') {
         e.preventDefault();
-        handleSkip();
+        handleClose();
       }
     };
     window.addEventListener('keydown', handleKeyDown);
@@ -178,132 +177,113 @@ export const WalkthroughTour: React.FC = () => {
     }
   };
 
-  const handleSkip = () => {
+  const handleClose = () => {
     sound.playClick();
     setIsTourOpen(false);
     setCurrentStepIdx(0);
   };
 
-  const handleJumpToFeature = () => {
-    sound.playGavelStrike();
-    setActiveWorkstation(currentStep.targetWorkstation);
-    setIsTourOpen(false);
-  };
-
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 backdrop-blur-md p-4 animate-in fade-in duration-200">
-      {/* High-Contrast Spotlight Card */}
-      <div className="bg-[#101420] text-slate-100 border-2 border-amber-400/90 ring-4 ring-amber-500/30 rounded-xl max-w-xl w-full p-6 sm:p-7 space-y-5 shadow-[0_0_60px_rgba(212,175,55,0.45)] relative">
-        {/* Top Header / Brand / Close */}
-        <div className="flex items-center justify-between border-b border-slate-700/80 pb-3">
-          <div className="flex items-center gap-3">
-            <AluLogo size="sm" showLabel={true} />
-            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-amber-400/15 border border-amber-400/50 rounded text-amber-300 text-xs font-mono font-bold uppercase tracking-wider">
-              <Sparkles className="w-3.5 h-3.5 text-amber-400" />
-              Step {currentStep.stepNumber} of {TOUR_STEPS.length}
-            </span>
+    <aside aria-label="Interactive Tour Guide" className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-50 max-w-lg w-[calc(100vw-2rem)] sm:w-full animate-in slide-in-from-bottom-5 duration-300 pointer-events-auto">
+      {/* Floating Non-Blocking Spotlight Card */}
+      <div className="bg-[var(--bg-card)] text-[var(--text-main)] border-2 border-[var(--accent-gold)] ring-4 ring-[var(--accent-gold)]/25 custom-geometry p-5 sm:p-6 space-y-4 shadow-2xl backdrop-blur-xl">
+        {/* Top Header / Step Indicator / Close */}
+        <div className="flex items-center justify-between border-b border-[var(--border-color)] pb-3">
+          <div className="flex items-center gap-2.5">
+            <AluLogo size="sm" showLabel={false} />
+            <div>
+              <span className="text-xs font-mono font-bold uppercase text-[var(--accent-gold)] flex items-center gap-1.5">
+                <Sparkles className="w-3.5 h-3.5" />
+                <span>Tour Step {currentStep.stepNumber} of {TOUR_STEPS.length}</span>
+              </span>
+            </div>
           </div>
-          <button
-            onClick={handleSkip}
-            className="text-slate-400 hover:text-white p-1 rounded hover:bg-slate-800 transition-colors"
-            title="Close Tour (Esc)"
-          >
-            <X className="w-5 h-5" />
-          </button>
-        </div>
 
-        {/* Step Progress Bar Dots */}
-        <div className="flex gap-1.5 w-full">
-          {TOUR_STEPS.map((step, idx) => (
+          <div className="flex items-center gap-2">
+            <span className="text-[11px] font-mono px-2 py-0.5 bg-[var(--badge-bg)] border border-[var(--badge-border)] text-[var(--accent-gold)] font-semibold custom-geometry">
+              Active: {currentStep.tabLabel}
+            </span>
             <button
-              key={step.id}
-              onClick={() => {
-                sound.playClick();
-                setCurrentStepIdx(idx);
-              }}
-              className={`h-2 rounded-full transition-all duration-300 ${
-                idx === currentStepIdx 
-                  ? 'bg-amber-400 w-12 shadow-[0_0_8px_rgba(212,175,55,0.8)]' 
-                  : idx < currentStepIdx
-                  ? 'bg-amber-600/70 w-4'
-                  : 'bg-slate-700 w-3'
-              }`}
-              title={`Jump to Step ${step.stepNumber}: ${step.title}`}
-            />
-          ))}
+              onClick={handleClose}
+              className="text-[var(--text-muted)] hover:text-[var(--text-main)] p-1 custom-geometry hover:bg-[var(--bg-secondary)] transition-colors"
+              title="Close Tour (Esc)"
+            >
+              <X className="w-4 h-4" />
+            </button>
+          </div>
         </div>
 
-        {/* Main Content Area */}
-        <div className="space-y-4">
-          <div className="flex items-start gap-4">
-            <div className="p-3 bg-amber-400/15 border border-amber-400/40 rounded-lg shrink-0 shadow-inner">
+        {/* Step Content */}
+        <div className="space-y-3">
+          <div className="flex items-start gap-3">
+            <div className="w-9 h-9 rounded-lg bg-[var(--badge-bg)] border border-[var(--badge-border)] flex items-center justify-center shrink-0">
               {currentStep.icon}
             </div>
-            <div className="space-y-1">
-              <h2 className="text-xl sm:text-2xl font-bold font-serif text-white leading-tight">
+            <div className="space-y-0.5">
+              <h3 className="text-base font-bold font-serif text-[var(--text-main)] leading-snug">
                 {currentStep.title}
-              </h2>
-              <div className="text-xs sm:text-sm font-semibold text-amber-300 font-sans">
-                {currentStep.simpleSubtitle}
-              </div>
+              </h3>
+              <p className="text-xs font-semibold text-[var(--accent-gold)]">
+                {currentStep.subtitle}
+              </p>
             </div>
           </div>
 
-          <p className="text-sm text-slate-200 leading-relaxed bg-slate-900/70 p-3.5 rounded-lg border border-slate-800">
-            {currentStep.whatItDoes}
+          <p className="text-xs text-[var(--text-muted)] leading-relaxed">
+            {currentStep.description}
           </p>
 
-          {/* WHERE TO GO & WHAT TO DO GUIDANCE BOX */}
-          <div className="space-y-2 p-3.5 bg-amber-950/30 border border-amber-500/40 rounded-lg">
-            <div className="flex items-center gap-2 text-xs font-mono font-bold uppercase text-amber-300 tracking-wider">
-              <MousePointerClick className="w-4 h-4 text-amber-400 animate-bounce" />
-              <span>Where to Go & What to Do:</span>
-            </div>
-            
-            <div className="text-xs text-amber-200 font-mono">
-              📍 <strong className="text-white">{currentStep.whereToGo}</strong>
-            </div>
-
-            <p className="text-xs text-slate-300 leading-snug">
-              👉 {currentStep.whatToDoNext}
-            </p>
+          <div className="p-2.5 bg-[var(--bg-secondary)] border border-[var(--border-color)] custom-geometry text-[11px] text-[var(--text-main)] flex items-center gap-2 font-mono">
+            <Navigation className="w-3.5 h-3.5 text-[var(--accent-gold)] shrink-0" />
+            <span>Tip: {currentStep.actionTip}</span>
           </div>
         </div>
 
-        {/* Action Controls & Navigation */}
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-3 border-t border-slate-800">
-          <button
-            onClick={handleJumpToFeature}
-            className="text-xs font-bold text-amber-400 hover:text-amber-300 underline font-mono flex items-center gap-1"
-          >
-            <span>👉 Open & Use This Tool Now</span>
-          </button>
+        {/* Navigation Dots & Controls */}
+        <div className="flex items-center justify-between gap-3 pt-2 border-t border-[var(--border-color)]">
+          {/* Progress Indicators */}
+          <div className="flex items-center gap-1.5">
+            {TOUR_STEPS.map((step, idx) => (
+              <button
+                key={step.id}
+                onClick={() => {
+                  sound.playClick();
+                  setCurrentStepIdx(idx);
+                }}
+                className={`h-2 rounded-full transition-all ${
+                  idx === currentStepIdx 
+                    ? 'w-6 bg-[var(--accent-gold)]' 
+                    : idx < currentStepIdx
+                    ? 'w-2 bg-[var(--accent-gold)]/50'
+                    : 'w-2 bg-[var(--border-color)]'
+                }`}
+                title={`Step ${step.stepNumber}: ${step.title}`}
+              />
+            ))}
+          </div>
 
-          <div className="flex items-center gap-2.5 w-full sm:w-auto justify-end">
+          {/* Action Buttons */}
+          <div className="flex items-center gap-2">
             {currentStepIdx > 0 && (
               <button
                 onClick={handleBack}
-                className="flex items-center gap-1.5 px-3 py-2 bg-slate-800 border border-slate-700 text-slate-200 text-xs font-semibold rounded hover:bg-slate-700 transition-colors"
+                className="px-3 py-1.5 bg-[var(--bg-secondary)] border border-[var(--border-color)] text-[var(--text-muted)] hover:text-[var(--text-main)] text-xs font-semibold custom-geometry flex items-center gap-1 transition-all"
               >
-                <ArrowLeft className="w-4 h-4" />
+                <ArrowLeft className="w-3.5 h-3.5" />
                 <span>Back</span>
               </button>
             )}
 
             <button
               onClick={handleNext}
-              className="flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-amber-500 to-amber-400 text-slate-950 text-xs sm:text-sm font-bold rounded hover:from-amber-400 hover:to-amber-300 transition-all shadow-[0_0_15px_rgba(212,175,55,0.4)]"
+              className="px-4 py-1.5 bg-[var(--accent-gold)] text-slate-950 text-xs font-bold custom-geometry hover:opacity-90 flex items-center gap-1.5 shadow-md transition-all"
             >
-              <span>{isLast ? 'Complete & Start Preparing' : 'Next Step (Show Where to Go)'}</span>
-              {isLast ? (
-                <Check className="w-4 h-4 text-slate-950 font-bold" />
-              ) : (
-                <ArrowRight className="w-4 h-4" />
-              )}
+              <span>{isLast ? 'Finish Tour' : 'Next Step'}</span>
+              {isLast ? <Check className="w-3.5 h-3.5" /> : <ArrowRight className="w-3.5 h-3.5" />}
             </button>
           </div>
         </div>
       </div>
-    </div>
+    </aside>
   );
 };
