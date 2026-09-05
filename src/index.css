@@ -1,0 +1,174 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ----------------------------------------------------
+   THEME PALETTE DEFINITIONS & CSS VARIABLES
+---------------------------------------------------- */
+
+:root {
+  --bg-primary: #0B0D13;
+  --bg-secondary: #11141E;
+  --bg-card: #181C28;
+  --bg-hover: #222738;
+  --border-color: #2A3042;
+  --text-main: #F1F5F9;
+  --text-muted: #94A3B8;
+  --accent-gold: #D4AF37;
+  --accent-secondary: #C5A059;
+  --badge-bg: rgba(212, 175, 55, 0.12);
+  --badge-border: rgba(212, 175, 55, 0.35);
+  --pleading-paper-bg: #FFFFFF;
+  --pleading-text: #111827;
+  --pleading-line: #9CA3AF;
+}
+
+/* 1. Chambers Onyx (Default Midnight Justice) */
+.theme-chambers-onyx {
+  --bg-primary: #0A0C10;
+  --bg-secondary: #10131A;
+  --bg-card: #171B24;
+  --bg-hover: #202633;
+  --border-color: #283040;
+  --text-main: #F3F4F6;
+  --text-muted: #9CA3AF;
+  --accent-gold: #D4AF37;
+  --accent-secondary: #E5C158;
+  --badge-bg: rgba(212, 175, 55, 0.15);
+  --badge-border: rgba(212, 175, 55, 0.4);
+}
+
+/* 2. Parchment & Ink (Clean Editorial Light Mode) */
+.theme-parchment-ink {
+  --bg-primary: #F8F5EE;
+  --bg-secondary: #EFE9DC;
+  --bg-card: #FAF7F2;
+  --bg-hover: #E8E0CE;
+  --border-color: #D6CAB4;
+  --text-main: #1C1917;
+  --text-muted: #78716C;
+  --accent-gold: #854D0E;
+  --accent-secondary: #A16207;
+  --badge-bg: rgba(133, 77, 14, 0.1);
+  --badge-border: rgba(133, 77, 14, 0.3);
+  --pleading-paper-bg: #FCFBF9;
+  --pleading-text: #1C1917;
+}
+
+/* 3. Legal Slate & Cobalt (Deep Navy Corporate) */
+.theme-legal-slate {
+  --bg-primary: #0F172A;
+  --bg-secondary: #1E293B;
+  --bg-card: #1E293B;
+  --bg-hover: #334155;
+  --border-color: #475569;
+  --text-main: #F8FAFC;
+  --text-muted: #94A3B8;
+  --accent-gold: #38BDF8;
+  --accent-secondary: #0284C7;
+  --badge-bg: rgba(56, 189, 248, 0.15);
+  --badge-border: rgba(56, 189, 248, 0.4);
+}
+
+/* 4. Emerald Chancery (British Racing Green) */
+.theme-emerald-chancery {
+  --bg-primary: #041811;
+  --bg-secondary: #09261C;
+  --bg-card: #0E3528;
+  --bg-hover: #154535;
+  --border-color: #1F5A46;
+  --text-main: #ECFDF5;
+  --text-muted: #A7F3D0;
+  --accent-gold: #FBBF24;
+  --accent-secondary: #F59E0B;
+  --badge-bg: rgba(251, 191, 36, 0.15);
+  --badge-border: rgba(251, 191, 36, 0.4);
+}
+
+/* 5. Cyber Tribunal (Tactical Terminal Matrix) */
+.theme-cyber-tribunal {
+  --bg-primary: #050505;
+  --bg-secondary: #0D0E11;
+  --bg-card: #14161D;
+  --bg-hover: #1F222E;
+  --border-color: #2B2F3D;
+  --text-main: #E2E8F0;
+  --text-muted: #8E96AA;
+  --accent-gold: #10B981;
+  --accent-secondary: #34D399;
+  --badge-bg: rgba(16, 185, 129, 0.15);
+  --badge-border: rgba(16, 185, 129, 0.4);
+}
+
+/* ----------------------------------------------------
+   CORNER GEOMETRY SYSTEM
+---------------------------------------------------- */
+
+/* Sharp (0px) */
+.geom-sharp .card-geom,
+.geom-sharp .btn-geom,
+.geom-sharp .input-geom,
+.geom-sharp .tab-geom {
+  border-radius: 0px !important;
+}
+
+/* Smooth (8px / 12px) */
+.geom-smooth .card-geom {
+  border-radius: 12px !important;
+}
+.geom-smooth .btn-geom,
+.geom-smooth .input-geom,
+.geom-smooth .tab-geom {
+  border-radius: 8px !important;
+}
+
+/* Chamfer (45-degree angle clip) */
+.geom-chamfer .card-geom {
+  border-radius: 0px;
+  clip-path: polygon(
+    10px 0%, calc(100% - 10px) 0%,
+    100% 10px, 100% calc(100% - 10px),
+    calc(100% - 10px) 100%, 10px 100%,
+    0% calc(100% - 10px), 0% 10px
+  );
+}
+.geom-chamfer .btn-geom,
+.geom-chamfer .tab-geom {
+  border-radius: 0px;
+  clip-path: polygon(
+    6px 0%, calc(100% - 6px) 0%,
+    100% 6px, 100% calc(100% - 6px),
+    calc(100% - 6px) 100%, 6px 100%,
+    0% calc(100% - 6px), 0% 6px
+  );
+}
+
+/* ----------------------------------------------------
+   LEGAL PLEADING PAPER 28-LINE NUMBERED MARGIN
+---------------------------------------------------- */
+
+.pleading-paper-container {
+  background-color: var(--pleading-paper-bg);
+  color: var(--pleading-text);
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3), 0 8px 10px -6px rgba(0, 0, 0, 0.2);
+}
+
+.pleading-line-margin {
+  border-right: 2px double var(--pleading-line);
+}
+
+/* Custom Sleek Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: var(--bg-secondary);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--border-color);
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--accent-gold);
+}
