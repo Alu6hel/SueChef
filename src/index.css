@@ -108,12 +108,14 @@
 .geom-sharp .card-geom,
 .geom-sharp .btn-geom,
 .geom-sharp .input-geom,
-.geom-sharp .tab-geom {
+.geom-sharp .tab-geom,
+.geom-sharp .custom-geometry {
   border-radius: 0px !important;
 }
 
 /* Smooth (8px / 12px) */
-.geom-smooth .card-geom {
+.geom-smooth .card-geom,
+.geom-smooth .custom-geometry {
   border-radius: 12px !important;
 }
 .geom-smooth .btn-geom,
@@ -123,7 +125,8 @@
 }
 
 /* Chamfer (45-degree angle clip) */
-.geom-chamfer .card-geom {
+.geom-chamfer .card-geom,
+.geom-chamfer .custom-geometry {
   border-radius: 0px;
   clip-path: polygon(
     10px 0%, calc(100% - 10px) 0%,

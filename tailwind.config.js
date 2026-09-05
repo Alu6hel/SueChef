@@ -8,6 +8,26 @@ export default {
   theme: {
     extend: {
       colors: {
+        background: 'var(--bg-primary)',
+        foreground: 'var(--text-main)',
+        card: {
+          DEFAULT: 'var(--bg-card)',
+          foreground: 'var(--text-main)'
+        },
+        muted: {
+          DEFAULT: 'var(--bg-secondary)',
+          foreground: 'var(--text-muted)'
+        },
+        primary: {
+          DEFAULT: 'var(--accent-gold)',
+          foreground: '#0B0D13'
+        },
+        border: 'var(--border-color)',
+        hover: 'var(--bg-hover)',
+        badge: {
+          bg: 'var(--badge-bg)',
+          border: 'var(--badge-border)'
+        },
         legal: {
           onyx: '#0B0D13',
           dark: '#11141E',

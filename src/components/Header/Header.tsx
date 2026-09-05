@@ -1,38 +1,36 @@
 import React, { useState } from 'react';
 import { useSueChef } from '../../context/SueChefContext';
-import { 
-  Scale, 
-  Flame, 
-  Hourglass, 
-  FileText, 
-  ShieldCheck, 
-  BookOpen, 
-  Send, 
-  Briefcase, 
-  Lock, 
-  Volume2, 
-  VolumeX, 
-  Palette, 
-  Shapes, 
-  AlertTriangle,
-  DollarSign,
-  Award,
-  Sparkles,
-  FolderSearch,
-  Gavel,
-  Calculator,
-  Search,
-  UserCheck,
-  ChevronDown
-} from 'lucide-react';
 import { ThemeId, CornerGeometry, WorkstationId } from '../../types';
 import { sound } from '../../services/soundEngine';
+import { AluLogo } from '../Branding/AluLogo';
+import { 
+  Scale, 
+  FileText, 
+  Search, 
+  FolderSearch, 
+  Gavel, 
+  ShieldCheck, 
+  Calculator, 
+  Lock, 
+  Palette, 
+  Volume2, 
+  VolumeX, 
+  Shapes, 
+  AlertTriangle, 
+  FolderGit2, 
+  Sparkles,
+  Layers,
+  Flame,
+  FileSpreadsheet,
+  Clock,
+  HelpCircle
+} from 'lucide-react';
 
 export const Header: React.FC = () => {
-  const {
-    theme,
-    setTheme,
-    cornerGeometry,
+  const { 
+    theme, 
+    setTheme, 
+    cornerGeometry, 
     setCornerGeometry,
     activeWorkstation,
     setActiveWorkstation,
@@ -40,8 +38,6 @@ export const Header: React.FC = () => {
     soundEnabled,
     toggleSound,
     panicWipe,
-    totalDamages,
-    estimatedParalegalSavings,
     setIsCaseManagerOpen,
     setIsQuickSearchOpen,
     setIsTourOpen
@@ -50,91 +46,97 @@ export const Header: React.FC = () => {
   const [showThemeModal, setShowThemeModal] = useState(false);
   const [showPanicConfirm, setShowPanicConfirm] = useState(false);
 
-  const workstations: { id: WorkstationId; label: string; icon: React.ReactNode; badge?: string }[] = [
-    { id: 'claim-kitchen', label: 'Claim Kitchen', icon: <Flame className="w-3.5 h-3.5 text-amber-500" />, badge: `${activeCase.claimEvaluation.meritScore}%` },
-    { id: 'discovery-studio', label: 'Discovery Studio', icon: <FolderSearch className="w-3.5 h-3.5 text-primary" />, badge: `${(activeCase.discovery?.interrogatories.length || 0) + (activeCase.discovery?.rfps.length || 0) + (activeCase.discovery?.rfas.length || 0)}` },
-    { id: 'trial-prep', label: 'Trial & Hearing Prep', icon: <Gavel className="w-3.5 h-3.5 text-amber-400" /> },
-    { id: 'settlement-matrix', label: 'Settlement Matrix', icon: <Calculator className="w-3.5 h-3.5 text-emerald-400" /> },
-    { id: 'sol-watcher', label: 'SOL Docket', icon: <Hourglass className="w-3.5 h-3.5 text-sky-400" /> },
-    { id: 'pleading-builder', label: 'Pleadings & Demand', icon: <FileText className="w-3.5 h-3.5 text-emerald-400" /> },
-    { id: 'evidence-locker', label: 'Evidence Locker', icon: <ShieldCheck className="w-3.5 h-3.5 text-indigo-400" />, badge: `${activeCase.evidenceList.length}` },
-    { id: 'legalese-decoder', label: 'Legalese Decoder', icon: <BookOpen className="w-3.5 h-3.5 text-purple-400" /> },
-    { id: 'service-tracker', label: 'Process Service', icon: <Send className="w-3.5 h-3.5 text-teal-400" /> },
-    { id: 'attorney-dossier', label: 'Attorney Dossier', icon: <UserCheck className="w-3.5 h-3.5 text-amber-400" />, badge: 'Save $5k' },
-    { id: 'security-vault', label: 'Security Vault', icon: <Lock className="w-3.5 h-3.5 text-rose-400" /> },
+  const themes: { id: ThemeId; name: string; desc: string; color: string }[] = [
+    { id: 'chambers-onyx', name: 'Chambers Onyx', desc: 'Midnight Justice & Gold Leaf', color: '#D4AF37' },
+    { id: 'parchment-ink', name: 'Parchment & Ink', desc: 'Editorial High-Contrast Light Mode', color: '#854D0E' },
+    { id: 'legal-slate', name: 'Legal Slate & Cobalt', desc: 'Federal Court Admiralty Navy', color: '#38BDF8' },
+    { id: 'emerald-chancery', name: 'Emerald Chancery', desc: 'British Chancery Racing Green', color: '#10B981' },
+    { id: 'cyber-tribunal', name: 'Cyber Tribunal', desc: 'Tactical Matrix Terminal Dark', color: '#34D399' },
   ];
 
-  const themes: { id: ThemeId; name: string; desc: string; color: string }[] = [
-    { id: 'chambers-onyx', name: 'Chambers Onyx', desc: 'Midnight obsidian with gold accents', color: '#D4AF37' },
-    { id: 'parchment-ink', name: 'Parchment & Ink', desc: 'Warm ivory editorial paper mode', color: '#854D0E' },
-    { id: 'legal-slate', name: 'Legal Slate & Cobalt', desc: 'Corporate navy slate with cyan', color: '#38BDF8' },
-    { id: 'emerald-chancery', name: 'Emerald Chancery', desc: 'Deep racing green with brass', color: '#10B981' },
-    { id: 'cyber-tribunal', name: 'Cyber Tribunal', desc: 'Tactical high-contrast terminal', color: '#34D399' },
+  const workstations: { id: WorkstationId; label: string; icon: React.ReactNode; badge?: string }[] = [
+    { id: 'claim-kitchen', label: 'Claim Kitchen', icon: <Scale className="w-3.5 h-3.5" /> },
+    { id: 'pleading-builder', label: '28-Line Pleading', icon: <FileText className="w-3.5 h-3.5" /> },
+    { id: 'discovery-studio', label: 'Discovery Studio', icon: <FolderSearch className="w-3.5 h-3.5" />, badge: '30D' },
+    { id: 'trial-prep', label: 'Trial & Hearing Prep', icon: <Gavel className="w-3.5 h-3.5" />, badge: 'Sim' },
+    { id: 'settlement-matrix', label: 'Settlement Matrix', icon: <Calculator className="w-3.5 h-3.5" /> },
+    { id: 'evidence-locker', label: 'Evidence Locker', icon: <ShieldCheck className="w-3.5 h-3.5" />, badge: 'SHA256' },
+    { id: 'sol-watcher', label: 'SOL Docket', icon: <Clock className="w-3.5 h-3.5" /> },
+    { id: 'service-tracker', label: 'Service & Proof', icon: <Clock className="w-3.5 h-3.5" /> },
+    { id: 'legalese-decoder', label: 'Legalese Decoder', icon: <Layers className="w-3.5 h-3.5" /> },
+    { id: 'attorney-dossier', label: 'Counsel Dossier', icon: <FileSpreadsheet className="w-3.5 h-3.5" /> },
+    { id: 'security-vault', label: 'Security Vault', icon: <Lock className="w-3.5 h-3.5" />, badge: 'AES' }
   ];
 
   return (
-    <header className="sticky top-0 z-40 bg-[var(--bg-secondary)] border-b border-[var(--border-color)] px-3 py-2 transition-colors">
-      <div className="flex flex-col gap-2 max-w-7xl mx-auto">
-        
-        {/* Top Header Row: Brand, Matter Switcher, Global Tools */}
-        <div className="flex items-center justify-between gap-3 w-full">
-          {/* Brand & Matter Switcher Button */}
+    <header className="border-b border-[var(--border-color)] bg-[var(--bg-secondary)] sticky top-0 z-40 transition-colors shadow-sm">
+      <div className="max-w-7xl mx-auto px-3 sm:px-4 py-2 space-y-2">
+        {/* Top Tier: Branding, Case Switcher, Global Tools */}
+        <div className="flex items-center justify-between gap-2">
+          {/* Logo & Platform Name */}
           <div className="flex items-center gap-3">
-            <div 
-              onClick={() => sound.playGavelStrike()}
-              className="w-10 h-10 card-geom bg-[var(--badge-bg)] border border-[var(--badge-border)] flex items-center justify-center cursor-pointer hover:scale-105 active:scale-95 transition-all shadow-md group shrink-0"
-              title="Click to strike the Gavel"
-            >
-              <Scale className="w-5 h-5 text-[var(--accent-gold)] group-hover:rotate-12 transition-transform" />
-            </div>
-
-            <div>
-              <div className="flex items-center gap-2">
-                <span className="font-serif font-bold text-lg text-[var(--text-main)] tracking-wide">
-                  SueChef
-                </span>
-                <span className="text-[10px] uppercase font-mono px-1.5 py-0.5 card-geom bg-emerald-950/80 border border-emerald-500/30 text-emerald-400 font-semibold hidden sm:inline">
-                  Zero-Cloud Offline
-                </span>
-              </div>
-              
-              {/* Matter Switcher Trigger */}
-              <button
-                onClick={() => { sound.playClick(); setIsCaseManagerOpen(true); }}
-                className="flex items-center gap-1.5 text-xs text-[var(--accent-gold)] hover:text-white font-mono transition-colors text-left group"
-              >
-                <Briefcase className="w-3 h-3 text-[var(--accent-gold)] shrink-0" />
-                <span className="font-bold underline decoration-dotted truncate max-w-[200px] sm:max-w-xs md:max-w-md">
-                  {activeCase.title}
-                </span>
-                <ChevronDown className="w-3 h-3 text-[var(--text-muted)] group-hover:text-white shrink-0" />
-              </button>
+            <AluLogo size="md" showLabel={true} />
+            <div className="hidden md:flex items-center gap-2 pl-2 border-l border-[var(--border-color)]">
+              <span className="text-[10px] font-mono uppercase px-2 py-0.5 bg-[var(--badge-bg)] border border-[var(--badge-border)] text-[var(--accent-gold)] custom-geometry font-bold">
+                PRO SE CIVIL SUITE
+              </span>
             </div>
           </div>
 
-          {/* Global Quick Action Toolbar */}
+          {/* Center: Active Dispute Switcher & Search Bar */}
           <div className="flex items-center gap-2">
-            {/* Quick Search Palette Trigger (Ctrl+K) */}
             <button
-              onClick={() => { sound.playClick(); setIsQuickSearchOpen(true); }}
-              className="btn-geom flex items-center gap-1.5 px-2.5 py-1.5 text-xs bg-[var(--bg-card)] border border-[var(--border-color)] text-[var(--text-muted)] hover:text-[var(--text-main)] hover:bg-[var(--bg-hover)] transition-all"
-              title="Global Command Palette (Ctrl+K)"
+              onClick={() => {
+                sound.playClick();
+                setIsCaseManagerOpen(true);
+              }}
+              className="btn-geom flex items-center gap-2 px-3 py-1.5 text-xs bg-[var(--bg-card)] border border-[var(--border-color)] text-[var(--text-main)] hover:border-[var(--accent-gold)] transition-all shadow-sm"
+              title="Switch or create legal dispute cases"
             >
-              <Search className="w-3.5 h-3.5 text-primary" />
-              <span className="hidden md:inline font-mono">Search / Ctrl+K</span>
+              <FolderGit2 className="w-3.5 h-3.5 text-[var(--accent-gold)]" />
+              <div className="flex flex-col text-left leading-tight">
+                <span className="font-bold text-[11px] truncate max-w-[140px] sm:max-w-[200px]">
+                  {activeCase.title}
+                </span>
+                <span className="text-[9px] font-mono text-[var(--text-muted)]">
+                  {activeCase.state} • {activeCase.claimEvaluation.category.replace('_', ' ').toUpperCase()}
+                </span>
+              </div>
             </button>
 
-            {/* Guided Tour Trigger */}
+            {/* Quick Search Shortcut */}
             <button
-              onClick={() => { sound.playClick(); setIsTourOpen(true); }}
-              className="btn-geom flex items-center gap-1 px-2.5 py-1.5 text-xs bg-primary/10 border border-primary/30 text-primary hover:bg-primary/20 transition-all font-semibold"
-              title="Launch Guided Interactive Tour"
+              onClick={() => {
+                sound.playClick();
+                setIsQuickSearchOpen(true);
+              }}
+              className="btn-geom hidden lg:flex items-center gap-2 px-3 py-1.5 text-xs bg-[var(--bg-card)] border border-[var(--border-color)] text-[var(--text-muted)] hover:text-[var(--text-main)] hover:border-[var(--accent-gold)] transition-all"
+              title="Global Legal Command Palette (Ctrl+K)"
             >
-              <Sparkles className="w-3.5 h-3.5 text-amber-400" />
+              <Search className="w-3.5 h-3.5 text-[var(--accent-gold)]" />
+              <span>Search Blueprints...</span>
+              <kbd className="text-[9px] font-mono bg-[var(--bg-secondary)] px-1.5 py-0.5 border border-[var(--border-color)] text-[var(--text-muted)]">
+                ⌘K
+              </kbd>
+            </button>
+          </div>
+
+          {/* Right Tools: Tour, Sound, Geometry, Theme, Panic */}
+          <div className="flex items-center gap-1.5">
+            {/* Spotlight Tour Button */}
+            <button
+              onClick={() => {
+                sound.playClick();
+                setIsTourOpen(true);
+              }}
+              className="btn-geom flex items-center gap-1.5 px-2.5 py-1.5 text-xs bg-[var(--badge-bg)] border border-[var(--badge-border)] text-[var(--accent-gold)] hover:bg-[var(--accent-gold)] hover:text-black transition-all font-semibold"
+              title="Launch Guided Feature Tour"
+            >
+              <Sparkles className="w-3.5 h-3.5" />
               <span className="hidden sm:inline font-mono">Tour</span>
             </button>
 
-            {/* Audio Toggle */}
+            {/* Sound Toggle */}
             <button
               onClick={toggleSound}
               className={`btn-geom p-1.5 border transition-all ${
@@ -154,11 +156,11 @@ export const Header: React.FC = () => {
                   cornerGeometry === 'sharp' ? 'chamfer' : cornerGeometry === 'chamfer' ? 'smooth' : 'sharp';
                 setCornerGeometry(nextGeom);
               }}
-              className="btn-geom flex items-center gap-1 px-2 py-1.5 text-xs bg-[var(--bg-card)] border border-[var(--border-color)] text-[var(--text-main)] hover:bg-[var(--bg-hover)]"
+              className="btn-geom hidden sm:flex items-center gap-1 px-2 py-1.5 text-xs bg-[var(--bg-card)] border border-[var(--border-color)] text-[var(--text-main)] hover:bg-[var(--bg-hover)]"
               title={`Corner Geometry: ${cornerGeometry.toUpperCase()}`}
             >
               <Shapes className="w-3.5 h-3.5 text-[var(--accent-gold)]" />
-              <span className="uppercase text-[10px] font-mono font-semibold hidden sm:inline">{cornerGeometry}</span>
+              <span className="uppercase text-[10px] font-mono font-semibold">{cornerGeometry}</span>
             </button>
 
             {/* Theme Palette Modal */}
@@ -179,24 +181,24 @@ export const Header: React.FC = () => {
                 sound.playWarningBell();
                 setShowPanicConfirm(true);
               }}
-              className="btn-geom flex items-center gap-1 px-2 py-1 text-xs font-semibold bg-rose-950/60 border border-rose-600/40 text-rose-300 hover:bg-rose-900/80 transition-all"
+              className="btn-geom flex items-center gap-1 px-2 py-1.5 text-xs font-semibold bg-rose-950/70 border border-rose-600/50 text-rose-300 hover:bg-rose-900/90 transition-all"
               title="Panic Button: Instantly purge all local data with cryptographic noise"
             >
               <AlertTriangle className="w-3.5 h-3.5 text-rose-400" />
-              <span className="hidden sm:inline font-mono">Panic</span>
+              <span className="hidden md:inline font-mono">Panic</span>
             </button>
           </div>
         </div>
 
         {/* Workstation Tab Bar (Scrollable horizontally) */}
-        <nav className="flex items-center gap-1 overflow-x-auto w-full pb-1 scrollbar-none">
+        <nav className="flex items-center gap-1.5 overflow-x-auto w-full pb-1 scrollbar-none pt-1 border-t border-[var(--border-color)]/60">
           {workstations.map(ws => {
             const isActive = activeWorkstation === ws.id;
             return (
               <button
                 key={ws.id}
                 onClick={() => setActiveWorkstation(ws.id)}
-                className={`tab-geom flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-medium whitespace-nowrap transition-all border ${
+                className={`tab-geom flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold whitespace-nowrap transition-all border ${
                   isActive 
                     ? 'bg-[var(--accent-gold)] text-slate-950 font-bold border-[var(--accent-gold)] shadow-sm' 
                     : 'bg-[var(--bg-card)] text-[var(--text-muted)] border-[var(--border-color)] hover:bg-[var(--bg-hover)] hover:text-[var(--text-main)]'
@@ -205,8 +207,8 @@ export const Header: React.FC = () => {
                 {ws.icon}
                 <span>{ws.label}</span>
                 {ws.badge && (
-                  <span className={`text-[10px] px-1 py-0.2 rounded font-mono font-bold ${
-                    isActive ? 'bg-black/20 text-slate-950' : 'bg-[var(--bg-primary)] text-[var(--accent-gold)]'
+                  <span className={`text-[9px] px-1 py-0.2 rounded font-mono font-bold ${
+                    isActive ? 'bg-black/20 text-slate-950' : 'bg-[var(--bg-primary)] text-[var(--accent-gold)] border border-[var(--border-color)]'
                   }`}>
                     {ws.badge}
                   </span>
@@ -219,10 +221,10 @@ export const Header: React.FC = () => {
 
       {/* Theme Selection Modal */}
       {showThemeModal && (
-        <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="card-geom bg-[var(--bg-card)] border border-[var(--border-color)] max-w-md w-full p-5 shadow-2xl space-y-4">
+        <div className="fixed inset-0 z-50 bg-black/75 backdrop-blur-sm flex items-center justify-center p-4 animate-in fade-in">
+          <div className="card-geom bg-[var(--bg-card)] border-2 border-[var(--border-color)] max-w-md w-full p-6 shadow-2xl space-y-4">
             <div className="flex items-center justify-between border-b border-[var(--border-color)] pb-3">
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2.5">
                 <Palette className="w-5 h-5 text-[var(--accent-gold)]" />
                 <h3 className="font-serif font-bold text-lg text-[var(--text-main)]">
                   Chambers Theme Palette
@@ -230,7 +232,7 @@ export const Header: React.FC = () => {
               </div>
               <button 
                 onClick={() => setShowThemeModal(false)}
-                className="text-[var(--text-muted)] hover:text-[var(--text-main)] text-sm font-bold"
+                className="text-[var(--text-muted)] hover:text-[var(--text-main)] text-sm font-bold p-1"
               >
                 ✕
               </button>
@@ -244,15 +246,15 @@ export const Header: React.FC = () => {
                     setTheme(t.id);
                     setShowThemeModal(false);
                   }}
-                  className={`w-full card-geom flex items-center justify-between p-3 border text-left transition-all ${
+                  className={`w-full card-geom flex items-center justify-between p-3.5 border text-left transition-all ${
                     theme === t.id 
-                      ? 'border-[var(--accent-gold)] bg-[var(--badge-bg)]' 
+                      ? 'border-[var(--accent-gold)] bg-[var(--badge-bg)] ring-1 ring-[var(--accent-gold)]' 
                       : 'border-[var(--border-color)] bg-[var(--bg-secondary)] hover:bg-[var(--bg-hover)]'
                   }`}
                 >
                   <div className="flex items-center gap-3">
                     <div 
-                      className="w-4 h-4 rounded-full border border-white/20 shadow-sm"
+                      className="w-5 h-5 rounded-full border border-white/20 shadow-sm shrink-0"
                       style={{ backgroundColor: t.color }}
                     />
                     <div>
@@ -261,7 +263,9 @@ export const Header: React.FC = () => {
                     </div>
                   </div>
                   {theme === t.id && (
-                    <span className="text-xs font-mono font-bold text-[var(--accent-gold)]">ACTIVE</span>
+                    <span className="text-xs font-mono font-bold text-[var(--accent-gold)] px-2 py-0.5 bg-[var(--bg-card)] border border-[var(--accent-gold)]/40 rounded">
+                      ACTIVE
+                    </span>
                   )}
                 </button>
               ))}
@@ -272,7 +276,7 @@ export const Header: React.FC = () => {
 
       {/* Panic Wipe Confirmation Modal */}
       {showPanicConfirm && (
-        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4">
+        <div className="fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center p-4">
           <div className="card-geom bg-rose-950 border-2 border-rose-600 max-w-md w-full p-6 shadow-2xl text-rose-100 space-y-4">
             <div className="flex items-center gap-3 text-rose-400">
               <AlertTriangle className="w-8 h-8 flex-shrink-0 animate-pulse" />
