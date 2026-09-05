@@ -355,9 +355,24 @@ export const DisputeIntakeWizard: React.FC = () => {
 
       {/* Success Intake Modal */}
       {isSuccessModalOpen && (
-        <div className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-[var(--bg-card)] border-2 border-[var(--accent-gold)] p-6 max-w-xl w-full custom-geometry shadow-2xl space-y-5 animate-in zoom-in-95 duration-200">
-            <div className="flex items-center gap-3 border-b border-[var(--border-color)] pb-4">
+        <div 
+          onClick={() => setIsSuccessModalOpen(false)}
+          className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4 cursor-pointer"
+        >
+          <div 
+            onClick={e => e.stopPropagation()}
+            className="bg-[var(--bg-card)] border-2 border-[var(--accent-gold)] p-6 max-w-xl w-full custom-geometry shadow-2xl space-y-5 animate-in zoom-in-95 duration-200 relative cursor-default"
+          >
+            {/* Close X */}
+            <button
+              type="button"
+              onClick={() => setIsSuccessModalOpen(false)}
+              className="absolute top-4 right-4 text-[var(--text-muted)] hover:text-[var(--text-main)] text-sm font-bold p-1"
+            >
+              ✕
+            </button>
+
+            <div className="flex items-center gap-3 border-b border-[var(--border-color)] pb-4 pr-6">
               <div className="w-10 h-10 rounded-full bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400">
                 <CheckCircle2 className="w-6 h-6" />
               </div>
@@ -400,6 +415,7 @@ export const DisputeIntakeWizard: React.FC = () => {
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
               <button
+                type="button"
                 onClick={() => {
                   sound.playClick();
                   setIsSuccessModalOpen(false);
@@ -412,6 +428,7 @@ export const DisputeIntakeWizard: React.FC = () => {
               </button>
 
               <button
+                type="button"
                 onClick={() => {
                   sound.playClick();
                   setIsSuccessModalOpen(false);

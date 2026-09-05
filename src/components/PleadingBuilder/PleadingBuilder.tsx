@@ -16,6 +16,7 @@ import {
   Scale
 } from 'lucide-react';
 import { PleadingParagraph } from '../../types';
+import { getJurisdiction } from '../../services/jurisdictions';
 import { sound } from '../../services/soundEngine';
 
 export const PleadingBuilder: React.FC = () => {
@@ -27,8 +28,26 @@ export const PleadingBuilder: React.FC = () => {
     activeCase.pleadings.fontFamily || 'Century Schoolbook'
   );
 
+  const jurisdiction = getJurisdiction(activeCase.state || 'CA');
   const plaintiff = activeCase.parties.find(p => p.role === 'plaintiff') || activeCase.parties[0];
   const defendant = activeCase.parties.find(p => p.role === 'defendant') || activeCase.parties[1];
+
+  const principalDamage = activeCase.claimEvaluation.damages.find(d => d.category === 'direct_actual')?.amount || 2500;
+  const statutoryPenalty = activeCase.claimEvaluation.damages.find(d => d.category === 'statutory_penalty')?.amount || 0;
+  const interestDamage = activeCase.claimEvaluation.damages.find(d => d.category === 'interest')?.amount || 0;
+  const totalDamages = activeCase.claimEvaluation.damages.reduce((sum, d) => sum + (d.amount || 0), 0) || (principalDamage + statutoryPenalty + interestDamage);
+
+  const deadlineDays = activeCase.pleadings.demandLetter.responseDeadlineDays || 10;
+  const demandDateObj = new Date(activeCase.pleadings.demandLetter.demandDate || activeCase.createdAt || new Date());
+  const calculatedDeadline = new Date(demandDateObj.getTime() + deadlineDays * 24 * 60 * 60 * 1000).toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric'
+  });
+
+  const formattedPrincipal = `$${principalDamage.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+  const formattedPenalty = `$${statutoryPenalty.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+  const formattedTotal = `$${totalDamages.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 
   const handleCopyText = () => {
     sound.playClick();
@@ -52,7 +71,7 @@ export const PleadingBuilder: React.FC = () => {
       ].join('\n');
     } else if (activeSubTab === 'demand_letter') {
       textToCopy = [
-        'FORMAL NOTICE & DEMAND FOR SETTLEMENT PRIOR TO LITIGATION',
+        'FORMAL LEGAL NOTICE & DEMAND FOR SETTLEMENT PRIOR TO LITIGATION',
         `Date: ${activeCase.pleadings.demandLetter.demandDate}`,
         `Certified Mail No: ${activeCase.pleadings.demandLetter.certifiedMailNumber || 'USPS CERTIFIED'}`,
         '',
@@ -62,16 +81,25 @@ export const PleadingBuilder: React.FC = () => {
         `FROM: ${plaintiff?.name}`,
         `      ${plaintiff?.address}, ${plaintiff?.city}, ${plaintiff?.state} ${plaintiff?.zip}`,
         '',
-        'RE: FINAL DEMAND FOR PAYMENT — RETURN OF SECURITY DEPOSIT',
+        `RE: FINAL DEMAND FOR IMMEDIATE SETTLEMENT & PAYMENT (${formattedTotal})`,
         '',
         `Dear ${defendant?.name}:`,
+        `This letter serves as formal written notice and final demand for the immediate payment of ${formattedPrincipal} owed to Claimant.`,
+        '',
         activeCase.pleadings.demandLetter.settlementOfferText,
         '',
-        'Failure to remit the full demanded sum within the statutory window will result in the immediate filing of a civil lawsuit seeking statutory bad-faith penalties up to twice the principal deposit under California Civil Code § 1950.5(l) plus all court and service costs.',
+        `DEMANDED SETTLEMENT TERMS:`,
+        `• Principal Due: ${formattedPrincipal}`,
+        statutoryPenalty > 0 ? `• Statutory Bad-Faith Penalty Claimable: ${formattedPenalty} (${jurisdiction.securityDepositStatuteCitation})` : '',
+        interestDamage > 0 ? `• Accrued Prejudgment Interest: $${interestDamage.toFixed(2)} (${jurisdiction.statutoryInterestRatePercent}%)` : '',
+        `• Total Demanded Sum: ${formattedTotal}`,
+        `• Response Deadline: ${deadlineDays} calendar days (${calculatedDeadline})`,
+        '',
+        `Failure to remit the demanded sum on or before ${calculatedDeadline} will result in the immediate filing of a civil action in ${jurisdiction.courtName}, seeking full compensatory damages, statutory penalties under ${jurisdiction.securityDepositStatuteCitation || 'state law'}, prejudgment interest, and court filing costs.`,
         '',
         `Respectfully submitted,`,
         `${plaintiff?.name}`
-      ].join('\n');
+      ].filter(Boolean).join('\n');
     }
 
     navigator.clipboard.writeText(textToCopy);
@@ -98,10 +126,10 @@ export const PleadingBuilder: React.FC = () => {
           </div>
           <div>
             <h1 className="font-serif font-bold text-2xl text-[var(--text-main)]">
-              Pleading & Document Builder
+              Pleading &amp; Document Builder
             </h1>
             <p className="text-xs text-[var(--text-muted)] font-mono">
-              28-Line California/Federal Pleading Paper, Formal Demand Letters & Sworn Affidavits
+              28-Line State/Federal Pleading Paper, Formal 10-Day Demand Letters &amp; Sworn Affidavits
             </p>
           </div>
         </div>
@@ -132,7 +160,7 @@ export const PleadingBuilder: React.FC = () => {
                 : 'bg-[var(--bg-card)] text-[var(--text-muted)] border-[var(--border-color)] hover:text-[var(--text-main)]'
             }`}
           >
-            14-Day Demand Letter
+            10-Day Demand Letter
           </button>
           <button
             onClick={() => {
@@ -251,9 +279,9 @@ export const PleadingBuilder: React.FC = () => {
                     COMPLAINT FOR DAMAGES AND STATUTORY BAD-FAITH PENALTIES
                   </div>
                   <div className="text-[10px] text-slate-600 italic">
-                    1. Violation of Cal. Civ. Code § 1950.5<br />
-                    2. Breach of Written Contract<br />
-                    3. Unjust Enrichment
+                    1. {jurisdiction.securityDepositStatuteCitation || 'Statutory Violation'}<br />
+                    2. Breach of Contract / Unlawful Retention<br />
+                    3. Unjust Enrichment &amp; Prejudgment Interest
                   </div>
                   <div className="text-[10px] font-bold text-slate-800">DEMAND FOR JURY TRIAL</div>
                 </div>
@@ -309,7 +337,7 @@ export const PleadingBuilder: React.FC = () => {
           
           <div className="border-b-2 border-slate-900 pb-4 text-center space-y-1">
             <h2 className="font-bold text-base uppercase tracking-wider text-slate-950">
-              FORMAL LEGAL NOTICE & SETTLEMENT DEMAND
+              FORMAL LEGAL NOTICE &amp; SETTLEMENT DEMAND
             </h2>
             <p className="text-[11px] font-mono text-slate-600">
               SENT VIA USPS CERTIFIED MAIL WITH RETURN RECEIPT REQUESTED
@@ -332,12 +360,12 @@ export const PleadingBuilder: React.FC = () => {
               <div className="font-bold">{defendant?.name}</div>
               <div>{defendant?.address}</div>
               <div>{defendant?.city}, {defendant?.state} {defendant?.zip}</div>
-              <div className="text-slate-600 italic">Attn: Managing Agent / Legal Dept</div>
+              <div className="text-slate-600 italic">Attn: Legal Department / Managing Officer</div>
             </div>
           </div>
 
           <div className="pt-3 font-bold border-t border-slate-200">
-            RE: FINAL DEMAND FOR IMMEDIATE RETURN OF WITHHELD SECURITY DEPOSIT ($3,200.00)
+            RE: FINAL DEMAND FOR IMMEDIATE SETTLEMENT &amp; PAYMENT ({formattedTotal})
           </div>
 
           <p className="indent-6">
@@ -345,21 +373,28 @@ export const PleadingBuilder: React.FC = () => {
           </p>
 
           <p className="indent-6">
-            This letter serves as formal written demand for the immediate return of Plaintiff’s full refundable security deposit in the amount of <strong>$3,200.00</strong>, paid pursuant to the residential lease agreement for the premises located at 450 University Avenue, Apt 3B, Palo Alto, CA 94301.
+            This letter serves as formal written demand for the immediate payment and reimbursement of Claimant’s principal claim in the amount of <strong>{formattedPrincipal}</strong>.
           </p>
 
           <p className="indent-6">
-            Under California Civil Code § 1950.5(g)(1), a landlord has a mandatory legal obligation to return the deposit and deliver an itemized list of lawful deductions within <strong>21 calendar days</strong> of the tenant surrendering possession. Plaintiff fully vacated and surrendered keys on July 31, 2025. More than 35 days have elapsed, and Defendant has failed to provide either an itemized deduction statement or the funds.
+            Under {jurisdiction.stateName} law ({jurisdiction.securityDepositStatuteCitation || 'applicable statutes'}), an opposing party has an affirmative statutory duty to return withheld funds and provide complete accounting within <strong>{jurisdiction.securityDepositReturnDays || 21} calendar days</strong>. Defendant has failed to satisfy statutory deadlines, unlawfully withholding funds from Claimant.
           </p>
 
           <div className="p-4 bg-slate-100 border-l-4 border-slate-800 text-xs font-mono space-y-1">
-            <div className="font-bold">DEMANDED SETTLEMENT TERMS:</div>
-            <div>• Principal Deposit Due: $3,200.00</div>
-            <div>• Response Deadline: Within {activeCase.pleadings.demandLetter.responseDeadlineDays} calendar days of receipt of this notice.</div>
+            <div className="font-bold">ITEMIZED CLAIM &amp; DEMANDED SETTLEMENT TERMS:</div>
+            <div>• Principal Amount Due: {formattedPrincipal}</div>
+            {statutoryPenalty > 0 && (
+              <div>• Statutory Bad-Faith Penalty (Authorized under {jurisdiction.securityDepositStatuteCitation}): {formattedPenalty}</div>
+            )}
+            {interestDamage > 0 && (
+              <div>• Accrued Prejudgment Interest ({jurisdiction.statutoryInterestRatePercent}% per annum): ${interestDamage.toFixed(2)}</div>
+            )}
+            <div className="font-bold text-slate-950 pt-1">• Total Enforceable Demand Sum: {formattedTotal}</div>
+            <div>• Response Deadline: Within {deadlineDays} calendar days ({calculatedDeadline})</div>
           </div>
 
           <p className="indent-6">
-            If payment is not received in full by <strong>September 15, 2025</strong>, Plaintiff will immediately initiate formal civil proceedings in the Superior Court of California, County of Santa Clara. In addition to the principal deposit of $3,200.00, Plaintiff will seek statutory bad-faith damages of up to <strong>$6,400.00 (two times the deposit)</strong> pursuant to California Civil Code § 1950.5(l), plus prejudgment interest and mandatory court filing costs.
+            If full settlement payment is not received on or before <strong>{calculatedDeadline}</strong>, Claimant will immediately file a formal civil lawsuit in <strong>{jurisdiction.courtName}</strong>. In addition to the principal amount of {formattedPrincipal}, Claimant will vigorously seek maximum statutory bad-faith penalties of <strong>{formattedPenalty}</strong>, prejudgment daily interest, court filing fees, and certified process server costs.
           </p>
 
           <div className="pt-6 flex justify-between items-end">
@@ -384,12 +419,12 @@ export const PleadingBuilder: React.FC = () => {
           </div>
 
           <div className="space-y-1 text-xs">
-            <div>STATE OF CALIFORNIA</div>
-            <div>COUNTY OF {activeCase.county.toUpperCase()}</div>
+            <div>STATE OF {jurisdiction.stateName.toUpperCase()}</div>
+            <div>COURT OF JURISDICTION: {jurisdiction.courtName.toUpperCase()}</div>
           </div>
 
           <p className="indent-6">
-            I, <strong>{activeCase.pleadings.verificationAffidavit.declarantName}</strong>, declare as follows:
+            I, <strong>{activeCase.pleadings.verificationAffidavit.declarantName || plaintiff?.name}</strong>, declare as follows:
           </p>
 
           <p className="indent-6">
@@ -397,20 +432,20 @@ export const PleadingBuilder: React.FC = () => {
           </p>
 
           <p className="indent-6 font-bold">
-            I declare under penalty of perjury under the laws of the State of California that the foregoing is true and correct.
+            I declare under penalty of perjury under the laws of the State of {jurisdiction.stateName} that the foregoing is true and correct.
           </p>
 
           <div className="pt-10 flex justify-between items-end border-t border-slate-300">
             <div>
               <div>Executed on: {activeCase.createdAt}</div>
-              <div>At: {activeCase.county} County, California</div>
+              <div>Jurisdiction: {jurisdiction.stateName}</div>
             </div>
             <div className="text-right space-y-2">
               <div className="font-serif italic text-base text-blue-950 border-b border-slate-400 pb-1 w-48">
-                {activeCase.pleadings.verificationAffidavit.declarantName}
+                {activeCase.pleadings.verificationAffidavit.declarantName || plaintiff?.name}
               </div>
-              <div className="font-bold">{activeCase.pleadings.verificationAffidavit.declarantName}</div>
-              <div className="text-slate-600 italic">Declarant</div>
+              <div className="font-bold">{activeCase.pleadings.verificationAffidavit.declarantName || plaintiff?.name}</div>
+              <div className="text-slate-600 italic">Declarant / Plaintiff in Pro Per</div>
             </div>
           </div>
         </div>
@@ -418,3 +453,4 @@ export const PleadingBuilder: React.FC = () => {
     </div>
   );
 };
+

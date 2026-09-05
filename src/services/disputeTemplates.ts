@@ -769,6 +769,101 @@ function generateElementsForCategory(category: DisputeCategory, jurisdiction: an
   }
 }
 
+function generateParagraphsForDispute(
+  pName: string,
+  dName: string,
+  state: string,
+  category: DisputeCategory,
+  principalAmt: number,
+  penaltyAmt: number,
+  accruedInterest: number,
+  incidentDate: string,
+  description?: string
+) {
+  const jurisdiction = getJurisdiction(state);
+  const formattedPrincipal = `$${principalAmt.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+  const formattedPenalty = `$${penaltyAmt.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+  const formattedInterest = `$${accruedInterest.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+  const formattedTotal = `$${(principalAmt + penaltyAmt + accruedInterest).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+
+  return [
+    {
+      id: `p_para_1`,
+      number: 1,
+      heading: 'PARTIES & VENUE',
+      content: `Plaintiff ${pName} is an individual residing in the State of ${jurisdiction.stateName}.`,
+      section: 'parties' as const,
+      linkedEvidenceIds: []
+    },
+    {
+      id: `p_para_2`,
+      number: 2,
+      content: `Defendant ${dName} is an entity or individual conducting business and/or residing in the State of ${jurisdiction.stateName}.`,
+      section: 'parties' as const,
+      linkedEvidenceIds: []
+    },
+    {
+      id: `p_para_3`,
+      number: 3,
+      content: `Venue is proper in ${jurisdiction.courtName} pursuant to applicable state statutes because the underlying dispute, obligations, and wrongful actions occurred within this judicial district.`,
+      section: 'jurisdiction_venue' as const,
+      linkedEvidenceIds: ['ev_1']
+    },
+    {
+      id: `p_para_4`,
+      number: 4,
+      heading: 'FACTUAL ALLEGATIONS',
+      content: `On or about ${incidentDate}, Plaintiff entered into an agreement / transaction with Defendant ${dName} for ${description || 'the underlying subject matter'}.`,
+      section: 'facts' as const,
+      linkedEvidenceIds: ['ev_1']
+    },
+    {
+      id: `p_para_5`,
+      number: 5,
+      content: `Pursuant to the agreement and applicable law, Plaintiff tendered and/or was owed the principal sum of ${formattedPrincipal}.`,
+      section: 'facts' as const,
+      linkedEvidenceIds: []
+    },
+    {
+      id: `p_para_6`,
+      number: 6,
+      content: `Defendant breached its legal and statutory duties by failing to perform, improperly withholding funds, and refusing to deliver required statutory accounting.`,
+      section: 'facts' as const,
+      linkedEvidenceIds: []
+    },
+    {
+      id: `p_para_7`,
+      number: 7,
+      content: `More than ${jurisdiction.securityDepositReturnDays || 21} calendar days have elapsed since the obligation became due. Defendant continues to unlawfully withhold ${formattedPrincipal} from Plaintiff without lawful excuse.`,
+      section: 'facts' as const,
+      linkedEvidenceIds: []
+    },
+    {
+      id: `p_para_8`,
+      number: 8,
+      heading: 'CAUSES OF ACTION & STATUTORY BAD-FAITH CLAIMS',
+      content: `Plaintiff incorporates herein Paragraphs 1 through 7 as though fully set forth. Defendant's willful refusal to return funds constitutes bad-faith non-compliance under ${jurisdiction.securityDepositStatuteCitation || 'applicable state statute'}, authorizing statutory penalties of up to ${formattedPenalty}.`,
+      section: 'causes_of_action' as const,
+      linkedEvidenceIds: []
+    },
+    {
+      id: `p_para_9`,
+      number: 9,
+      content: `Prejudgment interest at the legal rate of ${jurisdiction.statutoryInterestRatePercent || 10.0}% per annum (${formattedInterest} accrued to date) is owed pursuant to ${jurisdiction.interestStatuteCitation || 'state law'}.`,
+      section: 'causes_of_action' as const,
+      linkedEvidenceIds: []
+    },
+    {
+      id: `p_para_10`,
+      number: 10,
+      heading: 'PRAYER FOR RELIEF',
+      content: `WHEREFORE, Plaintiff prays for judgment against Defendant ${dName} as follows: (1) Actual compensatory damages of ${formattedPrincipal}; (2) Statutory bad-faith damages of ${formattedPenalty}; (3) Prejudgment statutory interest of ${formattedInterest}; (4) Court filing fees and process service costs; and (5) Such further relief as the Court deems just and proper. Total Enforceable Demand: ${formattedTotal}.`,
+      section: 'prayer' as const,
+      linkedEvidenceIds: []
+    }
+  ];
+}
+
 export function createCustomDispute(input: CustomDisputeInput): CaseFile {
   const jurisdiction = getJurisdiction(input.state);
   const now = new Date();
@@ -785,6 +880,7 @@ export function createCustomDispute(input: CustomDisputeInput): CaseFile {
   const daysElapsed = Math.max(15, Math.floor((now.getTime() - new Date(input.incidentDate).getTime()) / (1000 * 60 * 60 * 24))) || 60;
   const interestRate = (jurisdiction.statutoryInterestRatePercent || 10) / 100;
   const accruedInterest = Math.round((principalAmt * interestRate * (daysElapsed / 365.25)) * 100) / 100;
+  const totalDemandSum = principalAmt + penaltyAmt + accruedInterest;
   
   const damagesList: any[] = [
     {
@@ -817,6 +913,17 @@ export function createCustomDispute(input: CustomDisputeInput): CaseFile {
   }
 
   const elements = generateElementsForCategory(input.category, jurisdiction, dName);
+  const customParagraphs = generateParagraphsForDispute(
+    pName,
+    dName,
+    input.state,
+    input.category,
+    principalAmt,
+    penaltyAmt,
+    accruedInterest,
+    input.incidentDate,
+    input.description
+  );
 
   const defaultBase = createDefaultCase();
 
@@ -827,7 +934,7 @@ export function createCustomDispute(input: CustomDisputeInput): CaseFile {
     caseNumber: `${now.getFullYear().toString().slice(-2)}SC-${Math.floor(100000 + Math.random() * 900000)}`,
     country: 'US',
     state: input.state,
-    county: 'County Civil Division',
+    county: `${jurisdiction.stateName} Civil Court`,
     courtName: jurisdiction.courtName,
     createdAt: dateStr,
     updatedAt: dateStr,
@@ -860,8 +967,8 @@ export function createCustomDispute(input: CustomDisputeInput): CaseFile {
     claimEvaluation: {
       category: input.category,
       smallClaimsLimit: jurisdiction.smallClaimsLimitIndividual,
-      courtRecommendation: (principalAmt + penaltyAmt + accruedInterest) <= jurisdiction.smallClaimsLimitIndividual ? 'small_claims' : 'civil_limited',
-      meritScore: 92,
+      courtRecommendation: totalDemandSum <= jurisdiction.smallClaimsLimitIndividual ? 'small_claims' : 'civil_limited',
+      meritScore: 94,
       defectWarnings: [
         `Ensure formal written demand letter is delivered via Certified Mail to establish statutory notice.`,
         'Preserve all timestamped receipts, invoices, and message threads in Evidence Locker.'
@@ -871,7 +978,7 @@ export function createCustomDispute(input: CustomDisputeInput): CaseFile {
         'Download and send the signed 10-day formal demand letter before filing court pleadings.'
       ],
       settlementMin: principalAmt,
-      settlementMax: principalAmt + penaltyAmt + accruedInterest,
+      settlementMax: totalDemandSum,
       elements,
       damages: damagesList
     },
@@ -893,18 +1000,24 @@ export function createCustomDispute(input: CustomDisputeInput): CaseFile {
           relevanceFre401: true
         },
         exhibitTag: 'EXHIBIT A',
-        linkedParagraphIds: ['p_para_1'],
+        linkedParagraphIds: ['p_para_1', 'p_para_4'],
         notes: `Original verification of the $${principalAmt.toLocaleString()} transaction.`
       }
     ],
     pleadings: {
       ...defaultBase.pleadings,
+      paragraphs: customParagraphs,
       demandLetter: {
-        ...defaultBase.pleadings.demandLetter,
         demandDate: dateStr,
         responseDeadlineDays: 10,
-        demandedAmount: principalAmt + penaltyAmt + accruedInterest,
-        settlementOfferText: `Pursuant to ${jurisdiction.securityDepositStatuteCitation || 'applicable state law'}, claimant demands full payment of $${(principalAmt + penaltyAmt + accruedInterest).toLocaleString()} within ten (10) calendar days to avoid civil litigation in ${jurisdiction.courtName}.`
+        demandedAmount: totalDemandSum,
+        settlementOfferText: `Pursuant to ${jurisdiction.securityDepositStatuteCitation || 'applicable state law'}, claimant demands full payment of $${totalDemandSum.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} within ten (10) calendar days to avoid civil litigation in ${jurisdiction.courtName}.`,
+        certifiedMailNumber: `7024 ${Math.floor(1000 + Math.random() * 9000)} 0001 ${Math.floor(1000 + Math.random() * 9000)} ${Math.floor(1000 + Math.random() * 9000)}`
+      },
+      verificationAffidavit: {
+        declarantName: pName,
+        county: `${jurisdiction.stateName} Civil`,
+        isSworn: true
       }
     }
   };
