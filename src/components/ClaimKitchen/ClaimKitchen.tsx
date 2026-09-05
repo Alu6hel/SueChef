@@ -13,7 +13,8 @@ import {
   ArrowRight,
   Calculator,
   Gavel,
-  DollarSign
+  DollarSign,
+  Sparkles
 } from 'lucide-react';
 import { DisputeCategory, DamageItem, ClaimElement } from '../../types';
 import { STATE_JURISDICTIONS, getJurisdiction } from '../../services/jurisdictions';
@@ -432,6 +433,114 @@ export const ClaimKitchen: React.FC = () => {
                 Add Itemized Damage
               </button>
             </form>
+          </div>
+
+          {/* Statutory Multiplier & Prejudgment Interest Calculator Card */}
+          <div className="card-geom bg-[var(--bg-card)] border border-[var(--border-color)] p-4 space-y-4">
+            <div className="flex items-center justify-between border-b border-[var(--border-color)] pb-2">
+              <h3 className="font-serif font-bold text-sm text-[var(--text-main)] flex items-center gap-2">
+                <Sparkles className="w-4 h-4 text-amber-400" />
+                Statutory Penalties & Interest
+              </h3>
+              <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-amber-500/10 text-amber-400 border border-amber-500/30">
+                {currJurisdiction.stateCode} Law Enabled
+              </span>
+            </div>
+
+            <div className="space-y-3 text-xs">
+              {/* Bad Faith Multiplier */}
+              <div className="p-3 card-geom bg-[var(--bg-secondary)] border border-[var(--border-color)] space-y-2">
+                <div className="flex justify-between items-center">
+                  <span className="font-bold text-[var(--text-main)]">Bad-Faith Statutory Penalty</span>
+                  <span className="font-mono text-emerald-400 font-bold">{currJurisdiction.securityDepositBadFaithPenaltyMultiplier}x Statutory Multiplier</span>
+                </div>
+                <p className="text-[11px] text-[var(--text-muted)]">
+                  Under <strong className="text-slate-200">{currJurisdiction.securityDepositStatuteCitation}</strong>, bad-faith retention authorizes statutory damages up to {currJurisdiction.securityDepositBadFaithPenaltyMultiplier}x the withheld amount.
+                </p>
+                <button
+                  type="button"
+                  onClick={() => {
+                    sound.playDocketStamp();
+                    const baseItem = activeCase.claimEvaluation.damages.find(d => d.category === 'direct_actual') || activeCase.claimEvaluation.damages[0];
+                    const baseAmt = baseItem ? baseItem.amount : 2800;
+                    const penaltyAmt = baseAmt * (currJurisdiction.securityDepositBadFaithPenaltyMultiplier || 2);
+                    const newItem: DamageItem = {
+                      id: `dmg_stat_${Date.now()}`,
+                      description: `Statutory Bad-Faith Penalty (${currJurisdiction.securityDepositBadFaithPenaltyMultiplier}x under ${currJurisdiction.securityDepositStatuteCitation})`,
+                      amount: penaltyAmt,
+                      category: 'statutory_penalty',
+                      statutoryBasis: currJurisdiction.securityDepositStatuteCitation
+                    };
+                    updateActiveCase(prev => ({
+                      ...prev,
+                      claimEvaluation: {
+                        ...prev.claimEvaluation,
+                        damages: [...prev.claimEvaluation.damages, newItem]
+                      }
+                    }));
+                  }}
+                  className="w-full py-1.5 px-3 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 font-semibold text-[11px] card-geom transition-all flex items-center justify-center gap-1.5"
+                >
+                  <Plus className="w-3.5 h-3.5" />
+                  Apply {currJurisdiction.securityDepositBadFaithPenaltyMultiplier}x Penalty to Ledger
+                </button>
+              </div>
+
+              {/* Prejudgment Interest */}
+              <div className="p-3 card-geom bg-[var(--bg-secondary)] border border-[var(--border-color)] space-y-2">
+                <div className="flex justify-between items-center">
+                  <span className="font-bold text-[var(--text-main)]">Prejudgment Statutory Interest</span>
+                  <span className="font-mono text-amber-400 font-bold">{currJurisdiction.statutoryInterestRatePercent || 10.0}% Annual</span>
+                </div>
+                <p className="text-[11px] text-[var(--text-muted)]">
+                  Under <strong className="text-slate-200">{currJurisdiction.interestStatuteCitation || 'State Law'}</strong>, interest accrues daily from the breach date to entry of judgment.
+                </p>
+                <button
+                  type="button"
+                  onClick={() => {
+                    sound.playDocketStamp();
+                    const directDamages = activeCase.claimEvaluation.damages
+                      .filter(d => d.category === 'direct_actual')
+                      .reduce((acc, d) => acc + d.amount, 0) || 2800;
+                    // Calculate 90 days of accrued interest as default model
+                    const rate = (currJurisdiction.statutoryInterestRatePercent || 10.0) / 100;
+                    const accruedInterest = Math.round((directDamages * rate * (90 / 365.25)) * 100) / 100;
+                    const newItem: DamageItem = {
+                      id: `dmg_int_${Date.now()}`,
+                      description: `Accrued Prejudgment Interest (${currJurisdiction.statutoryInterestRatePercent || 10}% under ${currJurisdiction.interestStatuteCitation || 'Code'})`,
+                      amount: accruedInterest > 0 ? accruedInterest : 125,
+                      category: 'interest',
+                      statutoryBasis: currJurisdiction.interestStatuteCitation
+                    };
+                    updateActiveCase(prev => ({
+                      ...prev,
+                      claimEvaluation: {
+                        ...prev.claimEvaluation,
+                        damages: [...prev.claimEvaluation.damages, newItem]
+                      }
+                    }));
+                  }}
+                  className="w-full py-1.5 px-3 bg-amber-500/10 hover:bg-amber-500/20 text-amber-400 border border-amber-500/30 font-semibold text-[11px] card-geom transition-all flex items-center justify-center gap-1.5"
+                >
+                  <Plus className="w-3.5 h-3.5" />
+                  Add Statutory Interest ({currJurisdiction.statutoryInterestRatePercent || 10}%) to Ledger
+                </button>
+              </div>
+
+              {/* Court Filing Fee Schedule */}
+              <div className="p-3 card-geom bg-black/20 border border-white/5 space-y-1.5">
+                <div className="flex justify-between items-center text-[11px]">
+                  <span className="text-[var(--text-muted)]">Estimated Court Filing Fee:</span>
+                  <span className="font-mono font-bold text-slate-200">
+                    ${currJurisdiction.filingFeeEstimate ? `${currJurisdiction.filingFeeEstimate.min} - $${currJurisdiction.filingFeeEstimate.max}` : '$30 - $75'}
+                  </span>
+                </div>
+                <div className="text-[10px] text-[var(--text-muted)]">
+                  <span className="text-sky-400 font-semibold">Fee Waiver Available: </span>
+                  {currJurisdiction.filingFeeEstimate?.feeWaiverForm || 'Form FW-001 (Indigent Waiver)'}
+                </div>
+              </div>
+            </div>
           </div>
 
           {/* Quick Nav to Pleading Builder */}

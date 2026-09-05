@@ -338,6 +338,54 @@ export const EvidenceLocker: React.FC = () => {
                       </div>
                     </div>
                   </div>
+
+                  {/* Official Courtroom Exhibit Sticker */}
+                  <div className="p-4 card-geom bg-slate-950 border-2 border-[var(--accent-gold)] space-y-3">
+                    <div className="flex justify-between items-center border-b border-[var(--accent-gold)]/30 pb-2">
+                      <div className="flex items-center gap-2">
+                        <span className="text-[10px] uppercase tracking-widest font-mono text-[var(--accent-gold)] font-bold">
+                          Official Courtroom Exhibit Sticker
+                        </span>
+                      </div>
+                      <span className="text-[10px] font-mono text-slate-400">
+                        Form SC-EX-01
+                      </span>
+                    </div>
+
+                    <div className="bg-slate-900/90 p-4 border border-[var(--accent-gold)]/40 text-center space-y-2">
+                      <div className="text-xl font-serif font-black text-[var(--accent-gold)] tracking-wide">
+                        {selectedEvidence.exhibitTag}
+                      </div>
+                      <div className="text-xs font-mono font-bold text-slate-200">
+                        {activeCase.title}
+                      </div>
+                      <div className="text-[10px] font-mono text-slate-400">
+                        {activeCase.courtName} • Case No. {activeCase.caseNumber}
+                      </div>
+                      <div className="text-[11px] font-medium text-slate-300 pt-1 border-t border-white/10">
+                        "{selectedEvidence.title}" ({selectedEvidence.originalFileName})
+                      </div>
+                      <div className="text-[9px] font-mono text-emerald-400/90 break-all bg-black/60 p-1.5 rounded">
+                        SHA-256: {selectedEvidence.sha256Hash}
+                      </div>
+                      <div className="flex justify-between items-center text-[9px] font-mono text-slate-400 pt-1">
+                        <span>Offered By: Plaintiff ({selectedEvidence.custodian})</span>
+                        <span>Date: {selectedEvidence.dateOccurred || '2026-06-01'}</span>
+                      </div>
+                    </div>
+
+                    <button
+                      type="button"
+                      onClick={() => {
+                        sound.playDocketStamp();
+                        window.print();
+                      }}
+                      className="w-full py-2 bg-[var(--accent-gold)] text-slate-950 hover:opacity-90 font-bold text-xs card-geom transition-all flex items-center justify-center gap-2"
+                    >
+                      <Sparkles className="w-4 h-4" />
+                      Print Official Exhibit Sticker Label
+                    </button>
+                  </div>
                 </div>
               ) : (
                 <div className="card-geom bg-[var(--bg-card)] border border-[var(--border-color)] p-12 text-center text-xs text-[var(--text-muted)]">
