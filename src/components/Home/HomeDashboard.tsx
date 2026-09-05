@@ -5,6 +5,7 @@ import { getCountryInfo } from '../../services/countries';
 import { STATE_JURISDICTIONS } from '../../services/jurisdictions';
 import { sound } from '../../services/soundEngine';
 import { AluLogo } from '../Branding/AluLogo';
+import { DisputeIntakeWizard } from './DisputeIntakeWizard';
 import { 
   Scale, 
   ShieldCheck, 
@@ -150,6 +151,11 @@ export const HomeDashboard: React.FC = () => {
             </div>
           </div>
         </div>
+      </section>
+
+      {/* Guided 30-Second Dispute Intake Assistant (Direct Real-World Help) */}
+      <section>
+        <DisputeIntakeWizard />
       </section>
 
       {/* Step-by-Step Litigation Workstations (The Core Value Engine) */}

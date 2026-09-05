@@ -28,6 +28,12 @@ export const ClaimKitchen: React.FC = () => {
 
   const currJurisdiction = getJurisdiction(activeCase.state);
 
+  // Live Calculator Interactive State
+  const initialPrincipal = activeCase.claimEvaluation.damages.find(d => d.category === 'direct_actual')?.amount || 2500;
+  const [calcPrincipal, setCalcPrincipal] = useState<number>(initialPrincipal);
+  const [calcDaysElapsed, setCalcDaysElapsed] = useState<number>(60);
+  const [calcMultiplier, setCalcMultiplier] = useState<number>(currJurisdiction.securityDepositBadFaithPenaltyMultiplier || 2);
+
   const categories: { id: DisputeCategory; label: string; desc: string }[] = [
     { id: 'security_deposit', label: 'Security Deposit Bad Faith', desc: 'Failure to return or itemize deductions within statutory window' },
     { id: 'breach_of_contract', label: 'Breach of Contract', desc: 'Failure to perform terms, unpaid invoices, or unfulfilled deliverables' },
@@ -440,33 +446,75 @@ export const ClaimKitchen: React.FC = () => {
             <div className="flex items-center justify-between border-b border-[var(--border-color)] pb-2">
               <h3 className="font-serif font-bold text-sm text-[var(--text-main)] flex items-center gap-2">
                 <Sparkles className="w-4 h-4 text-amber-400" />
-                Statutory Penalties & Interest
+                Live Statutory Penalties &amp; Interest Calculator
               </h3>
               <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-amber-500/10 text-amber-400 border border-amber-500/30">
-                {currJurisdiction.stateCode} Law Enabled
+                {currJurisdiction.stateCode} Law
               </span>
+            </div>
+
+            {/* Configurable Base Principal */}
+            <div className="p-2.5 bg-[var(--bg-secondary)] border border-[var(--border-color)] custom-geometry space-y-1.5">
+              <div className="flex justify-between items-center text-xs">
+                <span className="text-[var(--text-muted)] font-mono">Base Principal Sum for Calculation:</span>
+                <span className="font-mono font-bold text-[var(--text-main)]">${calcPrincipal.toLocaleString()}</span>
+              </div>
+              <input
+                type="number"
+                min="1"
+                step="any"
+                value={calcPrincipal}
+                onChange={e => setCalcPrincipal(parseFloat(e.target.value) || 0)}
+                className="input-geom w-full bg-[var(--bg-card)] border border-[var(--border-color)] text-xs text-[var(--text-main)] font-mono px-2.5 py-1.5 focus:border-[var(--accent-gold)]"
+                placeholder="2500"
+              />
             </div>
 
             <div className="space-y-3 text-xs">
               {/* Bad Faith Multiplier */}
-              <div className="p-3 card-geom bg-[var(--bg-secondary)] border border-[var(--border-color)] space-y-2">
+              <div className="p-3 card-geom bg-[var(--bg-secondary)] border border-[var(--border-color)] space-y-2.5">
                 <div className="flex justify-between items-center">
                   <span className="font-bold text-[var(--text-main)]">Bad-Faith Statutory Penalty</span>
-                  <span className="font-mono text-emerald-400 font-bold">{currJurisdiction.securityDepositBadFaithPenaltyMultiplier}x Statutory Multiplier</span>
+                  <span className="font-mono text-emerald-400 font-bold">
+                    +${(calcPrincipal * calcMultiplier).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                  </span>
                 </div>
+
+                <div className="flex items-center justify-between gap-2 text-[11px]">
+                  <span className="text-[var(--text-muted)]">Penalty Multiplier:</span>
+                  <div className="flex items-center gap-1">
+                    {[1, 2, 3].map(m => (
+                      <button
+                        key={m}
+                        type="button"
+                        onClick={() => {
+                          sound.playClick();
+                          setCalcMultiplier(m);
+                        }}
+                        className={`px-2 py-0.5 text-xs font-mono font-bold custom-geometry border ${
+                          calcMultiplier === m 
+                            ? 'bg-emerald-500 text-slate-950 border-emerald-400' 
+                            : 'bg-[var(--bg-card)] text-[var(--text-muted)] border-[var(--border-color)] hover:text-[var(--text-main)]'
+                        }`}
+                      >
+                        {m}x
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
                 <p className="text-[11px] text-[var(--text-muted)]">
-                  Under <strong className="text-slate-200">{currJurisdiction.securityDepositStatuteCitation}</strong>, bad-faith retention authorizes statutory damages up to {currJurisdiction.securityDepositBadFaithPenaltyMultiplier}x the withheld amount.
+                  Under <strong className="text-slate-200">{currJurisdiction.securityDepositStatuteCitation}</strong>, bad-faith retention authorizes statutory damages up to {calcMultiplier}x the withheld principal.
                 </p>
+
                 <button
                   type="button"
                   onClick={() => {
                     sound.playDocketStamp();
-                    const baseItem = activeCase.claimEvaluation.damages.find(d => d.category === 'direct_actual') || activeCase.claimEvaluation.damages[0];
-                    const baseAmt = baseItem ? baseItem.amount : 2800;
-                    const penaltyAmt = baseAmt * (currJurisdiction.securityDepositBadFaithPenaltyMultiplier || 2);
+                    const penaltyAmt = calcPrincipal * calcMultiplier;
                     const newItem: DamageItem = {
                       id: `dmg_stat_${Date.now()}`,
-                      description: `Statutory Bad-Faith Penalty (${currJurisdiction.securityDepositBadFaithPenaltyMultiplier}x under ${currJurisdiction.securityDepositStatuteCitation})`,
+                      description: `Statutory Bad-Faith Penalty (${calcMultiplier}x under ${currJurisdiction.securityDepositStatuteCitation})`,
                       amount: penaltyAmt,
                       category: 'statutory_penalty',
                       statutoryBasis: currJurisdiction.securityDepositStatuteCitation
@@ -479,35 +527,50 @@ export const ClaimKitchen: React.FC = () => {
                       }
                     }));
                   }}
-                  className="w-full py-1.5 px-3 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 font-semibold text-[11px] card-geom transition-all flex items-center justify-center gap-1.5"
+                  className="w-full py-2 px-3 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 font-semibold text-xs card-geom transition-all flex items-center justify-center gap-1.5"
                 >
                   <Plus className="w-3.5 h-3.5" />
-                  Apply {currJurisdiction.securityDepositBadFaithPenaltyMultiplier}x Penalty to Ledger
+                  Apply ${ (calcPrincipal * calcMultiplier).toLocaleString() } ({calcMultiplier}x Penalty) to Ledger
                 </button>
               </div>
 
-              {/* Prejudgment Interest */}
-              <div className="p-3 card-geom bg-[var(--bg-secondary)] border border-[var(--border-color)] space-y-2">
+              {/* Prejudgment Interest with Live Elapsed Days */}
+              <div className="p-3 card-geom bg-[var(--bg-secondary)] border border-[var(--border-color)] space-y-2.5">
                 <div className="flex justify-between items-center">
-                  <span className="font-bold text-[var(--text-main)]">Prejudgment Statutory Interest</span>
-                  <span className="font-mono text-amber-400 font-bold">{currJurisdiction.statutoryInterestRatePercent || 10.0}% Annual</span>
+                  <span className="font-bold text-[var(--text-main)]">Daily Prejudgment Interest</span>
+                  <span className="font-mono text-amber-400 font-bold">
+                    +${(Math.round(((calcPrincipal * ((currJurisdiction.statutoryInterestRatePercent || 10) / 100) * (calcDaysElapsed / 365.25))) * 100) / 100).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                  </span>
                 </div>
+
+                <div className="space-y-1">
+                  <div className="flex justify-between items-center text-[11px] font-mono">
+                    <span className="text-[var(--text-muted)]">Days Elapsed Since Breach:</span>
+                    <span className="text-[var(--accent-gold)] font-bold">{calcDaysElapsed} Days (${((calcPrincipal * ((currJurisdiction.statutoryInterestRatePercent || 10) / 100)) / 365.25).toFixed(2)}/day)</span>
+                  </div>
+                  <input
+                    type="range"
+                    min="1"
+                    max="365"
+                    value={calcDaysElapsed}
+                    onChange={e => setCalcDaysElapsed(parseInt(e.target.value) || 1)}
+                    className="w-full accent-amber-400"
+                  />
+                </div>
+
                 <p className="text-[11px] text-[var(--text-muted)]">
-                  Under <strong className="text-slate-200">{currJurisdiction.interestStatuteCitation || 'State Law'}</strong>, interest accrues daily from the breach date to entry of judgment.
+                  Under <strong className="text-slate-200">{currJurisdiction.interestStatuteCitation || 'State Law'}</strong>, interest accrues at <strong className="text-amber-400">{currJurisdiction.statutoryInterestRatePercent || 10.0}%/year</strong> from breach date to judgment entry.
                 </p>
+
                 <button
                   type="button"
                   onClick={() => {
                     sound.playDocketStamp();
-                    const directDamages = activeCase.claimEvaluation.damages
-                      .filter(d => d.category === 'direct_actual')
-                      .reduce((acc, d) => acc + d.amount, 0) || 2800;
-                    // Calculate 90 days of accrued interest as default model
                     const rate = (currJurisdiction.statutoryInterestRatePercent || 10.0) / 100;
-                    const accruedInterest = Math.round((directDamages * rate * (90 / 365.25)) * 100) / 100;
+                    const accruedInterest = Math.round((calcPrincipal * rate * (calcDaysElapsed / 365.25)) * 100) / 100;
                     const newItem: DamageItem = {
                       id: `dmg_int_${Date.now()}`,
-                      description: `Accrued Prejudgment Interest (${currJurisdiction.statutoryInterestRatePercent || 10}% under ${currJurisdiction.interestStatuteCitation || 'Code'})`,
+                      description: `Accrued Prejudgment Interest (${currJurisdiction.statutoryInterestRatePercent || 10}% for ${calcDaysElapsed} days under ${currJurisdiction.interestStatuteCitation || 'Code'})`,
                       amount: accruedInterest > 0 ? accruedInterest : 125,
                       category: 'interest',
                       statutoryBasis: currJurisdiction.interestStatuteCitation
@@ -520,10 +583,10 @@ export const ClaimKitchen: React.FC = () => {
                       }
                     }));
                   }}
-                  className="w-full py-1.5 px-3 bg-amber-500/10 hover:bg-amber-500/20 text-amber-400 border border-amber-500/30 font-semibold text-[11px] card-geom transition-all flex items-center justify-center gap-1.5"
+                  className="w-full py-2 px-3 bg-amber-500/10 hover:bg-amber-500/20 text-amber-400 border border-amber-500/30 font-semibold text-xs card-geom transition-all flex items-center justify-center gap-1.5"
                 >
                   <Plus className="w-3.5 h-3.5" />
-                  Add Statutory Interest ({currJurisdiction.statutoryInterestRatePercent || 10}%) to Ledger
+                  Add ${Math.round(((calcPrincipal * ((currJurisdiction.statutoryInterestRatePercent || 10) / 100) * (calcDaysElapsed / 365.25))) * 100) / 100} Interest to Ledger
                 </button>
               </div>
 

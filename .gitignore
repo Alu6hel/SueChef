@@ -7,3 +7,4 @@ dist-ssr
 android_build/build/
 android_build/debug.keystore
 android_build/assets/
+*.exe

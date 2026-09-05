@@ -11,7 +11,7 @@ import {
   DamageItem
 } from '../types';
 import { createDefaultCase } from '../services/defaultCase';
-import { DISPUTE_BLUEPRINTS } from '../services/disputeTemplates';
+import { DISPUTE_BLUEPRINTS, createCustomDispute, CustomDisputeInput } from '../services/disputeTemplates';
 import { CryptoDbService } from '../services/cryptoDb';
 import { sound } from '../services/soundEngine';
 
@@ -30,6 +30,7 @@ interface SueChefContextType {
   updateActiveCase: (updater: (prev: CaseFile) => CaseFile) => void;
   loadBlueprint: (blueprintId: string) => void;
   createNewCase: (title: string, state: string, category: string) => void;
+  createCustomCase: (input: CustomDisputeInput) => void;
   soundEnabled: boolean;
   toggleSound: () => void;
   panicWipe: () => Promise<void>;
@@ -209,6 +210,13 @@ export const SueChefProvider: React.FC<{ children: ReactNode }> = ({ children })
     sound.playGavelStrike();
   };
 
+  const createCustomCase = (input: CustomDisputeInput) => {
+    const customCase = createCustomDispute(input);
+    setActiveCase(customCase);
+    setIsCaseManagerOpen(false);
+    sound.playGavelStrike();
+  };
+
   // Total Damages
   const totalDamages = activeCase.claimEvaluation.damages.reduce((acc, d) => acc + (d.amount || 0), 0);
 
@@ -300,6 +308,7 @@ export const SueChefProvider: React.FC<{ children: ReactNode }> = ({ children })
         updateActiveCase,
         loadBlueprint,
         createNewCase,
+        createCustomCase,
         soundEnabled,
         toggleSound,
         panicWipe,

@@ -37,23 +37,19 @@ export const AluLogo: React.FC<AluLogoProps> = ({
   }
 
   return (
-    <div className={`inline-flex items-center gap-2.5 ${className}`}>
+    <div className={`inline-flex items-center gap-2 shrink-0 ${className}`}>
       <img
-        src={logoSrc}
-        alt="Alu"
-        className={`${sizeClasses} w-auto object-contain transition-all duration-300 drop-shadow-[0_2px_8px_rgba(212,175,55,0.25)]`}
+        src="./logos/alu-company-logo-symbol.svg"
+        alt="SueChef"
+        className={`${sizeClasses} w-auto object-contain transition-all duration-300 drop-shadow-[0_2px_8px_rgba(212,175,55,0.25)] shrink-0`}
         onError={(e) => {
-          // Fallback
-          (e.currentTarget as HTMLImageElement).src = './logos/alu-company-logo.svg';
+          (e.currentTarget as HTMLImageElement).src = './logos/alu-company-logo-symbol.svg';
         }}
       />
       {showLabel && (
-        <div className="flex flex-col leading-none">
-          <span className="font-serif font-extrabold text-sm tracking-widest text-[var(--text-main)] uppercase">
+        <div className="flex items-center leading-none whitespace-nowrap shrink-0">
+          <span className="font-serif font-black text-base sm:text-lg tracking-wider text-[var(--text-main)] uppercase select-none">
             SUE<span className="text-[var(--accent-gold)]">CHEF</span>
-          </span>
-          <span className="text-[9px] font-mono text-[var(--accent-gold)] tracking-wider">
-            BY ALU
           </span>
         </div>
       )}
