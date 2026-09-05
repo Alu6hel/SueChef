@@ -7,18 +7,24 @@ export type ThemeId =
 
 export type CornerGeometry = 'sharp' | 'chamfer' | 'smooth';
 
+export type FontSizeScale = 'normal' | 'large' | 'xlarge';
+
+export type CountryCode = 'US' | 'GB' | 'CA' | 'AU' | 'NG' | 'DE' | 'GLOBAL';
+
 export type WorkstationId = 
-  | 'claim-kitchen'
-  | 'sol-watcher'
-  | 'pleading-builder'
-  | 'evidence-locker'
-  | 'discovery-studio'
-  | 'trial-prep'
-  | 'settlement-matrix'
-  | 'legalese-decoder'
-  | 'service-tracker'
-  | 'attorney-dossier'
-  | 'security-vault';
+  | 'claim-kitchen'     // 1. Build Your Case (Claim Kitchen)
+  | 'evidence-locker'   // 2. Proof & Evidence (Evidence Locker)
+  | 'pleading-builder'  // 3. Court Papers & Pleadings (28-Line Pleading)
+  | 'settlement-matrix' // 4. Demand & Settle (Settlement Matrix)
+  | 'second-opinion'    // 5. Legal Second Opinion AI
+  | 'legal-services'    // 6. Real-Life Legal Aid & Courts
+  | 'discovery-studio'  // 7. Request Evidence (Discovery Studio)
+  | 'trial-prep'        // 8. Practice Hearing & Objections
+  | 'sol-watcher'       // 9. Statute of Limitations Docket
+  | 'service-tracker'   // 10. Service of Process & Proof
+  | 'legalese-decoder'  // 11. Plain-English Legal Decoder
+  | 'attorney-dossier'  // 12. Opposing Counsel Tracker
+  | 'security-vault';   // 13. Privacy & Offline Vault
 
 export type DisputeCategory = 
   | 'security_deposit'
@@ -31,6 +37,66 @@ export type DisputeCategory =
   | 'property_damage'
   | 'negligence'
   | 'hoa_neighbor';
+
+export interface CountryInfo {
+  code: CountryCode;
+  name: string;
+  flag: string;
+  currencySymbol: string;
+  currencyCode: string;
+  smallClaimsName: string;
+  defaultLimit: number;
+  hasSubdivisions: boolean;
+  subdivisionType: string; // "State", "Province", "Constituent Country"
+  legalSystemSummary: string;
+}
+
+export interface LegalServiceDirectory {
+  id: string;
+  country: CountryCode;
+  subdivision?: string; // State or Province (e.g. CA, NY, ON, NSW)
+  name: string;
+  category: 'legal_aid' | 'court_self_help' | 'bar_referral' | 'small_claims_advisor' | 'consumer_affairs';
+  description: string;
+  phone?: string;
+  websiteUrl: string;
+  isFree: boolean;
+  intakeNotes: string;
+}
+
+export interface SecondOpinionReport {
+  timestamp: string;
+  caseTitle: string;
+  category: DisputeCategory;
+  state: string;
+  country: CountryCode;
+  overallMeritGrade: 'A+' | 'A' | 'B' | 'C' | 'D' | 'F';
+  winProbabilityScore: number; // 0-100%
+  verdictSummary: string;
+  keyStrengths: string[];
+  vulnerabilities: string[];
+  predictedDefenses: {
+    defenseTitle: string;
+    likelihood: 'High' | 'Medium' | 'Low';
+    opposingArgument: string;
+    counterStrategy: string;
+    statutoryBasis: string;
+  }[];
+  financialAssessment: {
+    claimedDamages: number;
+    realisticRecoveryEstimate: number;
+    courtFilingCostEstimate: number;
+    recommendedSettlementFloor: number;
+    proceedRecommendation: 'Strongly Recommend Filing' | 'Negotiate Pre-Trial Settlement' | 'Gather Additional Evidence' | 'Not Economically Viable';
+  };
+  stepByStepRoadmap: {
+    stepNumber: number;
+    action: string;
+    deadlineNotice: string;
+    importance: 'Mandatory' | 'Recommended' | 'Optional';
+  }[];
+  localHelpResources: LegalServiceDirectory[];
+}
 
 export interface Party {
   id: string;
@@ -242,6 +308,7 @@ export interface CaseFile {
   id: string;
   title: string;
   caseNumber: string;
+  country: CountryCode;
   state: string;
   county: string;
   courtName: string;

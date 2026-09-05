@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useSueChef } from '../../context/SueChefContext';
 import { WorkstationId } from '../../types';
 import { sound } from '../../services/soundEngine';
+import { AluLogo } from '../Branding/AluLogo';
 import { 
   Sparkles, 
   ArrowRight, 
@@ -15,140 +16,116 @@ import {
   FolderSearch,
   FileText,
   Lock,
-  Flame,
-  MessageSquare,
-  HelpCircle,
-  Play
+  Building,
+  Lightbulb,
+  MousePointerClick
 } from 'lucide-react';
 
 interface TourStep {
   id: string;
+  stepNumber: number;
   title: string;
-  subtitle: string;
-  description: string;
+  simpleSubtitle: string;
+  whatItDoes: string;
   targetWorkstation: WorkstationId;
   icon: React.ReactNode;
-  highlights: string[];
-  actionPrompt: string;
+  whereToGo: string;
+  whatToDoNext: string;
 }
 
 const TOUR_STEPS: TourStep[] = [
   {
     id: 'welcome',
+    stepNumber: 1,
     title: 'Welcome to SueChef Pro',
-    subtitle: 'High-Rigor Pro Se Civil Litigation Suite',
-    description: 'SueChef equips self-represented civil litigants with the computational firepower, discovery weapons, and evidentiary rigor used by high-billing commercial litigation law firms.',
+    simpleSubtitle: 'Easy Step-by-Step Legal Help for Everyday People',
+    whatItDoes: 'SueChef helps you easily prepare, organize, and win your small claims dispute, security deposit claim, unpaid invoice, or property damage case without paying thousands to lawyers.',
     targetWorkstation: 'claim-kitchen',
     icon: <Scale className="w-6 h-6 text-amber-400" />,
-    highlights: [
-      'Zero third-party cloud dependence — 100% offline client encrypted',
-      'Automated statutory cause of action deconstruction',
-      'Federal Rule 902 cryptographic evidence hashing & redaction'
-    ],
-    actionPrompt: 'Explore Claim Kitchen Elements'
+    whereToGo: 'Top Navigation Tab #1: "1. Build Case"',
+    whatToDoNext: 'Click "Take Me to Step 1" below to start building your case elements and check your small claims limit.'
   },
   {
     id: 'claim-kitchen',
-    title: 'Workstation 1: Claim Kitchen',
-    subtitle: 'Deconstruct Causes of Action & Prove Every Statutory Element',
-    description: 'Break your civil dispute into black-letter legal elements. Ensure every element of liability and every dollar of damages is mathematically proven before filing.',
+    stepNumber: 2,
+    title: '1. Build Your Case & Check Laws',
+    simpleSubtitle: 'Pick Your Issue & Calculate Your Maximum Damages',
+    whatItDoes: 'Select what happened (e.g. Landlord withheld deposit, Unpaid contractor, Car accident). SueChef checks your state laws, calculates late penalties (2x-3x damages), and rates your case strength.',
     targetWorkstation: 'claim-kitchen',
     icon: <Scale className="w-6 h-6 text-amber-400" />,
-    highlights: [
-      '50-State Small Claims jurisdictional damage caps',
-      'Statutory element satisfaction checklist with merit score rating',
-      'Itemized special and general damages ledger'
-    ],
-    actionPrompt: 'Inspect Statutory Checklist'
-  },
-  {
-    id: 'pleading-drafter',
-    title: 'Workstation 2: 28-Line Pleading Drafter',
-    subtitle: 'Authentic Judicial Council 28-Line Court Pleading Paper',
-    description: 'Draft formal complaints, answers, and motions with numbered double-line margins, automatic verified paragraph numbering, and prayer for relief formatting.',
-    targetWorkstation: 'pleading-builder',
-    icon: <FileText className="w-6 h-6 text-amber-400" />,
-    highlights: [
-      'Court-compliant 28-line numbered judicial pleading paper',
-      'Interactive paragraph reordering & cause of action linking',
-      'Instant print-ready PDF export with formal caption formatting'
-    ],
-    actionPrompt: 'View 28-Line Pleading Paper'
-  },
-  {
-    id: 'discovery-studio',
-    title: 'Workstation 3: Discovery Studio & 30-Day Default Trap',
-    subtitle: 'Interrogatories, RFPs, Subpoenas & Requests for Admission',
-    description: 'Draft written discovery requests under oath. Weaponize Requests for Admission (RFAs)—if the defendant fails to answer within 30 days, every fact is deemed legally admitted!',
-    targetWorkstation: 'discovery-studio',
-    icon: <FolderSearch className="w-6 h-6 text-amber-400" />,
-    highlights: [
-      'Interrogatories, Requests for Production & Subpoena templates',
-      '30-Day RFA Default Clock countdown timer',
-      'Objection rebuttal cheat sheet for non-responsive opposing parties'
-    ],
-    actionPrompt: 'Examine Discovery Requests'
-  },
-  {
-    id: 'trial-prep',
-    title: 'Workstation 4: Trial Prep & Objection Simulator',
-    subtitle: 'Evidentiary Objection Quiz & Argument Teleprompter',
-    description: 'Train on real courtroom scenarios to master hearsay exceptions and leading objections under fire. Rehearse opening statements using the adjustable WPM live teleprompter.',
-    targetWorkstation: 'trial-prep',
-    icon: <Gavel className="w-6 h-6 text-amber-400" />,
-    highlights: [
-      'Interactive Evidence Objection Quiz with real-time rulings',
-      'Direct & Cross-examination witness question trees',
-      'Speed-controlled Argument Teleprompter for hearing rehearsal'
-    ],
-    actionPrompt: 'Test Objection Simulator'
-  },
-  {
-    id: 'settlement-matrix',
-    title: 'Workstation 5: Settlement Negotiation Matrix',
-    subtitle: 'Expected Value (EV) Modeling & Rule 408 Letter Drafter',
-    description: 'Calculate your risk-adjusted trial outcome and generate 3-tier settlement brackets (Anchor, Fair Compromise, Walk-Away Floor) with Federal Rule of Evidence 408 confidentiality protection.',
-    targetWorkstation: 'settlement-matrix',
-    icon: <Calculator className="w-6 h-6 text-amber-400" />,
-    highlights: [
-      'Win-probability Monte Carlo expected value calculation',
-      'Litigation cost-offset & wage-loss deduction analyzer',
-      'Formal Rule 408 Confidential Settlement Offer generator'
-    ],
-    actionPrompt: 'Calculate Settlement EV'
+    whereToGo: 'Workstation Tab 1: Claim Kitchen (Top Bar)',
+    whatToDoNext: 'Check off the boxes under "Statutory Elements" to verify you have all required legal ingredients to win.'
   },
   {
     id: 'evidence-locker',
-    title: 'Workstation 6: Evidence Locker & PII Redactor',
-    subtitle: 'SHA-256 Fingerprinting & Canvas Redactor',
-    description: 'Hash critical receipts and contracts with in-browser SHA-256 for FRE 902 self-authentication. Reconstruct messy SMS threads and redact sensitive SSN/Bank numbers.',
+    stepNumber: 3,
+    title: '2. Add Your Proof & Photos',
+    simpleSubtitle: 'Receipts, Text Messages, Photos & Contracts',
+    whatItDoes: 'Upload your proof. SueChef creates official SHA-256 digital certificates (Federal Rule 902) and lets you easily black out sensitive private numbers (SSN, bank cards) with 1 click.',
     targetWorkstation: 'evidence-locker',
     icon: <ShieldCheck className="w-6 h-6 text-amber-400" />,
-    highlights: [
-      'Client-side SHA-256 cryptographic chain of custody certification',
-      'Visual Canvas Redactor with black box & blur modes',
-      'Chat & SMS iMessage-style timeline reconstructor'
-    ],
-    actionPrompt: 'Inspect Evidence Vault'
+    whereToGo: 'Workstation Tab 2: Evidence Locker',
+    whatToDoNext: 'Drag and drop your photos, lease agreements, or receipts to generate certified Exhibit stickers.'
   },
   {
-    id: 'security-vault',
-    title: 'Workstation 7: Zero-Knowledge Security Vault',
-    subtitle: 'AES-256 GCM Client Encryption & Panic Shredder',
-    description: 'Your case data never touches third-party servers. All files are encrypted locally in IndexedDB with instant one-click panic wipe capability.',
-    targetWorkstation: 'security-vault',
-    icon: <Lock className="w-6 h-6 text-amber-400" />,
-    highlights: [
-      'Zero cloud leaks — 100% in-browser WebCrypto & IndexedDB',
-      'One-click Cryptographic Panic Wipe with random noise overwrite',
-      'Encrypted JSON case backup & instant restore'
-    ],
-    actionPrompt: 'Review Security Controls'
+    id: 'pleading-builder',
+    stepNumber: 4,
+    title: '3. Official 28-Line Court Papers',
+    simpleSubtitle: 'Print-Ready Small Claims & Judicial Council Pleading Paper',
+    whatItDoes: 'Generates real 28-line numbered court documents, formal legal notices, and verified complaints formatted for your local court clerk.',
+    targetWorkstation: 'pleading-builder',
+    icon: <FileText className="w-6 h-6 text-amber-400" />,
+    whereToGo: 'Workstation Tab 3: 28-Line Pleading',
+    whatToDoNext: 'Review your auto-drafted complaint, click "Print / Export Pleading", and take it directly to the courthouse.'
+  },
+  {
+    id: 'second-opinion',
+    stepNumber: 5,
+    title: '4. AI Case Second Opinion',
+    simpleSubtitle: 'Objective Case Viability & Defense Trap Predictions',
+    whatItDoes: 'Gives you an objective second opinion on your case. Shows what the other person will argue to defend themselves, and gives you the exact legal rebuttal to win.',
+    targetWorkstation: 'second-opinion',
+    icon: <Lightbulb className="w-6 h-6 text-amber-400" />,
+    whereToGo: 'Workstation Tab 5: Second Opinion (New!)',
+    whatToDoNext: 'View your overall Merit Grade, Win Probability %, and predicted counter-strategies.'
+  },
+  {
+    id: 'settlement-matrix',
+    stepNumber: 6,
+    title: '5. Demand Letter & Settlement Settle',
+    simpleSubtitle: 'Get Paid Before Trial with Rule 408 Letters',
+    whatItDoes: 'Drafts a formal 10-day demand letter with Federal Rule 408 confidentiality protection and calculates your walk-away settlement number.',
+    targetWorkstation: 'settlement-matrix',
+    icon: <Calculator className="w-6 h-6 text-amber-400" />,
+    whereToGo: 'Workstation Tab 4: Demand & Settle',
+    whatToDoNext: 'Adjust the probability slider to see your risk-adjusted expected recovery value.'
+  },
+  {
+    id: 'legal-services',
+    stepNumber: 7,
+    title: '6. Real-Life Legal Aid & Local Courts',
+    simpleSubtitle: 'Connect to Free Legal Aid Clinics & Court Self-Help Centers',
+    whatItDoes: 'Direct phone numbers, e-filing portals, free legal aid societies, and small claims advisors for your specific country and state.',
+    targetWorkstation: 'legal-services',
+    icon: <Building className="w-6 h-6 text-amber-400" />,
+    whereToGo: 'Workstation Tab 6: Legal Services Hub',
+    whatToDoNext: 'Click "Open Official Site" or call the free Small Claims Advisor hotline in your area.'
+  },
+  {
+    id: 'trial-prep',
+    stepNumber: 8,
+    title: '7. Courtroom Practice & Objections',
+    simpleSubtitle: 'Rehearse Opening Argument with Live Teleprompter',
+    whatItDoes: 'Train with real courtroom objection quizzes (Hearsay, Leading) and practice speaking with the adjustable speed teleprompter before your court hearing.',
+    targetWorkstation: 'trial-prep',
+    icon: <Gavel className="w-6 h-6 text-amber-400" />,
+    whereToGo: 'Workstation Tab 8: Trial Prep',
+    whatToDoNext: 'Test your objection skills with the interactive simulator and rehearse your opening speech.'
   }
 ];
 
 export const WalkthroughTour: React.FC = () => {
-  const { isTourOpen, setIsTourOpen, setActiveWorkstation, theme } = useSueChef();
+  const { isTourOpen, setIsTourOpen, setActiveWorkstation } = useSueChef();
   const [currentStepIdx, setCurrentStepIdx] = useState(0);
 
   // Sync active workstation whenever step changes
@@ -207,21 +184,23 @@ export const WalkthroughTour: React.FC = () => {
     setCurrentStepIdx(0);
   };
 
-  const handleTryFeature = () => {
+  const handleJumpToFeature = () => {
     sound.playGavelStrike();
     setActiveWorkstation(currentStep.targetWorkstation);
+    setIsTourOpen(false);
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md p-4 animate-in fade-in duration-200">
-      {/* High-Contrast Spotlight Card with Glowing Gold Frame */}
-      <div className="bg-[#101420] text-slate-100 border-2 border-amber-400/90 ring-4 ring-amber-500/30 rounded-xl max-w-xl w-full p-6 sm:p-7 space-y-5 shadow-[0_0_60px_rgba(212,175,55,0.4)] relative">
-        {/* Top Header / Close */}
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 backdrop-blur-md p-4 animate-in fade-in duration-200">
+      {/* High-Contrast Spotlight Card */}
+      <div className="bg-[#101420] text-slate-100 border-2 border-amber-400/90 ring-4 ring-amber-500/30 rounded-xl max-w-xl w-full p-6 sm:p-7 space-y-5 shadow-[0_0_60px_rgba(212,175,55,0.45)] relative">
+        {/* Top Header / Brand / Close */}
         <div className="flex items-center justify-between border-b border-slate-700/80 pb-3">
-          <div className="flex items-center gap-2">
-            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-amber-400/15 border border-amber-400/50 rounded text-amber-300 text-[11px] font-mono font-bold uppercase tracking-wider">
+          <div className="flex items-center gap-3">
+            <AluLogo size="sm" showLabel={true} />
+            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-amber-400/15 border border-amber-400/50 rounded text-amber-300 text-xs font-mono font-bold uppercase tracking-wider">
               <Sparkles className="w-3.5 h-3.5 text-amber-400" />
-              SueChef Pro Tour • Step {currentStepIdx + 1} of {TOUR_STEPS.length}
+              Step {currentStep.stepNumber} of {TOUR_STEPS.length}
             </span>
           </div>
           <button
@@ -233,7 +212,7 @@ export const WalkthroughTour: React.FC = () => {
           </button>
         </div>
 
-        {/* Step Progress Bar Indicator */}
+        {/* Step Progress Bar Dots */}
         <div className="flex gap-1.5 w-full">
           {TOUR_STEPS.map((step, idx) => (
             <button
@@ -249,7 +228,7 @@ export const WalkthroughTour: React.FC = () => {
                   ? 'bg-amber-600/70 w-4'
                   : 'bg-slate-700 w-3'
               }`}
-              title={`Jump to ${step.title}`}
+              title={`Jump to Step ${step.stepNumber}: ${step.title}`}
             />
           ))}
         </div>
@@ -261,42 +240,43 @@ export const WalkthroughTour: React.FC = () => {
               {currentStep.icon}
             </div>
             <div className="space-y-1">
-              <h2 className="text-xl font-bold font-serif text-white leading-tight">
+              <h2 className="text-xl sm:text-2xl font-bold font-serif text-white leading-tight">
                 {currentStep.title}
               </h2>
-              <div className="text-xs font-semibold text-amber-300 font-mono">
-                {currentStep.subtitle}
+              <div className="text-xs sm:text-sm font-semibold text-amber-300 font-sans">
+                {currentStep.simpleSubtitle}
               </div>
             </div>
           </div>
 
-          <p className="text-sm text-slate-300 leading-relaxed bg-slate-900/60 p-3.5 rounded-lg border border-slate-800">
-            {currentStep.description}
+          <p className="text-sm text-slate-200 leading-relaxed bg-slate-900/70 p-3.5 rounded-lg border border-slate-800">
+            {currentStep.whatItDoes}
           </p>
 
-          {/* Key Feature Highlights */}
-          <div className="space-y-1.5 pt-1">
-            <div className="text-[10px] font-mono uppercase text-amber-400/90 font-bold tracking-wider">
-              Core Capabilities in this Workstation:
+          {/* WHERE TO GO & WHAT TO DO GUIDANCE BOX */}
+          <div className="space-y-2 p-3.5 bg-amber-950/30 border border-amber-500/40 rounded-lg">
+            <div className="flex items-center gap-2 text-xs font-mono font-bold uppercase text-amber-300 tracking-wider">
+              <MousePointerClick className="w-4 h-4 text-amber-400 animate-bounce" />
+              <span>Where to Go & What to Do:</span>
             </div>
-            <ul className="space-y-1">
-              {currentStep.highlights.map((h, i) => (
-                <li key={i} className="flex items-center gap-2 text-xs text-slate-200">
-                  <div className="w-1.5 h-1.5 rounded-full bg-amber-400 shrink-0" />
-                  <span>{h}</span>
-                </li>
-              ))}
-            </ul>
+            
+            <div className="text-xs text-amber-200 font-mono">
+              📍 <strong className="text-white">{currentStep.whereToGo}</strong>
+            </div>
+
+            <p className="text-xs text-slate-300 leading-snug">
+              👉 {currentStep.whatToDoNext}
+            </p>
           </div>
         </div>
 
         {/* Action Controls & Navigation */}
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-4 border-t border-slate-800">
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-3 border-t border-slate-800">
           <button
-            onClick={handleSkip}
-            className="text-xs text-slate-400 hover:text-slate-200 font-mono"
+            onClick={handleJumpToFeature}
+            className="text-xs font-bold text-amber-400 hover:text-amber-300 underline font-mono flex items-center gap-1"
           >
-            Skip Tour (Esc)
+            <span>👉 Open & Use This Tool Now</span>
           </button>
 
           <div className="flex items-center gap-2.5 w-full sm:w-auto justify-end">
@@ -312,9 +292,9 @@ export const WalkthroughTour: React.FC = () => {
 
             <button
               onClick={handleNext}
-              className="flex items-center gap-2 px-5 py-2 bg-gradient-to-r from-amber-500 to-amber-400 text-slate-950 text-xs font-bold rounded hover:from-amber-400 hover:to-amber-300 transition-all shadow-[0_0_15px_rgba(212,175,55,0.4)]"
+              className="flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-amber-500 to-amber-400 text-slate-950 text-xs sm:text-sm font-bold rounded hover:from-amber-400 hover:to-amber-300 transition-all shadow-[0_0_15px_rgba(212,175,55,0.4)]"
             >
-              <span>{isLast ? 'Complete & Start Preparing' : 'Next Workstation'}</span>
+              <span>{isLast ? 'Complete & Start Preparing' : 'Next Step (Show Where to Go)'}</span>
               {isLast ? (
                 <Check className="w-4 h-4 text-slate-950 font-bold" />
               ) : (

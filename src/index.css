@@ -6,6 +6,25 @@
    THEME PALETTE DEFINITIONS & CSS VARIABLES
 ---------------------------------------------------- */
 
+/* ----------------------------------------------------
+   ACCESSIBILITY & FONT SIZE SCALING
+---------------------------------------------------- */
+html {
+  font-size: 15px;
+}
+
+html.scale-normal {
+  font-size: 15px;
+}
+
+html.scale-large {
+  font-size: 17.5px;
+}
+
+html.scale-xlarge {
+  font-size: 20px;
+}
+
 :root {
   --bg-primary: #0B0D13;
   --bg-secondary: #11141E;

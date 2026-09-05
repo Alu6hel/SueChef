@@ -8,6 +8,7 @@ export function createDefaultCase(): CaseFile {
     id: 'case_2026_0901',
     title: 'Smith v. Vanguard Property Management LLC',
     caseNumber: '26SC-004891',
+    country: 'US',
     state: 'CA',
     county: 'Santa Clara',
     courtName: 'Superior Court of California, County of Santa Clara - Small Claims Division',

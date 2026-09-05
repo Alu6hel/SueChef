@@ -12,11 +12,16 @@ import { LegaleseDecoder } from './components/LegaleseDecoder/LegaleseDecoder';
 import { ServiceTracker } from './components/ServiceTracker/ServiceTracker';
 import { AttorneyDossier } from './components/AttorneyDossier/AttorneyDossier';
 import { SecurityVault } from './components/SecurityVault/SecurityVault';
+import { SecondOpinionConsultant } from './components/SecondOpinion/SecondOpinionConsultant';
+import { LegalServicesHub } from './components/LegalServices/LegalServicesHub';
 import { CaseManagerModal } from './components/CaseManager/CaseManagerModal';
 import { QuickSearchModal } from './components/QuickSearch/QuickSearchModal';
 import { WalkthroughTour } from './components/WalkthroughTour/WalkthroughTour';
+import { SettingsModal } from './components/Settings/SettingsModal';
+import { LocationOnboardingModal } from './components/Settings/LocationOnboardingModal';
 import { ParchmentBookAnimation } from './components/ThemeEffects/ParchmentBookAnimation';
 import { ChambersScalesAnimation } from './components/ThemeEffects/ChambersScalesAnimation';
+import { getCountryInfo } from './services/countries';
 import { 
   ShieldCheck, 
   Scale, 
@@ -24,22 +29,32 @@ import {
   Clock, 
   Award,
   Sparkles,
-  ChevronDown,
-  ChevronUp,
   Eye,
-  EyeOff
+  EyeOff,
+  Building,
+  Settings
 } from 'lucide-react';
 
 const WorkstationRouter: React.FC = () => {
-  const { activeWorkstation, totalDamages, estimatedParalegalSavings, activeCase, theme } = useSueChef();
+  const { 
+    activeWorkstation, 
+    totalDamages, 
+    estimatedParalegalSavings, 
+    activeCase, 
+    theme,
+    country,
+    setIsSettingsOpen
+  } = useSueChef();
   const [showLiveTheme, setShowLiveTheme] = useState(true);
+
+  const countryInfo = getCountryInfo(country);
 
   return (
     <div className="min-h-screen flex flex-col bg-[var(--bg-primary)] text-[var(--text-main)] transition-colors">
       <Header />
       
-      <main className="flex-1 pb-20 p-3 sm:p-4 md:p-6 max-w-7xl w-full mx-auto space-y-4">
-        {/* Interactive Live Theme Animation Stage */}
+      <main className="flex-1 pb-24 p-3 sm:p-4 md:p-6 max-w-7xl w-full mx-auto space-y-5">
+        {/* Interactive Live Theme Animation Banner */}
         {showLiveTheme && (
           <div className="animate-in fade-in duration-300">
             {theme === 'parchment-ink' ? (
@@ -53,52 +68,68 @@ const WorkstationRouter: React.FC = () => {
         {/* Workstation View Routing */}
         <div className="transition-all duration-200">
           {activeWorkstation === 'claim-kitchen' && <ClaimKitchen />}
+          {activeWorkstation === 'evidence-locker' && <EvidenceLocker />}
+          {activeWorkstation === 'pleading-builder' && <PleadingBuilder />}
+          {activeWorkstation === 'settlement-matrix' && <SettlementMatrix />}
+          {activeWorkstation === 'second-opinion' && <SecondOpinionConsultant />}
+          {activeWorkstation === 'legal-services' && <LegalServicesHub />}
           {activeWorkstation === 'discovery-studio' && <DiscoveryStudio />}
           {activeWorkstation === 'trial-prep' && <TrialPrep />}
-          {activeWorkstation === 'settlement-matrix' && <SettlementMatrix />}
           {activeWorkstation === 'sol-watcher' && <SolWatcher />}
-          {activeWorkstation === 'pleading-builder' && <PleadingBuilder />}
-          {activeWorkstation === 'evidence-locker' && <EvidenceLocker />}
-          {activeWorkstation === 'legalese-decoder' && <LegaleseDecoder />}
           {activeWorkstation === 'service-tracker' && <ServiceTracker />}
+          {activeWorkstation === 'legalese-decoder' && <LegaleseDecoder />}
           {activeWorkstation === 'attorney-dossier' && <AttorneyDossier />}
           {activeWorkstation === 'security-vault' && <SecurityVault />}
         </div>
       </main>
 
-      {/* Global Modals & Overlay Tour */}
+      {/* Global Modals & Overlay Services */}
       <CaseManagerModal />
       <QuickSearchModal />
       <WalkthroughTour />
+      <SettingsModal />
+      <LocationOnboardingModal />
 
       {/* Fixed Bottom Status Bar */}
-      <footer className="fixed bottom-0 left-0 right-0 z-30 bg-[var(--bg-secondary)] border-t border-[var(--border-color)] px-4 py-2 text-xs shadow-lg">
+      <footer className="fixed bottom-0 left-0 right-0 z-30 bg-[var(--bg-secondary)] border-t-2 border-[var(--border-color)] px-4 py-2 text-xs md:text-sm shadow-xl">
         <div className="max-w-7xl mx-auto flex items-center justify-between gap-4 font-mono">
           <div className="flex items-center gap-3">
-            <span className="flex items-center gap-1.5 text-emerald-400 font-semibold">
-              <ShieldCheck className="w-3.5 h-3.5" />
-              <span className="hidden sm:inline">100% Client Encrypted</span>
+            <span className="flex items-center gap-1.5 text-emerald-400 font-bold">
+              <ShieldCheck className="w-4 h-4" />
+              <span>100% Client-Side Privacy</span>
             </span>
             <span className="text-[var(--text-muted)] hidden md:inline">•</span>
             <span className="text-[var(--text-muted)] hidden md:inline truncate max-w-xs">
-              {activeCase.courtName}
+              {countryInfo.flag} {activeCase.state} Jurisdiction
             </span>
           </div>
 
           <div className="flex items-center gap-4">
             <button
               onClick={() => setShowLiveTheme(prev => !prev)}
-              className="text-[10px] text-[var(--accent-gold)] hover:underline flex items-center gap-1 font-sans"
+              className="text-xs text-[var(--accent-gold)] hover:underline flex items-center gap-1 font-sans"
               title="Toggle Live Animated Stage"
             >
-              {showLiveTheme ? <EyeOff className="w-3 h-3" /> : <Eye className="w-3 h-3" />}
+              {showLiveTheme ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
               <span className="hidden sm:inline">{showLiveTheme ? 'Hide Live Stage' : 'Show Live Stage'}</span>
             </button>
 
+            <button
+              onClick={() => setIsSettingsOpen(true)}
+              className="text-xs text-[var(--text-muted)] hover:text-[var(--text-main)] flex items-center gap-1 font-sans"
+              title="Change country & location"
+            >
+              <Settings className="w-3.5 h-3.5 text-[var(--accent-gold)]" />
+              <span className="hidden md:inline">Country: {countryInfo.name}</span>
+            </button>
+
             <div className="flex items-center gap-1">
-              <span className="text-[var(--text-muted)]">Damages:</span>
-              <span className="font-bold text-emerald-400">${totalDamages.toLocaleString()}</span>
+              <span className="text-[var(--text-muted)]">Claimed:</span>
+              <span className="font-bold text-emerald-400">
+                {countryInfo.currencySymbol}{totalDamages.toLocaleString()}
+              </span>
             </div>
+
             <div className="hidden sm:flex items-center gap-1">
               <span className="text-[var(--text-muted)]">Legal Savings:</span>
               <span className="font-bold text-[var(--accent-gold)]">${estimatedParalegalSavings.toLocaleString()}</span>

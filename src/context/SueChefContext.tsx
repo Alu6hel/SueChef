@@ -3,6 +3,8 @@ import {
   ThemeId, 
   CornerGeometry, 
   WorkstationId, 
+  CountryCode,
+  FontSizeScale,
   CaseFile, 
   EvidenceItem, 
   PleadingParagraph,
@@ -18,6 +20,10 @@ interface SueChefContextType {
   setTheme: (theme: ThemeId) => void;
   cornerGeometry: CornerGeometry;
   setCornerGeometry: (geometry: CornerGeometry) => void;
+  country: CountryCode;
+  setCountry: (country: CountryCode) => void;
+  fontSizeScale: FontSizeScale;
+  setFontSizeScale: (scale: FontSizeScale) => void;
   activeWorkstation: WorkstationId;
   setActiveWorkstation: (id: WorkstationId) => void;
   activeCase: CaseFile;
@@ -40,6 +46,8 @@ interface SueChefContextType {
   setIsQuickSearchOpen: (open: boolean) => void;
   isTourOpen: boolean;
   setIsTourOpen: (open: boolean) => void;
+  isSettingsOpen: boolean;
+  setIsSettingsOpen: (open: boolean) => void;
 }
 
 const SueChefContext = createContext<SueChefContextType | undefined>(undefined);
@@ -53,6 +61,14 @@ export const SueChefProvider: React.FC<{ children: ReactNode }> = ({ children })
     return (localStorage.getItem('suechef_geometry') as CornerGeometry) || 'sharp';
   });
 
+  const [country, setCountryState] = useState<CountryCode>(() => {
+    return (localStorage.getItem('suechef_country') as CountryCode) || 'US';
+  });
+
+  const [fontSizeScale, setFontSizeScaleState] = useState<FontSizeScale>(() => {
+    return (localStorage.getItem('suechef_font_scale') as FontSizeScale) || 'normal';
+  });
+
   const [activeWorkstation, setActiveWorkstationState] = useState<WorkstationId>('claim-kitchen');
   const [activeCase, setActiveCase] = useState<CaseFile>(() => createDefaultCase());
   const [soundEnabled, setSoundEnabled] = useState<boolean>(true);
@@ -61,6 +77,7 @@ export const SueChefProvider: React.FC<{ children: ReactNode }> = ({ children })
   const [isCaseManagerOpen, setIsCaseManagerOpen] = useState<boolean>(false);
   const [isQuickSearchOpen, setIsQuickSearchOpen] = useState<boolean>(false);
   const [isTourOpen, setIsTourOpen] = useState<boolean>(false);
+  const [isSettingsOpen, setIsSettingsOpen] = useState<boolean>(false);
 
   // Apply theme classes to document root
   useEffect(() => {
@@ -91,6 +108,14 @@ export const SueChefProvider: React.FC<{ children: ReactNode }> = ({ children })
     localStorage.setItem('suechef_geometry', cornerGeometry);
   }, [cornerGeometry]);
 
+  // Apply font size scale class
+  useEffect(() => {
+    const root = document.documentElement;
+    root.classList.remove('scale-normal', 'scale-large', 'scale-xlarge');
+    root.classList.add(`scale-${fontSizeScale}`);
+    localStorage.setItem('suechef_font_scale', fontSizeScale);
+  }, [fontSizeScale]);
+
   // Global keyboard shortcuts (Ctrl+K or Cmd+K)
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -118,6 +143,18 @@ export const SueChefProvider: React.FC<{ children: ReactNode }> = ({ children })
   const setCornerGeometry = (newGeom: CornerGeometry) => {
     sound.playClick();
     setCornerGeometryState(newGeom);
+  };
+
+  const setCountry = (newCountry: CountryCode) => {
+    sound.playClick();
+    setCountryState(newCountry);
+    localStorage.setItem('suechef_country', newCountry);
+  };
+
+  const setFontSizeScale = (newScale: FontSizeScale) => {
+    sound.playClick();
+    setFontSizeScaleState(newScale);
+    localStorage.setItem('suechef_font_scale', newScale);
   };
 
   const setActiveWorkstation = (id: WorkstationId) => {
@@ -155,6 +192,7 @@ export const SueChefProvider: React.FC<{ children: ReactNode }> = ({ children })
       ...base,
       id: `case_${Date.now()}`,
       title: title || 'New Dispute Matter',
+      country: country,
       state: state || 'CA',
       claimEvaluation: {
         ...base.claimEvaluation,
@@ -252,6 +290,10 @@ export const SueChefProvider: React.FC<{ children: ReactNode }> = ({ children })
         setTheme,
         cornerGeometry,
         setCornerGeometry,
+        country,
+        setCountry,
+        fontSizeScale,
+        setFontSizeScale,
         activeWorkstation,
         setActiveWorkstation,
         activeCase,
@@ -273,7 +315,9 @@ export const SueChefProvider: React.FC<{ children: ReactNode }> = ({ children })
         isQuickSearchOpen,
         setIsQuickSearchOpen,
         isTourOpen,
-        setIsTourOpen
+        setIsTourOpen,
+        isSettingsOpen,
+        setIsSettingsOpen
       }}
     >
       {children}
