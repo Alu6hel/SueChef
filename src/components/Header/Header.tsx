@@ -50,6 +50,8 @@ export const Header: React.FC = () => {
     { id: 'sol-watcher', stepNum: '9', label: 'SOL Docket', icon: <Clock className="w-4 h-4" /> },
     { id: 'service-tracker', stepNum: '10', label: 'Service & Proof', icon: <Clock className="w-4 h-4" /> },
     { id: 'legalese-decoder', stepNum: '11', label: 'Legal Decoder', icon: <Layers className="w-4 h-4" /> },
+    { id: 'attorney-dossier', stepNum: '12', label: 'Attorney Binder', icon: <FileText className="w-4 h-4" />, badge: 'Savings' },
+    { id: 'security-vault', stepNum: '13', label: 'Security Vault', icon: <ShieldCheck className="w-4 h-4" /> },
   ];
 
   return (
