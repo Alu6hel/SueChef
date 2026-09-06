@@ -60,12 +60,36 @@ export const QuickSearchModal: React.FC = () => {
   const items: SearchResultItem[] = [
     // Workstations
     {
+      id: 'ws_home',
+      title: 'Home Dashboard & 30-Sec Intake Assistant',
+      subtitle: 'Dispute overview, merit stats, and 4-question intake wizard',
+      category: 'workstation',
+      icon: <UtensilsCrossed className="w-4 h-4 text-primary" />,
+      action: () => { setActiveWorkstation('home'); setIsQuickSearchOpen(false); }
+    },
+    {
       id: 'ws_claim',
-      title: 'Claim Kitchen & Merit Scoring',
+      title: 'Claim Kitchen & Merit Scoring (WS 1)',
       subtitle: 'Analyze legal elements, evaluate damages, and assess small claims caps',
       category: 'workstation',
       icon: <UtensilsCrossed className="w-4 h-4 text-primary" />,
       action: () => { setActiveWorkstation('claim-kitchen'); setIsQuickSearchOpen(false); }
+    },
+    {
+      id: 'ws_second_op',
+      title: 'AI Legal Second Opinion & Viability Audit (WS 5)',
+      subtitle: 'Predict 3 opponent defenses, counter-rebuttals, and case grade',
+      category: 'workstation',
+      icon: <Sparkles className="w-4 h-4 text-primary" />,
+      action: () => { setActiveWorkstation('second-opinion'); setIsQuickSearchOpen(false); }
+    },
+    {
+      id: 'ws_legal_aid',
+      title: 'Verified Legal Aid Directory & Fee Waivers (WS 6)',
+      subtitle: '131+ pro bono clinics, court self-help portals, and FW-001 $0 forms',
+      category: 'workstation',
+      icon: <Gavel className="w-4 h-4 text-primary" />,
+      action: () => { setActiveWorkstation('legal-services'); setIsQuickSearchOpen(false); }
     },
     {
       id: 'ws_discovery',
