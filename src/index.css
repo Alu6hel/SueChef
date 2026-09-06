@@ -26,6 +26,10 @@ html.scale-xlarge {
 }
 
 :root {
+  --sat: env(safe-area-inset-top, 0px);
+  --sar: env(safe-area-inset-right, 0px);
+  --sab: env(safe-area-inset-bottom, 0px);
+  --sal: env(safe-area-inset-left, 0px);
   --bg-primary: #0B0D13;
   --bg-secondary: #11141E;
   --bg-card: #181C28;
@@ -40,6 +44,15 @@ html.scale-xlarge {
   --pleading-paper-bg: #FFFFFF;
   --pleading-text: #111827;
   --pleading-line: #9CA3AF;
+}
+
+body {
+  padding-top: var(--sat);
+  padding-right: var(--sar);
+  padding-bottom: var(--sab);
+  padding-left: var(--sal);
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
 }
 
 /* 1. Chambers Onyx (Default Midnight Justice) */
