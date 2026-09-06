@@ -15,14 +15,88 @@ export class SecondOpinionEngine {
     const hasReceipt = caseFile.evidenceList.some(e => e.category === 'receipt');
     const hasAdmissions = caseFile.chatThreads.some(t => t.messages.some(m => m.isAdmission));
 
+    const resolvedSet = new Set(caseFile.resolvedVulnerabilityIds || []);
+
+    // Generate Structured Actionable Vulnerability Items
+    const vulnerabilityItems: import('../types').VulnerabilityCheckItem[] = [];
+
+    if (elementRatio < 0.6) {
+      vulnerabilityItems.push({
+        id: 'vuln_elements_gap',
+        title: 'Incomplete Statutory Cause of Action Proof',
+        description: `${totalElements - satisfiedElements} out of ${totalElements} legal elements lack affirmative proof notes.`,
+        remedyAction: 'Review Claim Kitchen and link at least one exhibit or factual statement to each unsatisfied element.',
+        isResolved: resolvedSet.has('vuln_elements_gap'),
+        scoreBonus: 15
+      });
+    }
+
+    if (evidenceCount === 0) {
+      vulnerabilityItems.push({
+        id: 'vuln_no_exhibits',
+        title: 'Zero Cryptographic Documentary Exhibits',
+        description: 'Judges heavily discount uncorroborated oral testimony in contested money disputes.',
+        remedyAction: 'Upload contracts, receipts, bank statements, or text messages in the Evidence Locker.',
+        isResolved: resolvedSet.has('vuln_no_exhibits'),
+        scoreBonus: 15
+      });
+    }
+
+    if (caseFile.parties.filter(p => p.role === 'defendant').length === 0) {
+      vulnerabilityItems.push({
+        id: 'vuln_missing_defendant',
+        title: 'Defendant Entity & Registered Agent Missing',
+        description: 'Cannot obtain an enforceable court judgment without a properly identified defendant.',
+        remedyAction: 'Look up the defendant’s exact legal entity name and registered agent on the Secretary of State portal.',
+        isResolved: resolvedSet.has('vuln_missing_defendant'),
+        scoreBonus: 10
+      });
+    }
+
+    if (!hasContract && !hasReceipt && caseFile.claimEvaluation.category !== 'negligence') {
+      vulnerabilityItems.push({
+        id: 'vuln_proof_of_payment',
+        title: 'Missing Proof of Consideration / Payment',
+        description: 'Contract and commercial claims require documentary proof of money transferred or services rendered.',
+        remedyAction: 'Attach bank statements, cancelled checks, credit card receipts, or electronic invoice confirmations.',
+        isResolved: resolvedSet.has('vuln_proof_of_payment'),
+        scoreBonus: 10
+      });
+    }
+
+    vulnerabilityItems.push({
+      id: 'vuln_demand_notice',
+      title: 'Pre-Suit Notice Window & Statutory Demand',
+      description: 'Many courts require proof of a pre-suit demand letter before awarding court fees or bad-faith damages.',
+      remedyAction: 'Send a formal 10-14 day Demand Letter via Certified Mail Return Receipt Requested.',
+      isResolved: resolvedSet.has('vuln_demand_notice'),
+      scoreBonus: 8
+    });
+
+    vulnerabilityItems.push({
+      id: 'vuln_mitigation',
+      title: 'Duty to Mitigate Economic Damages',
+      description: 'Plaintiffs must show reasonable steps taken to minimize financial harm after the breach or defect occurred.',
+      remedyAction: 'Catalog repair estimates, replacement vendor quotes, or written attempts to negotiate an amicable resolution.',
+      isResolved: resolvedSet.has('vuln_mitigation'),
+      scoreBonus: 5
+    });
+
     // Calculate Win Probability (0 - 100)
-    let rawScore = Math.round(elementRatio * 60);
+    let rawScore = Math.round(elementRatio * 50);
     if (evidenceCount >= 1) rawScore += 10;
     if (evidenceCount >= 3) rawScore += 10;
     if (hasContract || hasReceipt) rawScore += 10;
     if (hasAdmissions) rawScore += 10;
 
-    const winProbabilityScore = Math.min(95, Math.max(15, rawScore));
+    // Apply resolved vulnerability bonuses
+    vulnerabilityItems.forEach(item => {
+      if (item.isResolved) {
+        rawScore += item.scoreBonus;
+      }
+    });
+
+    const winProbabilityScore = Math.min(96, Math.max(15, rawScore));
 
     // Letter Grade
     let overallMeritGrade: SecondOpinionReport['overallMeritGrade'] = 'B';
@@ -54,23 +128,19 @@ export class SecondOpinionEngine {
       keyStrengths.push(`High Monetary Value: Your $${totalDamages.toLocaleString()} claim qualifies for formal civil court, providing access to full pre-trial discovery and depositions.`);
     }
 
-    // Vulnerabilities
-    const vulnerabilities: string[] = [];
-    if (elementRatio < 0.6) {
-      vulnerabilities.push('Incomplete Element Proof: One or more statutory elements of your cause of action lack affirmative evidence.');
-    }
-    if (evidenceCount === 0) {
-      vulnerabilities.push('Lack of Documentary Exhibits: Courts strongly disfavor oral "he-said-she-said" claims without written receipts, contracts, or text records.');
-    }
-    if (caseFile.parties.filter(p => p.role === 'defendant').length === 0) {
-      vulnerabilities.push('Unidentified Defendant: You must identify the exact legal entity name and registered agent address for valid service of process.');
-    }
+    // Vulnerabilities as string summaries
+    const vulnerabilities: string[] = vulnerabilityItems
+      .filter(v => !v.isResolved)
+      .map(v => `${v.title}: ${v.description}`);
+
     if (vulnerabilities.length === 0) {
       vulnerabilities.push('Procedural Timing: Ensure you strictly comply with statutory notice windows before filing court papers to preserve fee shifting.');
     }
 
-    // Predicted Defenses by Category
-    const predictedDefenses = this.getPredictedDefenses(caseFile.claimEvaluation.category, caseFile.state);
+    // Predicted Defenses (merge default template defenses + custom user-added defenses)
+    const templateDefenses = this.getPredictedDefenses(caseFile.claimEvaluation.category, caseFile.state);
+    const customDefenses = caseFile.secondOpinionDefenses || [];
+    const predictedDefenses = [...customDefenses, ...templateDefenses];
 
     // Financial Recommendation
     let proceedRecommendation: SecondOpinionReport['financialAssessment']['proceedRecommendation'] = 'Strongly Recommend Filing';
@@ -136,6 +206,7 @@ export class SecondOpinionEngine {
       verdictSummary: this.getVerdictSummary(overallMeritGrade, winProbabilityScore, caseFile),
       keyStrengths,
       vulnerabilities,
+      vulnerabilityItems,
       predictedDefenses,
       financialAssessment: {
         claimedDamages: totalDamages,

@@ -3,6 +3,7 @@ import { useSueChef } from '../../context/SueChefContext';
 import { SecondOpinionEngine } from '../../services/secondOpinionEngine';
 import { sound } from '../../services/soundEngine';
 import { AluLogo } from '../Branding/AluLogo';
+import { PredictedDefense } from '../../types';
 import { 
   Sparkles, 
   ShieldCheck, 
@@ -21,15 +22,87 @@ import {
   HelpCircle,
   Clock,
   Phone,
-  Building
+  Building,
+  Plus,
+  Trash2,
+  Calculator,
+  CheckSquare,
+  Square,
+  X
 } from 'lucide-react';
 
 export const SecondOpinionConsultant: React.FC = () => {
-  const { activeCase, setActiveWorkstation, country } = useSueChef();
-  const [activeTab, setActiveTab] = useState<'overview' | 'defenses' | 'roadmap' | 'local_aid'>('overview');
+  const { activeCase, updateActiveCase, setActiveWorkstation, country } = useSueChef();
+  const [activeTab, setActiveTab] = useState<'overview' | 'vulnerabilities' | 'defenses' | 'ev_calculator' | 'roadmap' | 'local_aid'>('overview');
   const [copiedMemo, setCopiedMemo] = useState(false);
 
+  // Custom defense builder modal state
+  const [isAddDefenseModalOpen, setIsAddDefenseModalOpen] = useState(false);
+  const [newDefenseTitle, setNewDefenseTitle] = useState('');
+  const [newOpposingArgument, setNewOpposingArgument] = useState('');
+  const [newCounterStrategy, setNewCounterStrategy] = useState('');
+  const [newStatutoryBasis, setNewStatutoryBasis] = useState('');
+  const [newLikelihood, setNewLikelihood] = useState<'High' | 'Medium' | 'Low'>('High');
+
+  // EV Calculator States
+  const [currentSettlementOffer, setCurrentSettlementOffer] = useState<number>(
+    activeCase.settlement?.offerHistory?.[activeCase.settlement.offerHistory.length - 1]?.amount || 
+    Math.round((activeCase.claimEvaluation.damages.reduce((a, b) => a + (b.amount || 0), 0)) * 0.5)
+  );
+  const [wageLossHearingDay, setWageLossHearingDay] = useState<number>(150);
+  const [travelParkingCosts, setTravelParkingCosts] = useState<number>(35);
+
   const report = SecondOpinionEngine.generateReport(activeCase);
+
+  const handleToggleVulnerability = (vulnId: string) => {
+    sound.playClick();
+    const currentResolved = new Set(activeCase.resolvedVulnerabilityIds || []);
+    if (currentResolved.has(vulnId)) {
+      currentResolved.delete(vulnId);
+    } else {
+      currentResolved.add(vulnId);
+      sound.playSuccessChime();
+    }
+    updateActiveCase(prev => ({
+      ...prev,
+      resolvedVulnerabilityIds: Array.from(currentResolved)
+    }));
+  };
+
+  const handleAddCustomDefense = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newDefenseTitle.trim() || !newOpposingArgument.trim() || !newCounterStrategy.trim()) return;
+
+    sound.playDocketStamp();
+    const newDefense: PredictedDefense = {
+      id: 'custom_def_' + Date.now(),
+      defenseTitle: newDefenseTitle.trim(),
+      likelihood: newLikelihood,
+      opposingArgument: newOpposingArgument.trim(),
+      counterStrategy: newCounterStrategy.trim(),
+      statutoryBasis: newStatutoryBasis.trim() || 'General Civil Law / Local Rules',
+      isCustom: true
+    };
+
+    updateActiveCase(prev => ({
+      ...prev,
+      secondOpinionDefenses: [newDefense, ...(prev.secondOpinionDefenses || [])]
+    }));
+
+    setNewDefenseTitle('');
+    setNewOpposingArgument('');
+    setNewCounterStrategy('');
+    setNewStatutoryBasis('');
+    setIsAddDefenseModalOpen(false);
+  };
+
+  const handleDeleteCustomDefense = (defenseId: string) => {
+    sound.playClick();
+    updateActiveCase(prev => ({
+      ...prev,
+      secondOpinionDefenses: (prev.secondOpinionDefenses || []).filter(d => d.id !== defenseId)
+    }));
+  };
 
   const handlePrintMemo = () => {
     sound.playDocketStamp();
@@ -62,7 +135,7 @@ REBUTTAL: ${d.counterStrategy}
 CITATION: ${d.statutoryBasis}
 `).join('\n')}
 
---- FINANCIAL RECOMMENDATION ---
+--- FINANCIAL & SETTLEMENT EXPECTED VALUE ASSESSMENT ---
 Claimed Damages: $${report.financialAssessment.claimedDamages.toLocaleString()}
 Recommended Settlement Floor: $${report.financialAssessment.recommendedSettlementFloor.toLocaleString()}
 Estimated Filing Fee: $${report.financialAssessment.courtFilingCostEstimate}
@@ -78,6 +151,12 @@ Certified by SueChef Privacy-First Pro Se Legal Suite
     setCopiedMemo(true);
     setTimeout(() => setCopiedMemo(false), 2500);
   };
+
+  // EV Math: EV_Trial = (WinProb% * ClaimDamages) - FilingFees - WageLoss - Travel
+  const totalTrialCosts = report.financialAssessment.courtFilingCostEstimate + wageLossHearingDay + travelParkingCosts;
+  const expectedTrialValue = Math.round((report.winProbabilityScore / 100) * report.financialAssessment.claimedDamages) - totalTrialCosts;
+  const netSettlementValue = currentSettlementOffer;
+  const evDelta = expectedTrialValue - netSettlementValue;
 
   return (
     <div className="space-y-6 max-w-7xl mx-auto p-4 md:p-6 animate-in fade-in duration-300">
@@ -135,14 +214,16 @@ Certified by SueChef Privacy-First Pro Se Legal Suite
           </p>
         </div>
 
-        {/* Quick Action Navigation & Memo Download */}
+        {/* Navigation Tabs & Actions */}
         <div className="flex flex-wrap items-center justify-between gap-3 pt-2">
           <div className="flex flex-wrap items-center gap-2">
             {[
-              { id: 'overview', label: 'Case Strengths & Risks', icon: <TrendingUp className="w-4 h-4" /> },
-              { id: 'defenses', label: 'Predicted Defenses & Rebuttals', icon: <Gavel className="w-4 h-4" /> },
+              { id: 'overview', label: 'Strengths & Overview', icon: <TrendingUp className="w-4 h-4" /> },
+              { id: 'vulnerabilities', label: `Risk Checklist (${report.vulnerabilityItems?.length || 0})`, icon: <CheckCircle2 className="w-4 h-4" /> },
+              { id: 'defenses', label: `Defense Traps (${report.predictedDefenses.length})`, icon: <Gavel className="w-4 h-4" /> },
+              { id: 'ev_calculator', label: 'Trial vs Settle Calculator', icon: <Calculator className="w-4 h-4" /> },
               { id: 'roadmap', label: 'Action Roadmap (5 Steps)', icon: <Clock className="w-4 h-4" /> },
-              { id: 'local_aid', label: 'Local Legal Aid & Courts', icon: <Building className="w-4 h-4" /> }
+              { id: 'local_aid', label: 'Legal Aid & Courts', icon: <Building className="w-4 h-4" /> }
             ].map(tab => (
               <button
                 key={tab.id}
@@ -150,7 +231,7 @@ Certified by SueChef Privacy-First Pro Se Legal Suite
                   sound.playClick();
                   setActiveTab(tab.id as any);
                 }}
-                className={`flex items-center gap-2 px-4 py-2 text-xs md:text-sm font-semibold custom-geometry border transition-all ${
+                className={`flex items-center gap-2 px-3.5 py-2 text-xs md:text-sm font-semibold custom-geometry border transition-all ${
                   activeTab === tab.id
                     ? 'bg-[var(--accent-gold)] text-slate-950 border-[var(--accent-gold)] font-bold shadow-md'
                     : 'bg-[var(--bg-secondary)] text-[var(--text-muted)] border-[var(--border-color)] hover:text-[var(--text-main)] hover:bg-[var(--bg-hover)]'
@@ -168,20 +249,20 @@ Certified by SueChef Privacy-First Pro Se Legal Suite
               className="flex items-center gap-1.5 px-3 py-2 text-xs font-bold bg-[var(--bg-secondary)] border border-[var(--border-color)] text-[var(--text-main)] hover:bg-[var(--bg-hover)] custom-geometry transition-all"
             >
               <FileText className="w-4 h-4 text-[var(--accent-gold)]" />
-              <span>{copiedMemo ? 'Copied to Clipboard!' : 'Copy Summary'}</span>
+              <span>{copiedMemo ? 'Copied!' : 'Copy Summary'}</span>
             </button>
             <button
               onClick={handlePrintMemo}
               className="flex items-center gap-1.5 px-3.5 py-2 text-xs font-bold bg-[var(--accent-gold)] text-slate-950 custom-geometry hover:opacity-90 shadow-sm transition-all"
             >
               <Printer className="w-4 h-4" />
-              <span>Print Memo</span>
+              <span>Print Brief</span>
             </button>
           </div>
         </div>
       </div>
 
-      {/* Tab 1: Strengths, Vulnerabilities & Financial ROI */}
+      {/* Tab 1: Strengths & Overview */}
       {activeTab === 'overview' && (
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Key Strengths */}
@@ -204,11 +285,19 @@ Certified by SueChef Privacy-First Pro Se Legal Suite
 
           {/* Vulnerabilities & Risks */}
           <div className="bg-[var(--bg-card)] border border-[var(--border-color)] p-6 custom-geometry space-y-4 shadow-sm">
-            <div className="flex items-center gap-2.5 pb-2 border-b border-[var(--border-color)]">
-              <AlertTriangle className="w-5 h-5 text-amber-400" />
-              <h2 className="font-serif font-bold text-lg text-[var(--text-main)]">
-                Vulnerabilities & Risk Areas
-              </h2>
+            <div className="flex items-center gap-2.5 pb-2 border-b border-[var(--border-color)] justify-between">
+              <div className="flex items-center gap-2">
+                <AlertTriangle className="w-5 h-5 text-amber-400" />
+                <h2 className="font-serif font-bold text-lg text-[var(--text-main)]">
+                  Identified Risk Areas
+                </h2>
+              </div>
+              <button
+                onClick={() => setActiveTab('vulnerabilities')}
+                className="text-xs text-[var(--accent-gold)] font-bold hover:underline"
+              >
+                Resolve Checklist →
+              </button>
             </div>
             <ul className="space-y-3">
               {report.vulnerabilities.map((vu, i) => (
@@ -220,7 +309,7 @@ Certified by SueChef Privacy-First Pro Se Legal Suite
             </ul>
           </div>
 
-          {/* Financial ROI & Recommendation Card */}
+          {/* Financial Assessment Card */}
           <div className="bg-[var(--bg-card)] border-2 border-[var(--accent-gold)]/40 p-6 custom-geometry space-y-5 shadow-lg">
             <div className="flex items-center gap-2.5 pb-2 border-b border-[var(--border-color)]">
               <DollarSign className="w-5 h-5 text-[var(--accent-gold)]" />
@@ -271,53 +360,66 @@ Certified by SueChef Privacy-First Pro Se Legal Suite
         </div>
       )}
 
-      {/* Tab 2: Predicted Defense Tactics & Legal Rebuttal Counters */}
-      {activeTab === 'defenses' && (
-        <div className="space-y-4">
-          <div className="flex items-center justify-between">
-            <h2 className="text-xl font-bold font-serif text-[var(--text-main)]">
-              Anticipated Defense Arguments & Court Counter-Strategies
-            </h2>
-            <span className="text-xs font-mono text-[var(--text-muted)]">
-              Tailored for {report.category.replace(/_/g, ' ').toUpperCase()} in {report.state}
-            </span>
+      {/* Tab 2: Interactive Vulnerability Remediation Checklist */}
+      {activeTab === 'vulnerabilities' && (
+        <div className="bg-[var(--bg-card)] border border-[var(--border-color)] p-6 custom-geometry space-y-6 shadow-sm">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 pb-4 border-b border-[var(--border-color)]">
+            <div>
+              <h2 className="text-xl font-bold font-serif text-[var(--text-main)]">
+                Vulnerability Remediation & Score Booster Checklist
+              </h2>
+              <p className="text-xs text-[var(--text-muted)] font-mono pt-1">
+                Ticking off completed remediation tasks immediately raises your case Merit Rating and Win Probability score.
+              </p>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="text-xs font-mono text-[var(--text-muted)]">Resolved:</span>
+              <span className="px-2.5 py-1 bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 rounded font-mono font-bold text-xs">
+                {report.vulnerabilityItems?.filter(v => v.isResolved).length || 0} / {report.vulnerabilityItems?.length || 0}
+              </span>
+            </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-            {report.predictedDefenses.map((def, idx) => (
-              <div key={idx} className="bg-[var(--bg-card)] border-2 border-[var(--border-color)] p-5 custom-geometry space-y-4 shadow-sm hover:border-[var(--accent-gold)]/60 transition-all">
-                <div className="flex items-start justify-between gap-2 border-b border-[var(--border-color)] pb-3">
-                  <div className="space-y-1">
-                    <span className="text-[10px] font-mono font-bold px-2 py-0.5 bg-rose-500/15 text-rose-400 border border-rose-500/30 rounded uppercase">
-                      Opposing Defense #{idx + 1}
-                    </span>
-                    <h3 className="text-base font-bold text-[var(--text-main)] font-serif pt-1">
-                      {def.defenseTitle}
-                    </h3>
-                  </div>
-                  <span className="text-[11px] font-mono px-2 py-0.5 bg-[var(--bg-secondary)] text-[var(--text-muted)] border border-[var(--border-color)] rounded">
-                    {def.likelihood} Probability
-                  </span>
+          <div className="space-y-4">
+            {report.vulnerabilityItems?.map(item => (
+              <div
+                key={item.id}
+                onClick={() => handleToggleVulnerability(item.id)}
+                className={`p-4 border custom-geometry cursor-pointer transition-all flex items-start gap-4 ${
+                  item.isResolved
+                    ? 'bg-emerald-950/20 border-emerald-500/50 hover:bg-emerald-950/30'
+                    : 'bg-[var(--bg-secondary)] border-[var(--border-color)] hover:border-[var(--accent-gold)]'
+                }`}
+              >
+                <div className="pt-0.5 shrink-0 text-xl">
+                  {item.isResolved ? (
+                    <CheckSquare className="w-5 h-5 text-emerald-400" />
+                  ) : (
+                    <Square className="w-5 h-5 text-[var(--text-muted)]" />
+                  )}
                 </div>
 
-                <div className="space-y-3 text-sm">
-                  <div className="p-3 bg-rose-950/20 border border-rose-800/40 custom-geometry text-rose-200">
-                    <div className="text-[10px] font-mono uppercase font-bold text-rose-400 mb-1">
-                      What the Defendant Will Argue:
-                    </div>
-                    {def.opposingArgument}
+                <div className="space-y-1.5 flex-1">
+                  <div className="flex flex-wrap items-center justify-between gap-2">
+                    <h3 className={`text-base font-bold font-serif ${item.isResolved ? 'line-through text-[var(--text-muted)]' : 'text-[var(--text-main)]'}`}>
+                      {item.title}
+                    </h3>
+                    <span className={`text-[10px] font-mono px-2 py-0.5 rounded font-bold uppercase ${
+                      item.isResolved
+                        ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40'
+                        : 'bg-amber-500/20 text-amber-300 border border-amber-500/40'
+                    }`}>
+                      {item.isResolved ? 'RESOLVED (+Bonus Applied)' : `+${item.scoreBonus}% Win Boost Available`}
+                    </span>
                   </div>
 
-                  <div className="p-3.5 bg-[var(--badge-bg)] border-l-4 border-[var(--accent-gold)] custom-geometry text-[var(--text-main)]">
-                    <div className="text-[10px] font-mono uppercase font-bold text-[var(--accent-gold)] mb-1">
-                      Your Winning Counter-Rebuttal:
-                    </div>
-                    {def.counterStrategy}
-                  </div>
+                  <p className="text-sm text-[var(--text-muted)] leading-relaxed">
+                    {item.description}
+                  </p>
 
-                  <div className="flex items-center gap-2 text-xs font-mono text-[var(--text-muted)] pt-1">
-                    <Scale className="w-3.5 h-3.5 text-[var(--accent-gold)]" />
-                    <span>Statutory Authority: {def.statutoryBasis}</span>
+                  <div className="p-2.5 bg-[var(--bg-card)] border border-[var(--border-color)] custom-geometry text-xs text-[var(--text-main)] flex items-center gap-2">
+                    <Lightbulb className="w-4 h-4 text-[var(--accent-gold)] shrink-0" />
+                    <span><strong>Remedy:</strong> {item.remedyAction}</span>
                   </div>
                 </div>
               </div>
@@ -326,7 +428,240 @@ Certified by SueChef Privacy-First Pro Se Legal Suite
         </div>
       )}
 
-      {/* Tab 3: Step-by-Step Action Roadmap */}
+      {/* Tab 3: Predicted Defenses & Custom Opposing Argument Builder */}
+      {activeTab === 'defenses' && (
+        <div className="space-y-5">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
+            <div>
+              <h2 className="text-xl font-bold font-serif text-[var(--text-main)]">
+                Anticipated Opposing Defenses & Rebuttals ({report.predictedDefenses.length})
+              </h2>
+              <p className="text-xs font-mono text-[var(--text-muted)] pt-1">
+                Specific court rebuttals and statutory citations to dismantle defendant arguments.
+              </p>
+            </div>
+            <button
+              onClick={() => {
+                sound.playClick();
+                setIsAddDefenseModalOpen(true);
+              }}
+              className="flex items-center gap-2 px-3.5 py-2 text-xs font-bold bg-[var(--accent-gold)] text-slate-950 custom-geometry hover:opacity-90 shadow-sm transition-all"
+            >
+              <Plus className="w-4 h-4" />
+              <span>+ Add Custom Opposing Defense</span>
+            </button>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+            {report.predictedDefenses.map((def, idx) => (
+              <div key={def.id || idx} className="bg-[var(--bg-card)] border-2 border-[var(--border-color)] p-5 custom-geometry space-y-4 shadow-sm hover:border-[var(--accent-gold)]/60 transition-all flex flex-col justify-between">
+                <div className="space-y-3">
+                  <div className="flex items-start justify-between gap-2 border-b border-[var(--border-color)] pb-3">
+                    <div className="space-y-1">
+                      <div className="flex items-center gap-2">
+                        <span className="text-[10px] font-mono font-bold px-2 py-0.5 bg-rose-500/15 text-rose-400 border border-rose-500/30 rounded uppercase">
+                          {def.isCustom ? 'Custom User Defense' : `Predicted Defense #${idx + 1}`}
+                        </span>
+                        <span className="text-[11px] font-mono px-2 py-0.5 bg-[var(--bg-secondary)] text-[var(--text-muted)] border border-[var(--border-color)] rounded">
+                          {def.likelihood} Likelihood
+                        </span>
+                      </div>
+                      <h3 className="text-base font-bold text-[var(--text-main)] font-serif pt-1">
+                        {def.defenseTitle}
+                      </h3>
+                    </div>
+                    {def.isCustom && def.id && (
+                      <button
+                        onClick={() => handleDeleteCustomDefense(def.id!)}
+                        className="text-rose-400 hover:text-rose-300 p-1"
+                        title="Delete custom defense"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    )}
+                  </div>
+
+                  <div className="space-y-3 text-sm">
+                    <div className="p-3 bg-rose-950/20 border border-rose-800/40 custom-geometry text-rose-200">
+                      <div className="text-[10px] font-mono uppercase font-bold text-rose-400 mb-1">
+                        What Defendant Will Argue:
+                      </div>
+                      {def.opposingArgument}
+                    </div>
+
+                    <div className="p-3.5 bg-[var(--badge-bg)] border-l-4 border-[var(--accent-gold)] custom-geometry text-[var(--text-main)]">
+                      <div className="text-[10px] font-mono uppercase font-bold text-[var(--accent-gold)] mb-1">
+                        Your Winning Counter-Rebuttal:
+                      </div>
+                      {def.counterStrategy}
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-2 text-xs font-mono text-[var(--text-muted)] pt-3 border-t border-[var(--border-color)]/60">
+                  <Scale className="w-3.5 h-3.5 text-[var(--accent-gold)]" />
+                  <span>Authority: {def.statutoryBasis}</span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Tab 4: Trial vs Settlement Expected Value (EV) Simulator */}
+      {activeTab === 'ev_calculator' && (
+        <div className="bg-[var(--bg-card)] border-2 border-[var(--border-color)] p-6 md:p-8 custom-geometry space-y-6 shadow-xl">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 border-b border-[var(--border-color)] pb-4">
+            <div>
+              <h2 className="text-xl font-bold font-serif text-[var(--text-main)]">
+                Litigation Expected Value (EV) Decision Engine
+              </h2>
+              <p className="text-xs font-mono text-[var(--text-muted)] pt-1">
+                Mathematical risk modeling comparing guaranteed settlement offers against trial trial outcomes after all court costs and lost wages.
+              </p>
+            </div>
+            <div className={`px-4 py-2 custom-geometry font-bold text-sm border font-mono ${
+              evDelta > 0 
+                ? 'bg-emerald-950/40 border-emerald-500/60 text-emerald-300' 
+                : 'bg-amber-950/40 border-amber-500/60 text-amber-300'
+            }`}>
+              {evDelta > 0 ? '✓ MATHEMATICALLY FAVORABLE TO PROCEED TO TRIAL' : '⚠️ FAVORABLE TO ACCEPT SETTLEMENT OFFER'}
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {/* Column 1: Financial Variables Slider */}
+            <div className="space-y-4 bg-[var(--bg-secondary)] p-5 custom-geometry border border-[var(--border-color)]">
+              <h3 className="font-serif font-bold text-base text-[var(--text-main)] border-b border-[var(--border-color)] pb-2">
+                Dispute Inputs & Variables
+              </h3>
+
+              <div className="space-y-2">
+                <div className="flex justify-between text-xs">
+                  <span className="text-[var(--text-muted)]">Defendant Settlement Offer:</span>
+                  <span className="font-mono font-bold text-[var(--accent-gold)]">${currentSettlementOffer.toLocaleString()}</span>
+                </div>
+                <input
+                  type="range"
+                  min="0"
+                  max={report.financialAssessment.claimedDamages}
+                  step="50"
+                  value={currentSettlementOffer}
+                  onChange={e => setCurrentSettlementOffer(parseInt(e.target.value))}
+                  className="w-full accent-[var(--accent-gold)] cursor-pointer"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <div className="flex justify-between text-xs">
+                  <span className="text-[var(--text-muted)]">Estimated Court Filing Fee:</span>
+                  <span className="font-mono font-bold text-[var(--text-main)]">${report.financialAssessment.courtFilingCostEstimate}</span>
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <div className="flex justify-between text-xs">
+                  <span className="text-[var(--text-muted)]">Hearing Day Lost Wages:</span>
+                  <span className="font-mono font-bold text-[var(--text-main)]">${wageLossHearingDay}</span>
+                </div>
+                <input
+                  type="range"
+                  min="0"
+                  max="600"
+                  step="25"
+                  value={wageLossHearingDay}
+                  onChange={e => setWageLossHearingDay(parseInt(e.target.value))}
+                  className="w-full accent-[var(--accent-gold)] cursor-pointer"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <div className="flex justify-between text-xs">
+                  <span className="text-[var(--text-muted)]">Travel, Parking & Copies:</span>
+                  <span className="font-mono font-bold text-[var(--text-main)]">${travelParkingCosts}</span>
+                </div>
+                <input
+                  type="range"
+                  min="0"
+                  max="150"
+                  step="5"
+                  value={travelParkingCosts}
+                  onChange={e => setTravelParkingCosts(parseInt(e.target.value))}
+                  className="w-full accent-[var(--accent-gold)] cursor-pointer"
+                />
+              </div>
+            </div>
+
+            {/* Column 2: Expected Trial Outcome */}
+            <div className="space-y-4 bg-[var(--bg-secondary)] p-5 custom-geometry border border-[var(--border-color)] flex flex-col justify-between">
+              <div>
+                <h3 className="font-serif font-bold text-base text-[var(--text-main)] border-b border-[var(--border-color)] pb-2 flex items-center justify-between">
+                  <span>Trial Scenario ($EV)</span>
+                  <span className="text-xs font-mono text-emerald-400">{report.winProbabilityScore}% Win Odds</span>
+                </h3>
+
+                <div className="space-y-3 pt-3 text-xs">
+                  <div className="flex justify-between">
+                    <span className="text-[var(--text-muted)]">Claimed Recovery:</span>
+                    <span className="font-mono font-bold">${report.financialAssessment.claimedDamages.toLocaleString()}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-[var(--text-muted)]">Expected Gross Win:</span>
+                    <span className="font-mono font-bold text-emerald-400">
+                      ${Math.round((report.winProbabilityScore / 100) * report.financialAssessment.claimedDamages).toLocaleString()}
+                    </span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-[var(--text-muted)]">Total Trial Costs:</span>
+                    <span className="font-mono font-bold text-rose-400">-${totalTrialCosts}</span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="p-3 bg-[var(--bg-card)] border border-[var(--border-color)] custom-geometry text-center space-y-1">
+                <span className="text-[10px] font-mono text-[var(--text-muted)] uppercase">Net Expected Trial Value</span>
+                <div className="text-2xl font-extrabold font-mono text-emerald-400">
+                  ${expectedTrialValue.toLocaleString()}
+                </div>
+              </div>
+            </div>
+
+            {/* Column 3: Guaranteed Settlement Offer */}
+            <div className="space-y-4 bg-[var(--bg-secondary)] p-5 custom-geometry border border-[var(--border-color)] flex flex-col justify-between">
+              <div>
+                <h3 className="font-serif font-bold text-base text-[var(--text-main)] border-b border-[var(--border-color)] pb-2 flex items-center justify-between">
+                  <span>Settlement Offer (100% Certain)</span>
+                  <span className="text-xs font-mono text-amber-400">Zero Trial Risk</span>
+                </h3>
+
+                <div className="space-y-3 pt-3 text-xs">
+                  <div className="flex justify-between">
+                    <span className="text-[var(--text-muted)]">Offered Cash Amount:</span>
+                    <span className="font-mono font-bold">${currentSettlementOffer.toLocaleString()}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-[var(--text-muted)]">Trial Costs Incurred:</span>
+                    <span className="font-mono font-bold text-emerald-400">$0.00</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-[var(--text-muted)]">Collection Timeframe:</span>
+                    <span className="font-mono font-bold text-[var(--text-main)]">7-14 Days</span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="p-3 bg-[var(--bg-card)] border border-[var(--border-color)] custom-geometry text-center space-y-1">
+                <span className="text-[10px] font-mono text-[var(--text-muted)] uppercase">Guaranteed Net In-Pocket</span>
+                <div className="text-2xl font-extrabold font-mono text-[var(--accent-gold)]">
+                  ${netSettlementValue.toLocaleString()}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Tab 5: Step-by-Step Action Roadmap */}
       {activeTab === 'roadmap' && (
         <div className="bg-[var(--bg-card)] border border-[var(--border-color)] p-6 custom-geometry space-y-6 shadow-sm">
           <div className="flex items-center justify-between pb-3 border-b border-[var(--border-color)]">
@@ -378,7 +713,7 @@ Certified by SueChef Privacy-First Pro Se Legal Suite
         </div>
       )}
 
-      {/* Tab 4: Real-Life Legal Aid & Local Court Directory */}
+      {/* Tab 6: Real-Life Legal Aid & Local Court Directory */}
       {activeTab === 'local_aid' && (
         <div className="space-y-5">
           <div className="flex items-center justify-between">
@@ -446,6 +781,106 @@ Certified by SueChef Privacy-First Pro Se Legal Suite
                 </div>
               </div>
             ))}
+          </div>
+        </div>
+      )}
+
+      {/* Modal: Add Custom Defense Argument */}
+      {isAddDefenseModalOpen && (
+        <div className="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4 backdrop-blur-sm animate-in fade-in duration-200">
+          <div className="bg-[var(--bg-card)] border-2 border-[var(--accent-gold)] max-w-lg w-full custom-geometry p-6 space-y-5 shadow-2xl">
+            <div className="flex items-center justify-between border-b border-[var(--border-color)] pb-3">
+              <div className="flex items-center gap-2">
+                <Gavel className="w-5 h-5 text-[var(--accent-gold)]" />
+                <h3 className="font-serif font-bold text-lg text-[var(--text-main)]">
+                  Add Custom Opposing Defense
+                </h3>
+              </div>
+              <button
+                onClick={() => setIsAddDefenseModalOpen(false)}
+                className="text-[var(--text-muted)] hover:text-[var(--text-main)]"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <form onSubmit={handleAddCustomDefense} className="space-y-4 text-xs font-mono">
+              <div className="space-y-1">
+                <label className="text-[var(--text-muted)] uppercase font-bold">Defense Label / Subject</label>
+                <input
+                  type="text"
+                  placeholder="e.g. Pre-existing wear or Lack of formal notice"
+                  value={newDefenseTitle}
+                  onChange={e => setNewDefenseTitle(e.target.value)}
+                  className="w-full p-2.5 bg-[var(--bg-secondary)] border border-[var(--border-color)] text-[var(--text-main)] custom-geometry text-sm focus:border-[var(--accent-gold)] outline-none"
+                  required
+                />
+              </div>
+
+              <div className="space-y-1">
+                <label className="text-[var(--text-muted)] uppercase font-bold">Likelihood of Defendant Raising This</label>
+                <select
+                  value={newLikelihood}
+                  onChange={e => setNewLikelihood(e.target.value as any)}
+                  className="w-full p-2.5 bg-[var(--bg-secondary)] border border-[var(--border-color)] text-[var(--text-main)] custom-geometry text-sm focus:border-[var(--accent-gold)] outline-none font-sans"
+                >
+                  <option value="High">High Likelihood (Primary Defense)</option>
+                  <option value="Medium">Medium Likelihood (Secondary Rebuttal)</option>
+                  <option value="Low">Low Likelihood (Fringe / Unlikely)</option>
+                </select>
+              </div>
+
+              <div className="space-y-1">
+                <label className="text-[var(--text-muted)] uppercase font-bold">What the Defendant Will Argue / Claim</label>
+                <textarea
+                  rows={2}
+                  placeholder="e.g. Defendant claimed the leak was caused by abnormal tenant negligence."
+                  value={newOpposingArgument}
+                  onChange={e => setNewOpposingArgument(e.target.value)}
+                  className="w-full p-2.5 bg-[var(--bg-secondary)] border border-[var(--border-color)] text-[var(--text-main)] custom-geometry text-sm focus:border-[var(--accent-gold)] outline-none font-sans"
+                  required
+                />
+              </div>
+
+              <div className="space-y-1">
+                <label className="text-[var(--text-muted)] uppercase font-bold">Your Counter-Strategy & Evidence Rebuttal</label>
+                <textarea
+                  rows={2}
+                  placeholder="e.g. Submit timestamped move-in inspection and plumber receipt proving pre-existing main line failure."
+                  value={newCounterStrategy}
+                  onChange={e => setNewCounterStrategy(e.target.value)}
+                  className="w-full p-2.5 bg-[var(--bg-secondary)] border border-[var(--border-color)] text-[var(--text-main)] custom-geometry text-sm focus:border-[var(--accent-gold)] outline-none font-sans"
+                  required
+                />
+              </div>
+
+              <div className="space-y-1">
+                <label className="text-[var(--text-muted)] uppercase font-bold">Statutory Authority / Citation (Optional)</label>
+                <input
+                  type="text"
+                  placeholder="e.g. Cal. Civ. Code § 1941.1 (Habitability Standards)"
+                  value={newStatutoryBasis}
+                  onChange={e => setNewStatutoryBasis(e.target.value)}
+                  className="w-full p-2.5 bg-[var(--bg-secondary)] border border-[var(--border-color)] text-[var(--text-main)] custom-geometry text-sm focus:border-[var(--accent-gold)] outline-none"
+                />
+              </div>
+
+              <div className="flex justify-end gap-2 pt-2">
+                <button
+                  type="button"
+                  onClick={() => setIsAddDefenseModalOpen(false)}
+                  className="px-4 py-2 bg-[var(--bg-secondary)] border border-[var(--border-color)] text-[var(--text-main)] custom-geometry font-bold hover:bg-[var(--bg-hover)]"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="px-5 py-2 bg-[var(--accent-gold)] text-slate-950 custom-geometry font-bold hover:opacity-90 shadow-sm"
+                >
+                  Save to Case Defenses
+                </button>
+              </div>
+            </form>
           </div>
         </div>
       )}

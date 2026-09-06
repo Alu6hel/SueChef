@@ -65,6 +65,25 @@ export interface LegalServiceDirectory {
   intakeNotes: string;
 }
 
+export interface PredictedDefense {
+  id?: string;
+  defenseTitle: string;
+  likelihood: 'High' | 'Medium' | 'Low';
+  opposingArgument: string;
+  counterStrategy: string;
+  statutoryBasis: string;
+  isCustom?: boolean;
+}
+
+export interface VulnerabilityCheckItem {
+  id: string;
+  title: string;
+  description: string;
+  remedyAction: string;
+  isResolved: boolean;
+  scoreBonus: number;
+}
+
 export interface SecondOpinionReport {
   timestamp: string;
   caseTitle: string;
@@ -76,13 +95,8 @@ export interface SecondOpinionReport {
   verdictSummary: string;
   keyStrengths: string[];
   vulnerabilities: string[];
-  predictedDefenses: {
-    defenseTitle: string;
-    likelihood: 'High' | 'Medium' | 'Low';
-    opposingArgument: string;
-    counterStrategy: string;
-    statutoryBasis: string;
-  }[];
+  vulnerabilityItems?: VulnerabilityCheckItem[];
+  predictedDefenses: PredictedDefense[];
   financialAssessment: {
     claimedDamages: number;
     realisticRecoveryEstimate: number;
@@ -329,6 +343,33 @@ export interface ChatThread {
   messages: ChatMessage[];
 }
 
+export interface OpposingCounselInfo {
+  name: string;
+  firm: string;
+  barNumber?: string;
+  email?: string;
+  phone?: string;
+  posture: 'aggressive' | 'cooperative' | 'unresponsive' | 'cautious';
+  notes: string;
+}
+
+export interface DossierPrintOptions {
+  includeSummary: boolean;
+  includeElements: boolean;
+  includeDamages: boolean;
+  includeEvidence: boolean;
+  includeCounsel: boolean;
+  includeStrategy: boolean;
+}
+
+export interface SecurityAuditEntry {
+  id: string;
+  timestamp: string;
+  action: string;
+  details: string;
+  status: 'verified' | 'logged' | 'warning';
+}
+
 export interface CaseFile {
   id: string;
   title: string;
@@ -371,6 +412,11 @@ export interface CaseFile {
   };
   settlement: SettlementCalculation;
   chatThreads: ChatThread[];
+  secondOpinionDefenses?: PredictedDefense[];
+  resolvedVulnerabilityIds?: string[];
+  opposingCounsel?: OpposingCounselInfo;
+  dossierPrintSections?: DossierPrintOptions;
+  securityAuditLogs?: SecurityAuditEntry[];
 }
 
 export interface DisputeBlueprint {

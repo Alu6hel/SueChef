@@ -15,6 +15,7 @@ export interface StateJurisdictionInfo {
   solPropertyDamageYears: number;
   solPersonalInjuryYears: number;
   solConsumerFraudYears: number;
+  attorneysAllowedInSmallClaims?: boolean;
 }
 
 export const STATE_JURISDICTIONS: Record<string, StateJurisdictionInfo> = {

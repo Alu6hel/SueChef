@@ -169,6 +169,83 @@ export const REAL_LEGAL_SERVICES: LegalServiceDirectory[] = [
     isFree: true,
     intakeNotes: 'Covers Florida Small Claims Rules 7.010-7.340 and mandatory pre-trial settlement mediation conferences.'
   },
+  {
+    id: 'us_il_legalaid',
+    country: 'US',
+    subdivision: 'IL',
+    name: 'Illinois Legal Aid Online (ILAO) & Court Self-Help',
+    category: 'court_self_help',
+    description: 'Statewide interactive court forms, Fee Waiver (Application for Waiver of Court Fees), and Cook County Pro Se Court guides.',
+    websiteUrl: 'https://www.illinoislegalaid.org',
+    isFree: true,
+    intakeNotes: 'Illinois small claims limit is $10,000 with simplified discovery rules under Illinois Supreme Court Rule 281-289.'
+  },
+  {
+    id: 'us_pa_legalaid',
+    country: 'US',
+    subdivision: 'PA',
+    name: 'Pennsylvania Legal Aid Network & Magisterial District Court Guide',
+    category: 'court_self_help',
+    description: 'Official self-help resources for PA Magisterial District Courts ($12,000 limit) and Philadelphia Municipal Court.',
+    websiteUrl: 'https://palegalaid.net',
+    isFree: true,
+    intakeNotes: 'Information on filing civil complaint Form AOPC 308A and In Forma Pauperis petition for fee exemption.'
+  },
+  {
+    id: 'us_oh_legalhelp',
+    country: 'US',
+    subdivision: 'OH',
+    name: 'Ohio Legal Help & Municipal Small Claims Division',
+    category: 'court_self_help',
+    description: 'Free statewide legal resource for Ohio small claims courts ($6,000 limit) and tenant escrow procedures.',
+    websiteUrl: 'https://www.ohiolegalhelp.org',
+    isFree: true,
+    intakeNotes: 'Assistance with filing Ohio R.C. 1925 small claims petitions and Poverty Affidavit fee waiver forms.'
+  },
+  {
+    id: 'us_ga_legalaid',
+    country: 'US',
+    subdivision: 'GA',
+    name: 'Georgia Legal Aid & Magistrate Court Portal',
+    category: 'court_self_help',
+    description: 'Complete guide for Georgia Magistrate Courts (People’s Court) with $15,000 jurisdictional limit.',
+    websiteUrl: 'https://www.georgialegalaid.org',
+    isFree: true,
+    intakeNotes: 'No attorney required; covers Statement of Claim forms, Pauper’s Affidavit, and statutory 30-day answer deadline.'
+  },
+  {
+    id: 'us_nc_equalaccess',
+    country: 'US',
+    subdivision: 'NC',
+    name: 'Legal Aid of North Carolina & Small Claims Magistrate Court',
+    category: 'court_self_help',
+    description: 'Guidance for North Carolina Small Claims Court ($10,000 limit) before District Court Magistrates.',
+    websiteUrl: 'https://www.legalaidnc.org',
+    isFree: true,
+    intakeNotes: 'Form AOC-CVM-200 (Complaint for Money Owed) and Petition to Sue/Appeal as an Indigent (Form AOC-G-106).'
+  },
+  {
+    id: 'us_wa_washingtonlawhelp',
+    country: 'US',
+    subdivision: 'WA',
+    name: 'Washington LawHelp & District Court Small Claims',
+    category: 'court_self_help',
+    description: 'Self-help for Washington State District Court Small Claims ($10,000 individual limit, RCW 12.40).',
+    websiteUrl: 'https://www.washingtonlawhelp.org',
+    isFree: true,
+    intakeNotes: 'Attorneys are prohibited without judge permission (RCW 12.40.080); mandatory pre-trial settlement mediation.'
+  },
+  {
+    id: 'us_ma_masslegalhelp',
+    country: 'US',
+    subdivision: 'MA',
+    name: 'MassLegalHelp & Massachusetts Small Claims Advisory',
+    category: 'court_self_help',
+    description: 'Official portal for Massachusetts District and Boston Municipal Court Small Claims ($7,000 limit, M.G.L. c. 218 § 21).',
+    websiteUrl: 'https://www.masslegalhelp.org',
+    isFree: true,
+    intakeNotes: 'Small claims limit is $7,000 except for property damage caused by motor vehicles which has no dollar ceiling.'
+  },
 
   // United Kingdom (England & Wales)
   {
