@@ -147,7 +147,7 @@ export const HomeDashboard: React.FC = () => {
 
             <div className="p-2.5 bg-amber-500/10 border border-amber-500/20 custom-geometry flex items-center gap-2 text-xs text-[var(--accent-gold)] font-mono">
               <TrendingUp className="w-4 h-4 shrink-0" />
-              <span>Est. Legal Fees Saved: ${estimatedParalegalSavings.toLocaleString()}</span>
+              <span>Est. Legal Fees Saved: {countryInfo.currencySymbol}{estimatedParalegalSavings.toLocaleString()}</span>
             </div>
           </div>
         </div>
@@ -360,7 +360,7 @@ export const HomeDashboard: React.FC = () => {
               <div className="space-y-2">
                 <div className="flex items-center justify-between text-xs font-mono">
                   <span className="text-[var(--accent-gold)] font-bold">{bp.state} JURISDICTION</span>
-                  <span className="text-emerald-400 font-bold">Est. ${bp.estimatedTotal.toLocaleString()}</span>
+                  <span className="text-emerald-400 font-bold">Est. {countryInfo.currencySymbol}{bp.estimatedTotal.toLocaleString()}</span>
                 </div>
                 <h4 className="text-sm font-bold font-serif text-[var(--text-main)]">{bp.title}</h4>
                 <p className="text-xs text-[var(--text-muted)] leading-relaxed line-clamp-2">{bp.description}</p>

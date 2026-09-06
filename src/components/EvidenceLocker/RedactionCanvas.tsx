@@ -103,20 +103,29 @@ export const RedactionCanvas: React.FC = () => {
     renderCanvas();
   }, [redactions, currentRect]);
 
-  const getCanvasCoords = (e: React.MouseEvent<HTMLCanvasElement>) => {
+  const getCanvasCoords = (clientX: number, clientY: number) => {
     const canvas = canvasRef.current;
     if (!canvas) return { x: 0, y: 0 };
     const rect = canvas.getBoundingClientRect();
     const scaleX = canvas.width / rect.width;
     const scaleY = canvas.height / rect.height;
     return {
-      x: (e.clientX - rect.left) * scaleX,
-      y: (e.clientY - rect.top) * scaleY
+      x: (clientX - rect.left) * scaleX,
+      y: (clientY - rect.top) * scaleY
     };
   };
 
   const handleMouseDown = (e: React.MouseEvent<HTMLCanvasElement>) => {
-    const coords = getCanvasCoords(e);
+    const coords = getCanvasCoords(e.clientX, e.clientY);
+    setIsDrawing(true);
+    setStartPos(coords);
+    setCurrentRect({ x: coords.x, y: coords.y, w: 0, h: 0 });
+  };
+
+  const handleTouchStart = (e: React.TouchEvent<HTMLCanvasElement>) => {
+    if (e.touches.length === 0) return;
+    const touch = e.touches[0];
+    const coords = getCanvasCoords(touch.clientX, touch.clientY);
     setIsDrawing(true);
     setStartPos(coords);
     setCurrentRect({ x: coords.x, y: coords.y, w: 0, h: 0 });
@@ -124,7 +133,18 @@ export const RedactionCanvas: React.FC = () => {
 
   const handleMouseMove = (e: React.MouseEvent<HTMLCanvasElement>) => {
     if (!isDrawing || !startPos) return;
-    const coords = getCanvasCoords(e);
+    const coords = getCanvasCoords(e.clientX, e.clientY);
+    const x = Math.min(startPos.x, coords.x);
+    const y = Math.min(startPos.y, coords.y);
+    const w = Math.abs(coords.x - startPos.x);
+    const h = Math.abs(coords.y - startPos.y);
+    setCurrentRect({ x, y, w, h });
+  };
+
+  const handleTouchMove = (e: React.TouchEvent<HTMLCanvasElement>) => {
+    if (!isDrawing || !startPos || e.touches.length === 0) return;
+    const touch = e.touches[0];
+    const coords = getCanvasCoords(touch.clientX, touch.clientY);
     const x = Math.min(startPos.x, coords.x);
     const y = Math.min(startPos.y, coords.y);
     const w = Math.abs(coords.x - startPos.x);
@@ -142,6 +162,10 @@ export const RedactionCanvas: React.FC = () => {
     setCurrentRect(null);
   };
 
+  const handleTouchEnd = () => {
+    handleMouseUp();
+  };
+
   const handleUndo = () => {
     sound.playClick();
     setRedactions(prev => prev.slice(0, -1));
@@ -150,6 +174,19 @@ export const RedactionCanvas: React.FC = () => {
   const handleClearAll = () => {
     sound.playClick();
     setRedactions([]);
+  };
+
+  const handleDownloadPng = () => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    sound.playDocketStamp();
+    const dataUrl = canvas.toDataURL('image/png');
+    const a = document.createElement('a');
+    a.href = dataUrl;
+    a.download = `Exhibit_Redacted_${Date.now()}.png`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
   };
 
   const handleSaveToEvidenceLocker = async () => {
@@ -195,19 +232,26 @@ export const RedactionCanvas: React.FC = () => {
 
         <div className="flex items-center gap-2">
           <button
+            onClick={handleDownloadPng}
+            className="flex items-center gap-1.5 px-3 py-1.5 bg-primary text-primary-foreground text-xs custom-geometry font-semibold hover:bg-primary/90 transition-all shadow-sm"
+          >
+            <Download className="w-3.5 h-3.5" />
+            <span>Download Redacted PNG</span>
+          </button>
+          <button
             onClick={handleUndo}
             disabled={redactions.length === 0}
             className="flex items-center gap-1.5 px-3 py-1.5 bg-muted text-foreground text-xs custom-geometry disabled:opacity-40"
           >
             <RotateCcw className="w-3.5 h-3.5" />
-            <span>Undo Redaction</span>
+            <span>Undo</span>
           </button>
           <button
             onClick={handleClearAll}
             disabled={redactions.length === 0}
             className="flex items-center gap-1.5 px-3 py-1.5 bg-muted text-foreground text-xs custom-geometry disabled:opacity-40"
           >
-            <span>Clear All</span>
+            <span>Clear</span>
           </button>
         </div>
       </div>
@@ -222,11 +266,14 @@ export const RedactionCanvas: React.FC = () => {
             onMouseDown={handleMouseDown}
             onMouseMove={handleMouseMove}
             onMouseUp={handleMouseUp}
-            className="w-full max-w-[700px] border border-border shadow-2xl cursor-crosshair bg-white"
+            onTouchStart={handleTouchStart}
+            onTouchMove={handleTouchMove}
+            onTouchEnd={handleTouchEnd}
+            className="w-full max-w-[700px] border border-border shadow-2xl cursor-crosshair bg-white touch-none"
           />
           <div className="text-[11px] font-mono text-muted-foreground mt-3 flex items-center gap-2">
             <ShieldAlert className="w-3.5 h-3.5 text-amber-400" />
-            <span>Click and drag over sensitive lines to burn permanent black redactions.</span>
+            <span>Click, drag, or touch over sensitive lines to burn permanent black redactions.</span>
           </div>
         </div>
 
