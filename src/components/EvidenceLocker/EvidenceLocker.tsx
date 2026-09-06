@@ -18,10 +18,14 @@ import {
   Tag,
   Key,
   Smartphone,
-  Scissors
+  Scissors,
+  UploadCloud,
+  FileUp,
+  Check
 } from 'lucide-react';
 import { EvidenceItem } from '../../types';
 import { sound } from '../../services/soundEngine';
+import { CryptoDbService } from '../../services/cryptoDb';
 import { ChatThreadMaker } from './ChatThreadMaker';
 import { RedactionCanvas } from './RedactionCanvas';
 
@@ -37,8 +41,11 @@ export const EvidenceLocker: React.FC = () => {
   const [newCategory, setNewCategory] = useState<EvidenceItem['category']>('receipt');
   const [newFileName, setNewFileName] = useState('');
   const [newDateOccurred, setNewDateOccurred] = useState(new Date().toISOString().split('T')[0]);
-  const [newCustodian, setNewCustodian] = useState('Jordan Smith');
+  const [newCustodian, setNewCustodian] = useState(activeCase.parties.find(p => p.role === 'plaintiff')?.name || 'Jordan Smith');
   const [newNotes, setNewNotes] = useState('');
+  const [computedHash, setComputedHash] = useState<string>('');
+  const [realFileSize, setRealFileSize] = useState<number>(0);
+  const [isDragging, setIsDragging] = useState<boolean>(false);
 
   const filteredEvidence = activeCase.evidenceList.filter(ev => 
     ev.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -46,18 +53,52 @@ export const EvidenceLocker: React.FC = () => {
     ev.category.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
+  const handleFileProcess = async (file: File) => {
+    sound.playDocketStamp();
+    setNewFileName(file.name);
+    setRealFileSize(file.size);
+    if (!newTitle) {
+      const cleanTitle = file.name
+        .replace(/\.[^/.]+$/, "")
+        .replace(/[-_]/g, " ")
+        .replace(/\b\w/g, l => l.toUpperCase());
+      setNewTitle(cleanTitle);
+    }
+    const ext = file.name.split('.').pop()?.toLowerCase();
+    if (['jpg', 'jpeg', 'png', 'webp', 'heic', 'gif'].includes(ext || '')) {
+      setNewCategory('photo');
+    } else if (['pdf', 'doc', 'docx'].includes(ext || '')) {
+      setNewCategory('contract');
+    } else if (['eml', 'msg'].includes(ext || '')) {
+      setNewCategory('email');
+    } else if (['csv', 'txt'].includes(ext || '')) {
+      setNewCategory('receipt');
+    }
+
+    try {
+      const buffer = await file.arrayBuffer();
+      const hash = await CryptoDbService.computeSha256(buffer);
+      setComputedHash(hash);
+    } catch (err) {
+      console.error('Error computing SHA-256 for file:', err);
+    }
+  };
+
   const handleAddSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newTitle || !newFileName) return;
+
+    const finalHash = computedHash || await CryptoDbService.computeSha256(newTitle + newFileName + Date.now());
 
     await addEvidence({
       title: newTitle,
       category: newCategory,
       originalFileName: newFileName,
-      fileSizeBytes: Math.floor(Math.random() * 2000000) + 150000,
+      fileSizeBytes: realFileSize || Math.floor(Math.random() * 2000000) + 150000,
       dateAcquired: new Date().toISOString().split('T')[0],
       dateOccurred: newDateOccurred,
       custodian: newCustodian,
+      sha256Hash: finalHash,
       admissibilityChecklist: {
         authenticationFre901: true,
         hearsayExceptionFre803: true,
@@ -73,6 +114,8 @@ export const EvidenceLocker: React.FC = () => {
     setNewTitle('');
     setNewFileName('');
     setNewNotes('');
+    setComputedHash('');
+    setRealFileSize(0);
   };
 
   const getCategoryIcon = (category: EvidenceItem['category']) => {
@@ -412,6 +455,63 @@ export const EvidenceLocker: React.FC = () => {
             </div>
 
             <form onSubmit={handleAddSubmit} className="space-y-4">
+              {/* File Dropzone */}
+              <div 
+                onDragOver={e => { e.preventDefault(); setIsDragging(true); }}
+                onDragLeave={() => setIsDragging(false)}
+                onDrop={e => {
+                  e.preventDefault();
+                  setIsDragging(false);
+                  if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+                    handleFileProcess(e.dataTransfer.files[0]);
+                  }
+                }}
+                className={`p-4 border-2 border-dashed card-geom text-center transition-all ${
+                  isDragging 
+                    ? 'border-[var(--accent-gold)] bg-amber-500/10' 
+                    : 'border-[var(--border-color)] bg-[var(--bg-secondary)] hover:border-slate-500'
+                }`}
+              >
+                <input
+                  type="file"
+                  id="evidence-file-input"
+                  className="hidden"
+                  onChange={e => {
+                    if (e.target.files && e.target.files[0]) {
+                      handleFileProcess(e.target.files[0]);
+                    }
+                  }}
+                />
+                <label 
+                  htmlFor="evidence-file-input"
+                  className="cursor-pointer flex flex-col items-center justify-center gap-1.5"
+                >
+                  <UploadCloud className="w-8 h-8 text-[var(--accent-gold)] animate-bounce" />
+                  <span className="text-xs font-bold text-[var(--text-main)]">
+                    {newFileName ? `Loaded: ${newFileName}` : 'Click or Drag & Drop File to Fingerprint'}
+                  </span>
+                  <span className="text-[10px] text-[var(--text-muted)] font-mono">
+                    PDF, JPG, PNG, DOCX, CSV, EML (Computes FRE 902 SHA-256 in browser)
+                  </span>
+                </label>
+              </div>
+
+              {/* Real-time Computed SHA-256 Digest Badge */}
+              {computedHash && (
+                <div className="p-3 bg-emerald-950/30 border border-emerald-500/30 card-geom space-y-1">
+                  <div className="flex justify-between items-center text-[10px] font-mono text-emerald-400 font-bold">
+                    <span className="flex items-center gap-1">
+                      <Check className="w-3.5 h-3.5" />
+                      In-Browser SHA-256 Hash Generated
+                    </span>
+                    <span>{Math.round(realFileSize / 1024)} KB</span>
+                  </div>
+                  <div className="text-[9px] font-mono text-slate-300 break-all bg-black/60 p-1.5 rounded border border-white/5">
+                    {computedHash}
+                  </div>
+                </div>
+              )}
+
               <div>
                 <label className="block text-[10px] font-mono uppercase text-[var(--text-muted)] mb-1">Exhibit Title</label>
                 <input
@@ -474,9 +574,10 @@ export const EvidenceLocker: React.FC = () => {
                 </button>
                 <button
                   type="submit"
-                  className="btn-geom px-5 py-2 text-xs font-bold bg-[var(--accent-gold)] text-slate-950 hover:opacity-90 transition-all"
+                  className="btn-geom px-5 py-2 text-xs font-bold bg-[var(--accent-gold)] text-slate-950 hover:opacity-90 transition-all flex items-center gap-1.5"
                 >
-                  Generate SHA-256 & Stamp Exhibit
+                  <Sparkles className="w-3.5 h-3.5" />
+                  <span>Generate SHA-256 & Stamp Exhibit</span>
                 </button>
               </div>
             </form>

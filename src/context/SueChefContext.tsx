@@ -11,7 +11,8 @@ import {
   DamageItem
 } from '../types';
 import { createDefaultCase } from '../services/defaultCase';
-import { DISPUTE_BLUEPRINTS, createCustomDispute, CustomDisputeInput } from '../services/disputeTemplates';
+import { DISPUTE_BLUEPRINTS, createCustomDispute, CustomDisputeInput, generateElementsForCategory } from '../services/disputeTemplates';
+import { getJurisdiction } from '../services/jurisdictions';
 import { CryptoDbService } from '../services/cryptoDb';
 import { sound } from '../services/soundEngine';
 
@@ -39,7 +40,7 @@ interface SueChefContextType {
   totalDamages: number;
   estimatedParalegalSavings: number;
   recalculateMeritScore: () => number;
-  addEvidence: (evidence: Omit<EvidenceItem, 'id' | 'sha256Hash'>) => Promise<void>;
+  addEvidence: (evidence: Omit<EvidenceItem, 'id' | 'sha256Hash'> & { sha256Hash?: string }) => Promise<void>;
   updateParagraph: (id: string, newContent: string) => void;
   isCaseManagerOpen: boolean;
   setIsCaseManagerOpen: (open: boolean) => void;
@@ -189,17 +190,24 @@ export const SueChefProvider: React.FC<{ children: ReactNode }> = ({ children })
 
   const createNewCase = (title: string, state: string, category: string) => {
     const base = createDefaultCase();
+    const caseState = state || 'CA';
+    const cat = (category || 'security_deposit') as any;
+    const jurisdiction = getJurisdiction(caseState);
+    const initialElements = generateElementsForCategory(cat, jurisdiction, 'Defendant');
+
     const newCase: CaseFile = {
       ...base,
       id: `case_${Date.now()}`,
       title: title || 'New Dispute Matter',
       country: country,
-      state: state || 'CA',
+      state: caseState,
+      courtName: jurisdiction.courtName,
       claimEvaluation: {
         ...base.claimEvaluation,
-        category: category as any,
+        category: cat,
+        smallClaimsLimit: jurisdiction.smallClaimsLimitIndividual,
         damages: [],
-        elements: []
+        elements: initialElements
       },
       evidenceList: [],
       serviceRecords: [],
@@ -238,9 +246,9 @@ export const SueChefProvider: React.FC<{ children: ReactNode }> = ({ children })
     return Math.min(100, Math.max(0, score));
   };
 
-  const addEvidence = async (evidence: Omit<EvidenceItem, 'id' | 'sha256Hash'>) => {
+  const addEvidence = async (evidence: Omit<EvidenceItem, 'id' | 'sha256Hash'> & { sha256Hash?: string }) => {
     const id = `ev_${Date.now()}`;
-    const hash = await CryptoDbService.computeSha256(evidence.title + evidence.originalFileName + Date.now());
+    const hash = evidence.sha256Hash || await CryptoDbService.computeSha256(evidence.title + evidence.originalFileName + Date.now());
     const newExTag = `EXHIBIT ${String.fromCharCode(65 + activeCase.evidenceList.length)}`;
     
     const newItem: EvidenceItem = {

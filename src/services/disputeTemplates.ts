@@ -646,7 +646,7 @@ export interface CustomDisputeInput {
   description?: string;
 }
 
-function generateElementsForCategory(category: DisputeCategory, jurisdiction: any, dName: string) {
+export function generateElementsForCategory(category: DisputeCategory, jurisdiction: any, dName: string = 'Defendant') {
   switch (category) {
     case 'security_deposit':
       return [
@@ -687,6 +687,7 @@ function generateElementsForCategory(category: DisputeCategory, jurisdiction: an
           linkedEvidenceIds: []
         }
       ];
+
     case 'contractor_dispute':
     case 'breach_of_contract':
       return [
@@ -694,9 +695,9 @@ function generateElementsForCategory(category: DisputeCategory, jurisdiction: an
           id: `elem_${Date.now()}_1`,
           title: 'Valid Contract / Agreement Formed',
           legalStandard: 'Restatement (Second) of Contracts § 1',
-          description: `Valid mutual assent between Plaintiff and ${dName} with defined scope and consideration.`,
+          description: `Valid mutual assent between Plaintiff and ${dName} with defined scope, price, and consideration.`,
           isSatisfied: true,
-          userEvidenceNotes: 'Written contract / invoice / text confirmation.',
+          userEvidenceNotes: 'Written contract / signed invoice / written electronic confirmation.',
           linkedEvidenceIds: []
         },
         {
@@ -712,9 +713,9 @@ function generateElementsForCategory(category: DisputeCategory, jurisdiction: an
           id: `elem_${Date.now()}_3`,
           title: `Material Breach by Defendant ${dName}`,
           legalStandard: 'Restatement (Second) of Contracts § 241',
-          description: `Defendant failed to perform agreed services, deliver promised goods, or cure defects.`,
+          description: `Defendant failed to perform agreed services, deliver promised goods, or cure material defects.`,
           isSatisfied: true,
-          userEvidenceNotes: 'Photos of incomplete work, defective deliverables, and communications.',
+          userEvidenceNotes: 'Photos of incomplete work, defective deliverables, and communication records.',
           linkedEvidenceIds: []
         },
         {
@@ -727,6 +728,212 @@ function generateElementsForCategory(category: DisputeCategory, jurisdiction: an
           linkedEvidenceIds: []
         }
       ];
+
+    case 'consumer_fraud':
+      return [
+        {
+          id: `elem_${Date.now()}_1`,
+          title: 'Unlawful, Deceptive, or Unfair Trade Practice',
+          legalStandard: 'UDAP / State Deceptive Trade Practices Act',
+          description: `Defendant ${dName} made false representations or concealed material facts in commercial trade.`,
+          isSatisfied: true,
+          userEvidenceNotes: 'Advertisements, written representations, and discrepancy logs.',
+          linkedEvidenceIds: []
+        },
+        {
+          id: `elem_${Date.now()}_2`,
+          title: 'Material Consumer Reliance',
+          legalStandard: 'Restatement (Second) of Torts § 538',
+          description: 'Plaintiff reasonably relied upon Defendant’s material representation in purchasing.',
+          isSatisfied: true,
+          userEvidenceNotes: 'Purchase agreement and contemporaneous communications.',
+          linkedEvidenceIds: []
+        },
+        {
+          id: `elem_${Date.now()}_3`,
+          title: 'Actual Economic Injury / Diminished Value',
+          legalStandard: 'Benefit-of-the-Bargain Rule',
+          description: 'Plaintiff suffered quantifiable pecuniary loss or received goods of diminished worth.',
+          isSatisfied: true,
+          userEvidenceNotes: 'Comparative appraisal and certified repair / replacement quotes.',
+          linkedEvidenceIds: []
+        },
+        {
+          id: `elem_${Date.now()}_4`,
+          title: 'Statutory Penalties / Multipliers for Willful Conduct',
+          legalStandard: 'Treble / Statutory Damages Under State Consumer Protection Code',
+          description: 'Willful bad-faith misrepresentation authorizes statutory multipliers or penalties.',
+          isSatisfied: true,
+          userEvidenceNotes: 'Formal notice letter demanding cure ignored by merchant.',
+          linkedEvidenceIds: []
+        }
+      ];
+
+    case 'wage_theft':
+      return [
+        {
+          id: `elem_${Date.now()}_1`,
+          title: 'Employer-Employee Relationship & Hours Rendered',
+          legalStandard: 'FLSA § 206 / State Labor Code',
+          description: `Plaintiff rendered compensable labor and services for the benefit of Defendant ${dName}.`,
+          isSatisfied: true,
+          userEvidenceNotes: 'Timecards, GPS check-in logs, and schedule assignments.',
+          linkedEvidenceIds: []
+        },
+        {
+          id: `elem_${Date.now()}_2`,
+          title: 'Failure to Pay Minimum Wage, Overtime, or Final Wages',
+          legalStandard: 'Statutory Wage Payment Mandate',
+          description: 'Defendant withheld earned wages, refused overtime rates, or delayed final paycheck.',
+          isSatisfied: true,
+          userEvidenceNotes: 'Paystubs, bank deposit records, and non-payment discrepancy ledger.',
+          linkedEvidenceIds: []
+        },
+        {
+          id: `elem_${Date.now()}_3`,
+          title: 'Statutory Waiting Time Penalties & Liquidated Damages',
+          legalStandard: 'FLSA § 216(b) / State Waiting Time Penalty Code',
+          description: 'Willful non-payment triggers statutory daily wage penalties and liquidated damages.',
+          isSatisfied: true,
+          userEvidenceNotes: 'Formal demand for unpaid wages delivered to management.',
+          linkedEvidenceIds: []
+        }
+      ];
+
+    case 'property_damage':
+      return [
+        {
+          id: `elem_${Date.now()}_1`,
+          title: 'Plaintiff Lawful Ownership / Possessory Interest',
+          legalStandard: 'Property Ownership / Leasehold Right',
+          description: 'Plaintiff held lawful title, lease, or possessory interest in damaged property.',
+          isSatisfied: true,
+          userEvidenceNotes: 'Title certificate, lease, or proof of purchase.',
+          linkedEvidenceIds: []
+        },
+        {
+          id: `elem_${Date.now()}_2`,
+          title: `Defendant Wrongful Act, Negligence, or Trespass`,
+          legalStandard: 'Tortious Interference / Negligence',
+          description: `Defendant ${dName} committed an unauthorized, negligent, or unlawful act harming property.`,
+          isSatisfied: true,
+          userEvidenceNotes: 'Incident report, witness statements, and video/photo evidence.',
+          linkedEvidenceIds: []
+        },
+        {
+          id: `elem_${Date.now()}_3`,
+          title: 'Direct Physical Harm & Reasonable Cost of Repair',
+          legalStandard: 'Restatement (Second) of Torts § 928',
+          description: 'Property sustained demonstrable physical damage requiring restoration or replacement.',
+          isSatisfied: true,
+          userEvidenceNotes: 'Licensed contractor / mechanic estimates and paid repair receipts.',
+          linkedEvidenceIds: []
+        }
+      ];
+
+    case 'auto_accident':
+    case 'negligence':
+      return [
+        {
+          id: `elem_${Date.now()}_1`,
+          title: 'Legal Duty of Due Care Owed',
+          legalStandard: 'Common Law Duty / State Vehicle & Safety Code',
+          description: `Defendant ${dName} owed a legal duty to exercise reasonable care under the circumstances.`,
+          isSatisfied: true,
+          userEvidenceNotes: 'Statutory driving standard or premise safety standard.',
+          linkedEvidenceIds: []
+        },
+        {
+          id: `elem_${Date.now()}_2`,
+          title: 'Breach of Duty by Defendant',
+          legalStandard: 'Negligence Per Se / Reasonable Person Standard',
+          description: 'Defendant failed to act as a reasonably prudent party, committing a moving violation or hazard.',
+          isSatisfied: true,
+          userEvidenceNotes: 'Police collision report, traffic citation, or dashcam footage.',
+          linkedEvidenceIds: []
+        },
+        {
+          id: `elem_${Date.now()}_3`,
+          title: 'Direct & Proximate Causation',
+          legalStandard: 'Proximate Cause / But-For Causation',
+          description: 'Defendant’s negligent conduct was the unbroken direct cause of Plaintiff’s harm.',
+          isSatisfied: true,
+          userEvidenceNotes: 'Accident reconstruction details and eyewitness corroboration.',
+          linkedEvidenceIds: []
+        },
+        {
+          id: `elem_${Date.now()}_4`,
+          title: 'Ascertainable Economic Damages & Loss of Use',
+          legalStandard: 'Actual Compensatory Property & Out-of-Pocket Damages',
+          description: 'Plaintiff incurred collision repair expenses, rental vehicle fees, and towing charges.',
+          isSatisfied: true,
+          userEvidenceNotes: 'Itemized body shop invoices and rental car payment records.',
+          linkedEvidenceIds: []
+        }
+      ];
+
+    case 'freelance_unpaid':
+      return [
+        {
+          id: `elem_${Date.now()}_1`,
+          title: 'Freelance Independent Contract / SOW Execution',
+          legalStandard: 'Freelance Worker Protection Act / Common Law SOW',
+          description: `Plaintiff and Defendant ${dName} agreed to written statement of work with defined compensation.`,
+          isSatisfied: true,
+          userEvidenceNotes: 'Executed freelance agreement or email confirmation.',
+          linkedEvidenceIds: []
+        },
+        {
+          id: `elem_${Date.now()}_2`,
+          title: 'Complete Delivery & Client Acceptance of Deliverables',
+          legalStandard: 'UCC § 2-606 Substantial Performance',
+          description: 'Plaintiff delivered all contractual milestones, code, or creative assets.',
+          isSatisfied: true,
+          userEvidenceNotes: 'Delivery confirmation, repository merges, and client approval messages.',
+          linkedEvidenceIds: []
+        },
+        {
+          id: `elem_${Date.now()}_3`,
+          title: 'Non-Payment Beyond Statutory / Contractual 30 Days',
+          legalStandard: 'Statutory Double Damages Mandate',
+          description: 'Client failed to tender invoice payment within required statutory window.',
+          isSatisfied: true,
+          userEvidenceNotes: 'Unpaid invoice records and repeated overdue reminder notices.',
+          linkedEvidenceIds: []
+        }
+      ];
+
+    case 'hoa_neighbor':
+      return [
+        {
+          id: `elem_${Date.now()}_1`,
+          title: 'Property Ownership / CC&R Covenant Applicability',
+          legalStandard: 'Real Property Covenants, Conditions & Restrictions (CC&Rs)',
+          description: 'Parties are subject to established property rights and neighborhood covenants.',
+          isSatisfied: true,
+          userEvidenceNotes: 'Property deed, CC&R charter, or survey boundary map.',
+          linkedEvidenceIds: []
+        },
+        {
+          id: `elem_${Date.now()}_2`,
+          title: 'Unlawful Nuisance, Encroachment, or Ultra Vires HOA Fine',
+          legalStandard: 'Private Nuisance Standard / HOA Procedural Due Process',
+          description: `Defendant ${dName} caused substantial unreasonable interference or levied illegal fines.`,
+          isSatisfied: true,
+          userEvidenceNotes: 'Notice of violation, boundary survey, and photographic evidence.',
+          linkedEvidenceIds: []
+        },
+        {
+          id: `elem_${Date.now()}_3`,
+          title: 'Quantifiable Property Damage / Improper Assessment',
+          legalStandard: 'Actual Economic Damages / Restitution',
+          description: 'Direct repair costs, landscape restoration, or improperly collected fine funds.',
+          isSatisfied: true,
+          userEvidenceNotes: 'Bank debit records and licensed contractor repair bids.',
+          linkedEvidenceIds: []
+        }
+      ];
+
     default:
       return [
         {
