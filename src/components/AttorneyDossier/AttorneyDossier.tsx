@@ -20,9 +20,11 @@ import {
   Square
 } from 'lucide-react';
 import { sound } from '../../services/soundEngine';
+import { getCountryInfo } from '../../services/countries';
 
 export const AttorneyDossier: React.FC = () => {
-  const { activeCase, updateActiveCase, totalDamages, exportCaseBundle } = useSueChef();
+  const { activeCase, updateActiveCase, totalDamages, exportCaseBundle, country } = useSueChef();
+  const countryInfo = getCountryInfo(country);
   const [hourlyRate, setHourlyRate] = useState<number>(325); // Average litigation associate/paralegal blended rate
   const [activeTab, setActiveTab] = useState<'binder' | 'opposing_counsel' | 'hours_breakdown'>('binder');
 
@@ -176,7 +178,7 @@ export const AttorneyDossier: React.FC = () => {
           }`}
         >
           <Clock className="w-4 h-4" />
-          <span>Billable Hours Savings ({totalHoursSaved}h / ${totalMoneySaved.toLocaleString()})</span>
+          <span>Billable Hours Savings ({totalHoursSaved}h / {countryInfo.currencySymbol}{totalMoneySaved.toLocaleString()})</span>
         </button>
       </div>
 
@@ -189,17 +191,17 @@ export const AttorneyDossier: React.FC = () => {
               Direct Financial Value Created
             </div>
             <h2 className="font-serif font-bold text-xl text-[var(--text-main)]">
-              Estimated Legal Fee Savings: ${totalMoneySaved.toLocaleString()} ({totalHoursSaved} Hours Saved)
+              Estimated Legal Fee Savings: {countryInfo.currencySymbol}{totalMoneySaved.toLocaleString()} ({totalHoursSaved} Hours Saved)
             </h2>
             <p className="text-xs text-[var(--text-muted)] leading-relaxed">
-              Attorneys and paralegals bill between $150 and $650 per hour simply sorting through unorganized evidence, drafting basic complaints, and researching cause-of-action elements. Handing over this structured SueChef binder bypasses raw intake billing entirely.
+              Attorneys and paralegals bill between {countryInfo.currencySymbol}150 and {countryInfo.currencySymbol}650 per hour simply sorting through unorganized evidence, drafting basic complaints, and researching cause-of-action elements. Handing over this structured SueChef binder bypasses raw intake billing entirely.
             </p>
           </div>
 
           <div className="md:col-span-5 card-geom bg-black/40 border border-white/10 p-4 space-y-3">
             <div className="flex justify-between items-center text-xs">
               <span className="text-[var(--text-muted)]">Litigation Hourly Billing Rate:</span>
-              <span className="font-mono font-bold text-[var(--accent-gold)]">${hourlyRate}/hr</span>
+              <span className="font-mono font-bold text-[var(--accent-gold)]">{countryInfo.currencySymbol}{hourlyRate}/hr</span>
             </div>
             <input
               type="range"
@@ -211,9 +213,9 @@ export const AttorneyDossier: React.FC = () => {
               className="w-full accent-[var(--accent-gold)] cursor-pointer"
             />
             <div className="flex justify-between text-[10px] font-mono text-[var(--text-muted)]">
-              <span>$150/hr (Paralegal)</span>
-              <span>$350/hr (Senior Associate)</span>
-              <span>$650/hr (Partner)</span>
+              <span>{countryInfo.currencySymbol}150/hr (Paralegal)</span>
+              <span>{countryInfo.currencySymbol}350/hr (Senior Associate)</span>
+              <span>{countryInfo.currencySymbol}650/hr (Partner)</span>
             </div>
           </div>
         </div>
@@ -548,7 +550,7 @@ export const AttorneyDossier: React.FC = () => {
               <div className="space-y-3">
                 <div className="font-bold text-sm uppercase tracking-wider text-slate-950 border-b border-slate-300 pb-1 flex justify-between">
                   <span>SECTION 4: ITEMIZED TABLE OF DAMAGES</span>
-                  <span>TOTAL: ${totalDamages.toLocaleString()}</span>
+                  <span>TOTAL: {countryInfo.currencySymbol}{totalDamages.toLocaleString()}</span>
                 </div>
                 <table className="w-full border-collapse text-[11px]">
                   <thead>
@@ -565,12 +567,12 @@ export const AttorneyDossier: React.FC = () => {
                         <td className="p-2 font-semibold">{dmg.description}</td>
                         <td className="p-2 uppercase text-[10px] text-slate-600">{dmg.category.replace('_', ' ')}</td>
                         <td className="p-2 text-slate-600 font-mono text-[10px]">{dmg.statutoryBasis || 'General Law'}</td>
-                        <td className="p-2 text-right font-mono font-bold">${dmg.amount.toLocaleString()}</td>
+                        <td className="p-2 text-right font-mono font-bold">{countryInfo.currencySymbol}{dmg.amount.toLocaleString()}</td>
                       </tr>
                     ))}
                     <tr className="bg-slate-100 font-bold border-t-2 border-slate-800">
                       <td colSpan={3} className="p-2 text-right">TOTAL QUANTIFIED CLAIM:</td>
-                      <td className="p-2 text-right font-mono text-emerald-800">${totalDamages.toLocaleString()}</td>
+                      <td className="p-2 text-right font-mono text-emerald-800">{countryInfo.currencySymbol}{totalDamages.toLocaleString()}</td>
                     </tr>
                   </tbody>
                 </table>

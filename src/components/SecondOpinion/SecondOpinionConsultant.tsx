@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useSueChef } from '../../context/SueChefContext';
 import { SecondOpinionEngine } from '../../services/secondOpinionEngine';
 import { sound } from '../../services/soundEngine';
+import { getCountryInfo } from '../../services/countries';
 import { AluLogo } from '../Branding/AluLogo';
 import { PredictedDefense } from '../../types';
 import { 
@@ -33,6 +34,7 @@ import {
 
 export const SecondOpinionConsultant: React.FC = () => {
   const { activeCase, updateActiveCase, setActiveWorkstation, country } = useSueChef();
+  const countryInfo = getCountryInfo(country);
   const [activeTab, setActiveTab] = useState<'overview' | 'vulnerabilities' | 'defenses' | 'ev_calculator' | 'roadmap' | 'local_aid'>('overview');
   const [copiedMemo, setCopiedMemo] = useState(false);
 
@@ -136,9 +138,9 @@ CITATION: ${d.statutoryBasis}
 `).join('\n')}
 
 --- FINANCIAL & SETTLEMENT EXPECTED VALUE ASSESSMENT ---
-Claimed Damages: $${report.financialAssessment.claimedDamages.toLocaleString()}
-Recommended Settlement Floor: $${report.financialAssessment.recommendedSettlementFloor.toLocaleString()}
-Estimated Filing Fee: $${report.financialAssessment.courtFilingCostEstimate}
+Claimed Damages: ${countryInfo.currencySymbol}${report.financialAssessment.claimedDamages.toLocaleString()}
+Recommended Settlement Floor: ${countryInfo.currencySymbol}${report.financialAssessment.recommendedSettlementFloor.toLocaleString()}
+Estimated Filing Fee: ${countryInfo.currencySymbol}${report.financialAssessment.courtFilingCostEstimate}
 Recommendation: ${report.financialAssessment.proceedRecommendation}
 
 --- ACTION ROADMAP ---
@@ -322,28 +324,28 @@ Certified by SueChef Privacy-First Pro Se Legal Suite
               <div className="flex justify-between items-center py-1.5 border-b border-[var(--border-color)]/60">
                 <span className="text-[var(--text-muted)]">Claimed Damages:</span>
                 <span className="font-mono font-bold text-lg text-[var(--text-main)]">
-                  ${report.financialAssessment.claimedDamages.toLocaleString()}
+                  {countryInfo.currencySymbol}{report.financialAssessment.claimedDamages.toLocaleString()}
                 </span>
               </div>
 
               <div className="flex justify-between items-center py-1.5 border-b border-[var(--border-color)]/60">
                 <span className="text-[var(--text-muted)]">Realistic Recovery:</span>
                 <span className="font-mono font-bold text-lg text-emerald-400">
-                  ${report.financialAssessment.realisticRecoveryEstimate.toLocaleString()}
+                  {countryInfo.currencySymbol}{report.financialAssessment.realisticRecoveryEstimate.toLocaleString()}
                 </span>
               </div>
 
               <div className="flex justify-between items-center py-1.5 border-b border-[var(--border-color)]/60">
                 <span className="text-[var(--text-muted)]">Estimated Court Filing Fee:</span>
                 <span className="font-mono font-semibold text-[var(--text-main)]">
-                  ${report.financialAssessment.courtFilingCostEstimate}
+                  {countryInfo.currencySymbol}{report.financialAssessment.courtFilingCostEstimate}
                 </span>
               </div>
 
               <div className="flex justify-between items-center py-1.5">
                 <span className="text-[var(--text-muted)]">Target Settle Floor:</span>
                 <span className="font-mono font-semibold text-[var(--accent-gold)]">
-                  ${report.financialAssessment.recommendedSettlementFloor.toLocaleString()}
+                  {countryInfo.currencySymbol}{report.financialAssessment.recommendedSettlementFloor.toLocaleString()}
                 </span>
               </div>
             </div>
@@ -539,7 +541,7 @@ Certified by SueChef Privacy-First Pro Se Legal Suite
               <div className="space-y-2">
                 <div className="flex justify-between text-xs">
                   <span className="text-[var(--text-muted)]">Defendant Settlement Offer:</span>
-                  <span className="font-mono font-bold text-[var(--accent-gold)]">${currentSettlementOffer.toLocaleString()}</span>
+                  <span className="font-mono font-bold text-[var(--accent-gold)]">{countryInfo.currencySymbol}{currentSettlementOffer.toLocaleString()}</span>
                 </div>
                 <input
                   type="range"
@@ -555,14 +557,14 @@ Certified by SueChef Privacy-First Pro Se Legal Suite
               <div className="space-y-2">
                 <div className="flex justify-between text-xs">
                   <span className="text-[var(--text-muted)]">Estimated Court Filing Fee:</span>
-                  <span className="font-mono font-bold text-[var(--text-main)]">${report.financialAssessment.courtFilingCostEstimate}</span>
+                  <span className="font-mono font-bold text-[var(--text-main)]">{countryInfo.currencySymbol}{report.financialAssessment.courtFilingCostEstimate}</span>
                 </div>
               </div>
 
               <div className="space-y-2">
                 <div className="flex justify-between text-xs">
                   <span className="text-[var(--text-muted)]">Hearing Day Lost Wages:</span>
-                  <span className="font-mono font-bold text-[var(--text-main)]">${wageLossHearingDay}</span>
+                  <span className="font-mono font-bold text-[var(--text-main)]">{countryInfo.currencySymbol}{wageLossHearingDay}</span>
                 </div>
                 <input
                   type="range"
@@ -578,7 +580,7 @@ Certified by SueChef Privacy-First Pro Se Legal Suite
               <div className="space-y-2">
                 <div className="flex justify-between text-xs">
                   <span className="text-[var(--text-muted)]">Travel, Parking & Copies:</span>
-                  <span className="font-mono font-bold text-[var(--text-main)]">${travelParkingCosts}</span>
+                  <span className="font-mono font-bold text-[var(--text-main)]">{countryInfo.currencySymbol}{travelParkingCosts}</span>
                 </div>
                 <input
                   type="range"
@@ -596,24 +598,24 @@ Certified by SueChef Privacy-First Pro Se Legal Suite
             <div className="space-y-4 bg-[var(--bg-secondary)] p-5 custom-geometry border border-[var(--border-color)] flex flex-col justify-between">
               <div>
                 <h3 className="font-serif font-bold text-base text-[var(--text-main)] border-b border-[var(--border-color)] pb-2 flex items-center justify-between">
-                  <span>Trial Scenario ($EV)</span>
+                  <span>Trial Scenario ({countryInfo.currencySymbol}EV)</span>
                   <span className="text-xs font-mono text-emerald-400">{report.winProbabilityScore}% Win Odds</span>
                 </h3>
 
                 <div className="space-y-3 pt-3 text-xs">
                   <div className="flex justify-between">
                     <span className="text-[var(--text-muted)]">Claimed Recovery:</span>
-                    <span className="font-mono font-bold">${report.financialAssessment.claimedDamages.toLocaleString()}</span>
+                    <span className="font-mono font-bold">{countryInfo.currencySymbol}{report.financialAssessment.claimedDamages.toLocaleString()}</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-[var(--text-muted)]">Expected Gross Win:</span>
                     <span className="font-mono font-bold text-emerald-400">
-                      ${Math.round((report.winProbabilityScore / 100) * report.financialAssessment.claimedDamages).toLocaleString()}
+                      {countryInfo.currencySymbol}{Math.round((report.winProbabilityScore / 100) * report.financialAssessment.claimedDamages).toLocaleString()}
                     </span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-[var(--text-muted)]">Total Trial Costs:</span>
-                    <span className="font-mono font-bold text-rose-400">-${totalTrialCosts}</span>
+                    <span className="font-mono font-bold text-rose-400">-{countryInfo.currencySymbol}{totalTrialCosts}</span>
                   </div>
                 </div>
               </div>
@@ -621,7 +623,7 @@ Certified by SueChef Privacy-First Pro Se Legal Suite
               <div className="p-3 bg-[var(--bg-card)] border border-[var(--border-color)] custom-geometry text-center space-y-1">
                 <span className="text-[10px] font-mono text-[var(--text-muted)] uppercase">Net Expected Trial Value</span>
                 <div className="text-2xl font-extrabold font-mono text-emerald-400">
-                  ${expectedTrialValue.toLocaleString()}
+                  {countryInfo.currencySymbol}{expectedTrialValue.toLocaleString()}
                 </div>
               </div>
             </div>
@@ -637,11 +639,11 @@ Certified by SueChef Privacy-First Pro Se Legal Suite
                 <div className="space-y-3 pt-3 text-xs">
                   <div className="flex justify-between">
                     <span className="text-[var(--text-muted)]">Offered Cash Amount:</span>
-                    <span className="font-mono font-bold">${currentSettlementOffer.toLocaleString()}</span>
+                    <span className="font-mono font-bold">{countryInfo.currencySymbol}{currentSettlementOffer.toLocaleString()}</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-[var(--text-muted)]">Trial Costs Incurred:</span>
-                    <span className="font-mono font-bold text-emerald-400">$0.00</span>
+                    <span className="font-mono font-bold text-emerald-400">{countryInfo.currencySymbol}0.00</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-[var(--text-muted)]">Collection Timeframe:</span>
@@ -653,7 +655,7 @@ Certified by SueChef Privacy-First Pro Se Legal Suite
               <div className="p-3 bg-[var(--bg-card)] border border-[var(--border-color)] custom-geometry text-center space-y-1">
                 <span className="text-[10px] font-mono text-[var(--text-muted)] uppercase">Guaranteed Net In-Pocket</span>
                 <div className="text-2xl font-extrabold font-mono text-[var(--accent-gold)]">
-                  ${netSettlementValue.toLocaleString()}
+                  {countryInfo.currencySymbol}{netSettlementValue.toLocaleString()}
                 </div>
               </div>
             </div>

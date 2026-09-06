@@ -23,10 +23,12 @@ import {
 import { DisputeCategory, DamageItem, ClaimElement } from '../../types';
 import { STATE_JURISDICTIONS, getJurisdiction } from '../../services/jurisdictions';
 import { generateElementsForCategory } from '../../services/disputeTemplates';
+import { getCountryInfo } from '../../services/countries';
 import { sound } from '../../services/soundEngine';
 
 export const ClaimKitchen: React.FC = () => {
-  const { activeCase, updateActiveCase, recalculateMeritScore, totalDamages, setActiveWorkstation } = useSueChef();
+  const { activeCase, updateActiveCase, recalculateMeritScore, totalDamages, setActiveWorkstation, country } = useSueChef();
+  const countryInfo = getCountryInfo(country);
   const [newDamageDesc, setNewDamageDesc] = useState('');
   const [newDamageAmount, setNewDamageAmount] = useState('');
   const [newDamageCategory, setNewDamageCategory] = useState<DamageItem['category']>('direct_actual');
@@ -489,7 +491,7 @@ export const ClaimKitchen: React.FC = () => {
               <div className="flex justify-between py-1 border-b border-white/5">
                 <span className="text-[var(--text-muted)]">Small Claims Dollar Limit:</span>
                 <span className="font-mono font-bold text-[var(--text-main)]">
-                  ${currJurisdiction.smallClaimsLimitIndividual.toLocaleString()}
+                  {countryInfo.currencySymbol}{currJurisdiction.smallClaimsLimitIndividual.toLocaleString()}
                 </span>
               </div>
               <div className="flex justify-between py-1 border-b border-white/5">
@@ -517,11 +519,11 @@ export const ClaimKitchen: React.FC = () => {
             }`}>
               {isOverSmallClaims ? (
                 <div>
-                  <strong>⚠️ EXCEEDS SMALL CLAIMS:</strong> Total claimed damages (${totalDamages.toLocaleString()}) exceed the {currJurisdiction.stateName} small claims ceiling (${currJurisdiction.smallClaimsLimitIndividual.toLocaleString()}). Must file in Superior / District Court (Limited Civil).
+                  <strong>⚠️ EXCEEDS SMALL CLAIMS:</strong> Total claimed damages ({countryInfo.currencySymbol}{totalDamages.toLocaleString()}) exceed the {currJurisdiction.stateName} small claims ceiling ({countryInfo.currencySymbol}{currJurisdiction.smallClaimsLimitIndividual.toLocaleString()}). Must file in Superior / District Court (Limited Civil).
                 </div>
               ) : (
                 <div>
-                  <strong>✓ SMALL CLAIMS ELIGIBLE:</strong> Total damages (${totalDamages.toLocaleString()}) fit comfortably within the {currJurisdiction.stateName} small claims limit (${currJurisdiction.smallClaimsLimitIndividual.toLocaleString()}).
+                  <strong>✓ SMALL CLAIMS ELIGIBLE:</strong> Total damages ({countryInfo.currencySymbol}{totalDamages.toLocaleString()}) fit comfortably within the {currJurisdiction.stateName} small claims limit ({countryInfo.currencySymbol}{currJurisdiction.smallClaimsLimitIndividual.toLocaleString()}).
                 </div>
               )}
             </div>
@@ -535,7 +537,7 @@ export const ClaimKitchen: React.FC = () => {
                 Itemized Damages Calculator
               </h3>
               <span className="text-base font-mono font-bold text-emerald-400">
-                ${totalDamages.toLocaleString()}
+                {countryInfo.currencySymbol}{totalDamages.toLocaleString()}
               </span>
             </div>
 
@@ -554,7 +556,7 @@ export const ClaimKitchen: React.FC = () => {
                   </div>
                   <div className="flex items-center gap-2">
                     <span className="font-mono font-bold text-[var(--text-main)]">
-                      ${dmg.amount.toLocaleString()}
+                      {countryInfo.currencySymbol}{dmg.amount.toLocaleString()}
                     </span>
                     <button
                       onClick={() => handleDeleteDamageItem(dmg.id)}
@@ -579,7 +581,7 @@ export const ClaimKitchen: React.FC = () => {
               <div className="grid grid-cols-2 gap-2">
                 <input
                   type="number"
-                  placeholder="Amount ($)"
+                  placeholder={`Amount (${countryInfo.currencySymbol})`}
                   value={newDamageAmount}
                   onChange={e => setNewDamageAmount(e.target.value)}
                   className="input-geom bg-[var(--bg-secondary)] border border-[var(--border-color)] text-xs text-[var(--text-main)] px-3 py-2 font-mono"
@@ -622,7 +624,7 @@ export const ClaimKitchen: React.FC = () => {
             <div className="p-2.5 bg-[var(--bg-secondary)] border border-[var(--border-color)] custom-geometry space-y-1.5">
               <div className="flex justify-between items-center text-xs">
                 <span className="text-[var(--text-muted)] font-mono">Base Principal Sum for Calculation:</span>
-                <span className="font-mono font-bold text-[var(--text-main)]">${calcPrincipal.toLocaleString()}</span>
+                <span className="font-mono font-bold text-[var(--text-main)]">{countryInfo.currencySymbol}{calcPrincipal.toLocaleString()}</span>
               </div>
               <input
                 type="number"
@@ -641,7 +643,7 @@ export const ClaimKitchen: React.FC = () => {
                 <div className="flex justify-between items-center">
                   <span className="font-bold text-[var(--text-main)]">Bad-Faith Statutory Penalty</span>
                   <span className="font-mono text-emerald-400 font-bold">
-                    +${(calcPrincipal * calcMultiplier).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                    +{countryInfo.currencySymbol}{(calcPrincipal * calcMultiplier).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                   </span>
                 </div>
 
@@ -695,7 +697,7 @@ export const ClaimKitchen: React.FC = () => {
                   className="w-full py-2 px-3 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 font-semibold text-xs card-geom transition-all flex items-center justify-center gap-1.5"
                 >
                   <Plus className="w-3.5 h-3.5" />
-                  Apply ${ (calcPrincipal * calcMultiplier).toLocaleString() } ({calcMultiplier}x Penalty) to Ledger
+                  Apply {countryInfo.currencySymbol}{ (calcPrincipal * calcMultiplier).toLocaleString() } ({calcMultiplier}x Penalty) to Ledger
                 </button>
               </div>
 
@@ -704,14 +706,14 @@ export const ClaimKitchen: React.FC = () => {
                 <div className="flex justify-between items-center">
                   <span className="font-bold text-[var(--text-main)]">Daily Prejudgment Interest</span>
                   <span className="font-mono text-amber-400 font-bold">
-                    +${(Math.round(((calcPrincipal * ((currJurisdiction.statutoryInterestRatePercent || 10) / 100) * (calcDaysElapsed / 365.25))) * 100) / 100).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                    +{countryInfo.currencySymbol}{(Math.round(((calcPrincipal * ((currJurisdiction.statutoryInterestRatePercent || 10) / 100) * (calcDaysElapsed / 365.25))) * 100) / 100).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                   </span>
                 </div>
 
                 <div className="space-y-1">
                   <div className="flex justify-between items-center text-[11px] font-mono">
                     <span className="text-[var(--text-muted)]">Days Elapsed Since Breach:</span>
-                    <span className="text-[var(--accent-gold)] font-bold">{calcDaysElapsed} Days (${((calcPrincipal * ((currJurisdiction.statutoryInterestRatePercent || 10) / 100)) / 365.25).toFixed(2)}/day)</span>
+                    <span className="text-[var(--accent-gold)] font-bold">{calcDaysElapsed} Days ({countryInfo.currencySymbol}{((calcPrincipal * ((currJurisdiction.statutoryInterestRatePercent || 10) / 100)) / 365.25).toFixed(2)}/day)</span>
                   </div>
                   <input
                     type="range"
@@ -751,7 +753,7 @@ export const ClaimKitchen: React.FC = () => {
                   className="w-full py-2 px-3 bg-amber-500/10 hover:bg-amber-500/20 text-amber-400 border border-amber-500/30 font-semibold text-xs card-geom transition-all flex items-center justify-center gap-1.5"
                 >
                   <Plus className="w-3.5 h-3.5" />
-                  Add ${Math.round(((calcPrincipal * ((currJurisdiction.statutoryInterestRatePercent || 10) / 100) * (calcDaysElapsed / 365.25))) * 100) / 100} Interest to Ledger
+                  Add {countryInfo.currencySymbol}{Math.round(((calcPrincipal * ((currJurisdiction.statutoryInterestRatePercent || 10) / 100) * (calcDaysElapsed / 365.25))) * 100) / 100} Interest to Ledger
                 </button>
               </div>
 
@@ -760,7 +762,7 @@ export const ClaimKitchen: React.FC = () => {
                 <div className="flex justify-between items-center text-[11px]">
                   <span className="text-[var(--text-muted)]">Estimated Court Filing Fee:</span>
                   <span className="font-mono font-bold text-slate-200">
-                    ${currJurisdiction.filingFeeEstimate ? `${currJurisdiction.filingFeeEstimate.min} - $${currJurisdiction.filingFeeEstimate.max}` : '$30 - $75'}
+                    {currJurisdiction.filingFeeEstimate ? `${countryInfo.currencySymbol}${currJurisdiction.filingFeeEstimate.min} - ${countryInfo.currencySymbol}${currJurisdiction.filingFeeEstimate.max}` : `${countryInfo.currencySymbol}30 - ${countryInfo.currencySymbol}75`}
                   </span>
                 </div>
                 <div className="text-[10px] text-[var(--text-muted)]">

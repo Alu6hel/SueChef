@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useSueChef } from '../../context/SueChefContext';
 import { DisputeCategory } from '../../types';
 import { STATE_JURISDICTIONS, getJurisdiction } from '../../services/jurisdictions';
+import { getCountryInfo } from '../../services/countries';
 import { sound } from '../../services/soundEngine';
 import { 
   Zap, 
@@ -77,7 +78,8 @@ const DISPUTE_TYPES: DisputeTypeOption[] = [
 ];
 
 export const DisputeIntakeWizard: React.FC = () => {
-  const { createCustomCase, setActiveWorkstation, activeCase } = useSueChef();
+  const { createCustomCase, setActiveWorkstation, activeCase, country } = useSueChef();
+  const countryInfo = getCountryInfo(country);
   
   const [selectedType, setSelectedType] = useState<DisputeCategory>('security_deposit');
   const [claimantName, setClaimantName] = useState('You (Claimant)');
@@ -236,7 +238,7 @@ export const DisputeIntakeWizard: React.FC = () => {
           <div className="space-y-1.5">
             <label className="text-xs font-mono uppercase font-bold text-[var(--text-muted)] flex items-center gap-1.5">
               <DollarSign className="w-3.5 h-3.5 text-emerald-400" />
-              Principal Amount Owed ($)
+              Principal Amount Owed ({countryInfo.currencySymbol})
             </label>
             <input
               type="number"
@@ -301,28 +303,28 @@ export const DisputeIntakeWizard: React.FC = () => {
             <div className="p-2 bg-[var(--bg-card)] border border-[var(--border-color)] custom-geometry">
               <div className="text-[10px] font-mono text-[var(--text-muted)] uppercase">1. Principal Claim</div>
               <div className="font-mono font-bold text-sm text-[var(--text-main)] pt-0.5">
-                ${principalAmount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                {countryInfo.currencySymbol}{principalAmount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
               </div>
             </div>
 
             <div className="p-2 bg-[var(--bg-card)] border border-[var(--border-color)] custom-geometry">
               <div className="text-[10px] font-mono text-emerald-400 uppercase">2. Statutory Penalty</div>
               <div className="font-mono font-bold text-sm text-emerald-400 pt-0.5">
-                {statutoryPenalty > 0 ? `+$${statutoryPenalty.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} (${penaltyMultiplier}x)` : '$0.00'}
+                {statutoryPenalty > 0 ? `+${countryInfo.currencySymbol}${statutoryPenalty.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} (${penaltyMultiplier}x)` : `${countryInfo.currencySymbol}0.00`}
               </div>
             </div>
 
             <div className="p-2 bg-[var(--bg-card)] border border-[var(--border-color)] custom-geometry">
               <div className="text-[10px] font-mono text-amber-400 uppercase">3. Daily Interest ({daysElapsed}d)</div>
               <div className="font-mono font-bold text-sm text-amber-400 pt-0.5">
-                +${totalInterest.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} ({jurisdiction.statutoryInterestRatePercent || 10}%)
+                +{countryInfo.currencySymbol}{totalInterest.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} ({jurisdiction.statutoryInterestRatePercent || 10}%)
               </div>
             </div>
 
             <div className="p-2 bg-gradient-to-br from-amber-500/10 to-amber-500/5 border border-amber-500/30 custom-geometry">
               <div className="text-[10px] font-mono text-[var(--accent-gold)] uppercase font-bold">Total Demand Sum</div>
               <div className="font-mono font-black text-sm text-[var(--accent-gold)] pt-0.5">
-                ${totalCalculatedClaim.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                {countryInfo.currencySymbol}{totalCalculatedClaim.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
               </div>
             </div>
           </div>
@@ -332,8 +334,8 @@ export const DisputeIntakeWizard: React.FC = () => {
               <span className={`w-2 h-2 rounded-full ${isSmallClaimsEligible ? 'bg-emerald-400' : 'bg-rose-400'}`} />
               <span>
                 {isSmallClaimsEligible 
-                  ? `Eligible for ${jurisdiction.courtName} (Limit: $${jurisdiction.smallClaimsLimitIndividual.toLocaleString()})`
-                  : `Exceeds Small Claims Limit ($${jurisdiction.smallClaimsLimitIndividual.toLocaleString()}) - File in Limited Civil`}
+                  ? `Eligible for ${jurisdiction.courtName} (Limit: ${countryInfo.currencySymbol}${jurisdiction.smallClaimsLimitIndividual.toLocaleString()})`
+                  : `Exceeds Small Claims Limit (${countryInfo.currencySymbol}${jurisdiction.smallClaimsLimitIndividual.toLocaleString()}) - File in Limited Civil`}
               </span>
             </div>
             <span>Citation: {jurisdiction.securityDepositStatuteCitation}</span>
@@ -392,7 +394,7 @@ export const DisputeIntakeWizard: React.FC = () => {
 
             <div className="space-y-3 text-xs leading-relaxed text-[var(--text-muted)]">
               <p>
-                Your dispute file has been securely initialized with <strong className="text-[var(--text-main)]">${totalCalculatedClaim.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</strong> in enforceable damages, statutory bad-faith citations, and pre-formatted legal pleadings.
+                Your dispute file has been securely initialized with <strong className="text-[var(--text-main)]">{countryInfo.currencySymbol}{totalCalculatedClaim.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</strong> in enforceable damages, statutory bad-faith citations, and pre-formatted legal pleadings.
               </p>
 
               <div className="p-3 bg-[var(--bg-secondary)] border border-[var(--border-color)] custom-geometry space-y-2">

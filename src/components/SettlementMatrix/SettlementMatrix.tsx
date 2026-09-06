@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useSueChef } from '../../context/SueChefContext';
 import { SettlementCalculation, SettlementOfferLog } from '../../types';
 import { sound } from '../../services/soundEngine';
+import { getCountryInfo } from '../../services/countries';
 import { 
   Calculator, 
   TrendingUp, 
@@ -26,7 +27,8 @@ import {
 } from 'lucide-react';
 
 export const SettlementMatrix: React.FC = () => {
-  const { activeCase, updateActiveCase } = useSueChef();
+  const { activeCase, updateActiveCase, country } = useSueChef();
+  const countryInfo = getCountryInfo(country);
   const [copiedLetter, setCopiedLetter] = useState(false);
   const [showAddOfferModal, setShowAddOfferModal] = useState(false);
   
@@ -182,7 +184,7 @@ This document constitutes a formal compromise and settlement proposal pursuant t
 Plaintiff ${pl?.name || 'Plaintiff'} proposes to fully settle, release, and discharge all disputed civil claims against ${df?.name || 'Defendant'} upon satisfaction of the following terms and covenants:
 
 1. SETTLEMENT COMPROMISE SUM:
-   Defendant shall pay to Plaintiff the compromised total sum of $${settlement.targetFairSettlement.toLocaleString()}.00 in full satisfaction of all claims.
+   Defendant shall pay to Plaintiff the compromised total sum of ${countryInfo.currencySymbol}${settlement.targetFairSettlement.toLocaleString()}.00 in full satisfaction of all claims.
 
 2. PAYMENT SCHEDULE & MANNER OF DELIVERY:
    The settlement sum shall be delivered via ${methodStr} within ${days} calendar days of execution of this agreement.
@@ -193,7 +195,7 @@ Plaintiff ${pl?.name || 'Plaintiff'} proposes to fully settle, release, and disc
 4. CONFIDENTIALITY & NON-DISPARAGEMENT COVENANTS:${settlement.includeConfidentiality ? '\n   - Confidentiality: The parties agree that the terms and existence of this settlement agreement shall remain strictly confidential.' : ''}${settlement.includeNonDisparagement ? '\n   - Non-Disparagement: The parties agree not to make derogatory, defamatory, or disparaging statements regarding one another in any public or online forum.' : ''}
 
 5. EXPIRATION OF SETTLEMENT PROPOSAL:
-   This formal compromise proposal shall automatically expire at 5:00 PM on the 10th business day following delivery. Should this offer lapse without written acceptance, Plaintiff will proceed to judicial trial seeking the full actual and statutory damages of $${settlement.claimDamages.toLocaleString()}.00 plus allowable court filing costs and statutory prejudgment interest.
+   This formal compromise proposal shall automatically expire at 5:00 PM on the 10th business day following delivery. Should this offer lapse without written acceptance, Plaintiff will proceed to judicial trial seeking the full actual and statutory damages of ${countryInfo.currencySymbol}${settlement.claimDamages.toLocaleString()}.00 plus allowable court filing costs and statutory prejudgment interest.
 
 Respectfully submitted,
 
@@ -276,7 +278,7 @@ Tel: ${pl?.phone || 'N/A'} | Email: ${pl?.email || 'N/A'}
             <div className="space-y-1.5">
               <div className="flex justify-between text-xs">
                 <span className="text-[var(--text-main)] font-semibold">Total Claimed Damages &amp; Statutory Penalties</span>
-                <span className="font-mono font-bold text-primary">${settlement.claimDamages.toLocaleString()}</span>
+                <span className="font-mono font-bold text-primary">{countryInfo.currencySymbol}{settlement.claimDamages.toLocaleString()}</span>
               </div>
               <input
                 type="range"
@@ -309,7 +311,7 @@ Tel: ${pl?.phone || 'N/A'} | Email: ${pl?.email || 'N/A'}
             {/* Filing & Service Fees */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
               <div>
-                <label className="text-[10px] font-mono uppercase text-[var(--text-muted)]">Court Filing Fee ($)</label>
+                <label className="text-[10px] font-mono uppercase text-[var(--text-muted)]">Court Filing Fee ({countryInfo.currencySymbol})</label>
                 <input
                   type="number"
                   value={settlement.courtFilingFees}
@@ -319,7 +321,7 @@ Tel: ${pl?.phone || 'N/A'} | Email: ${pl?.email || 'N/A'}
               </div>
 
               <div>
-                <label className="text-[10px] font-mono uppercase text-[var(--text-muted)]">Process Server Fee ($)</label>
+                <label className="text-[10px] font-mono uppercase text-[var(--text-muted)]">Process Server Fee ({countryInfo.currencySymbol})</label>
                 <input
                   type="number"
                   value={settlement.processServiceFees}
@@ -329,7 +331,7 @@ Tel: ${pl?.phone || 'N/A'} | Email: ${pl?.email || 'N/A'}
               </div>
 
               <div>
-                <label className="text-[10px] font-mono uppercase text-[var(--text-muted)]">Expert / Inspection Fee ($)</label>
+                <label className="text-[10px] font-mono uppercase text-[var(--text-muted)]">Expert / Inspection Fee ({countryInfo.currencySymbol})</label>
                 <input
                   type="number"
                   value={settlement.expertWitnessFees}
@@ -339,7 +341,7 @@ Tel: ${pl?.phone || 'N/A'} | Email: ${pl?.email || 'N/A'}
               </div>
 
               <div>
-                <label className="text-[10px] font-mono uppercase text-[var(--text-muted)]">Time / Wage Opportunity Loss ($)</label>
+                <label className="text-[10px] font-mono uppercase text-[var(--text-muted)]">Time / Wage Opportunity Loss ({countryInfo.currencySymbol})</label>
                 <input
                   type="number"
                   value={settlement.estimatedTimeValueLoss}
@@ -361,13 +363,13 @@ Tel: ${pl?.phone || 'N/A'} | Email: ${pl?.email || 'N/A'}
 
             <div className="flex items-baseline gap-2">
               <div className="text-3xl font-bold font-mono text-[var(--text-main)]">
-                ${expectedValueTrial.toLocaleString()}
+                {countryInfo.currencySymbol}{expectedValueTrial.toLocaleString()}
               </div>
               <span className="text-xs text-[var(--text-muted)]">net expected return</span>
             </div>
 
             <p className="text-xs text-[var(--text-muted)] leading-relaxed">
-              Based on a {settlement.winProbabilityPercent}% trial success likelihood, taking your claim of ${settlement.claimDamages.toLocaleString()} to trial has a risk-discounted value of ${expectedValueTrial.toLocaleString()} after deducting ${totalLitigationCost.toLocaleString()} in estimated filing fees, service costs, and lost work time.
+              Based on a {settlement.winProbabilityPercent}% trial success likelihood, taking your claim of {countryInfo.currencySymbol}{settlement.claimDamages.toLocaleString()} to trial has a risk-discounted value of {countryInfo.currencySymbol}{expectedValueTrial.toLocaleString()} after deducting {countryInfo.currencySymbol}{totalLitigationCost.toLocaleString()} in estimated filing fees, service costs, and lost work time.
             </p>
           </div>
 
@@ -448,7 +450,7 @@ Tel: ${pl?.phone || 'N/A'} | Email: ${pl?.email || 'N/A'}
               <div className="flex justify-between items-center text-xs">
                 <span className="font-bold text-amber-400">Tier 1: Opening Demand Anchor</span>
                 <div className="flex items-center gap-1 font-mono font-bold text-[var(--text-main)]">
-                  <span>$</span>
+                  <span>{countryInfo.currencySymbol}</span>
                   <input
                     type="number"
                     value={settlement.openingDemandAnchor}
@@ -467,7 +469,7 @@ Tel: ${pl?.phone || 'N/A'} | Email: ${pl?.email || 'N/A'}
               <div className="flex justify-between items-center text-xs">
                 <span className="font-bold text-primary">Tier 2: Target Fair Compromise</span>
                 <div className="flex items-center gap-1 font-mono font-bold text-[var(--text-main)]">
-                  <span>$</span>
+                  <span>{countryInfo.currencySymbol}</span>
                   <input
                     type="number"
                     value={settlement.targetFairSettlement}
@@ -486,7 +488,7 @@ Tel: ${pl?.phone || 'N/A'} | Email: ${pl?.email || 'N/A'}
               <div className="flex justify-between items-center text-xs">
                 <span className="font-bold text-destructive">Tier 3: Walk-Away Floor</span>
                 <div className="flex items-center gap-1 font-mono font-bold text-[var(--text-main)]">
-                  <span>$</span>
+                  <span>{countryInfo.currencySymbol}</span>
                   <input
                     type="number"
                     value={settlement.walkAwayFloor}
@@ -496,7 +498,7 @@ Tel: ${pl?.phone || 'N/A'} | Email: ${pl?.email || 'N/A'}
                 </div>
               </div>
               <p className="text-[11px] text-[var(--text-muted)] leading-relaxed">
-                Absolute bottom line. If defendant offers less than ${settlement.walkAwayFloor.toLocaleString()}, proceeding to judgment is mathematically superior.
+                Absolute bottom line. If defendant offers less than {countryInfo.currencySymbol}{settlement.walkAwayFloor.toLocaleString()}, proceeding to judgment is mathematically superior.
               </p>
             </div>
           </div>
@@ -550,7 +552,7 @@ Tel: ${pl?.phone || 'N/A'} | Email: ${pl?.email || 'N/A'}
                             <span className="font-mono text-[11px] text-[var(--text-muted)]">{off.offerDate}</span>
                           </div>
                           <div className="text-base font-bold font-mono text-[var(--text-main)] mt-1">
-                            ${off.amount.toLocaleString()}
+                            {countryInfo.currencySymbol}{off.amount.toLocaleString()}
                           </div>
                         </div>
 
@@ -577,7 +579,7 @@ Tel: ${pl?.phone || 'N/A'} | Email: ${pl?.email || 'N/A'}
                           {isBelowFloor ? (
                             <>
                               <XCircle className="w-3.5 h-3.5 text-rose-400 shrink-0" />
-                              <span>BELOW FLOOR (${settlement.walkAwayFloor.toLocaleString()}) — REJECT &amp; COUNTER</span>
+                              <span>BELOW FLOOR ({countryInfo.currencySymbol}{settlement.walkAwayFloor.toLocaleString()}) — REJECT &amp; COUNTER</span>
                             </>
                           ) : isAboveTarget ? (
                             <>
@@ -665,7 +667,7 @@ Tel: ${pl?.phone || 'N/A'} | Email: ${pl?.email || 'N/A'}
               </div>
 
               <div>
-                <label className="text-xs font-mono text-[var(--text-muted)]">Settlement Dollar Amount ($)</label>
+                <label className="text-xs font-mono text-[var(--text-muted)]">Settlement Dollar Amount ({countryInfo.currencySymbol})</label>
                 <input
                   type="number"
                   min="0"

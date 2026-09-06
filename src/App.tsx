@@ -134,7 +134,7 @@ const WorkstationRouter: React.FC = () => {
 
             <div className="hidden sm:flex items-center gap-1">
               <span className="text-[var(--text-muted)]">Legal Savings:</span>
-              <span className="font-bold text-[var(--accent-gold)]">${estimatedParalegalSavings.toLocaleString()}</span>
+              <span className="font-bold text-[var(--accent-gold)]">{countryInfo.currencySymbol}{estimatedParalegalSavings.toLocaleString()}</span>
             </div>
           </div>
         </div>
