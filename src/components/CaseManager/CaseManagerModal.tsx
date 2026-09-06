@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { useSueChef } from '../../context/SueChefContext';
 import { DISPUTE_BLUEPRINTS } from '../../services/disputeTemplates';
+import { STATE_JURISDICTIONS } from '../../services/jurisdictions';
+import { getCountryInfo } from '../../services/countries';
 import { sound } from '../../services/soundEngine';
 import { 
   Briefcase, 
@@ -10,9 +12,9 @@ import {
   X, 
   Scale, 
   MapPin, 
-  DollarSign,
-  ArrowRight,
-  ShieldAlert
+  DollarSign, 
+  ArrowRight, 
+  ShieldAlert 
 } from 'lucide-react';
 
 export const CaseManagerModal: React.FC = () => {
@@ -21,12 +23,14 @@ export const CaseManagerModal: React.FC = () => {
     setIsCaseManagerOpen, 
     activeCase, 
     loadBlueprint, 
-    createNewCase 
+    createNewCase,
+    country
   } = useSueChef();
+  const countryInfo = getCountryInfo(country);
 
   const [activeTab, setActiveTab] = useState<'blueprints' | 'new'>('blueprints');
   const [newTitle, setNewTitle] = useState('');
-  const [newState, setNewState] = useState('CA');
+  const [newState, setNewState] = useState(activeCase.state || 'CA');
   const [newCategory, setNewCategory] = useState('security_deposit');
 
   if (!isCaseManagerOpen) return null;
@@ -127,7 +131,7 @@ export const CaseManagerModal: React.FC = () => {
 
                     <div className="pt-2 border-t border-border/50 flex items-center justify-between">
                       <span className="text-[11px] font-mono text-muted-foreground">
-                        Estimated Claim: ${bp.estimatedTotal.toLocaleString()}
+                        Estimated Claim: {countryInfo.currencySymbol}{bp.estimatedTotal.toLocaleString()}
                       </span>
 
                       <button
@@ -165,20 +169,17 @@ export const CaseManagerModal: React.FC = () => {
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="text-xs font-mono uppercase text-muted-foreground">Jurisdiction State</label>
+                  <label className="text-xs font-mono uppercase text-muted-foreground">Jurisdiction State / Region</label>
                   <select
                     value={newState}
                     onChange={(e) => setNewState(e.target.value)}
                     className="w-full bg-input/50 border border-border p-2.5 text-xs focus:outline-none focus:border-primary mt-1"
                   >
-                    <option value="CA">California (CA)</option>
-                    <option value="NY">New York (NY)</option>
-                    <option value="TX">Texas (TX)</option>
-                    <option value="FL">Florida (FL)</option>
-                    <option value="IL">Illinois (IL)</option>
-                    <option value="WA">Washington (WA)</option>
-                    <option value="NV">Nevada (NV)</option>
-                    <option value="MA">Massachusetts (MA)</option>
+                    {Object.entries(STATE_JURISDICTIONS).map(([code, info]) => (
+                      <option key={code} value={code}>
+                        {info.stateName} ({code})
+                      </option>
+                    ))}
                   </select>
                 </div>
 

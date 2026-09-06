@@ -238,7 +238,7 @@ export const LegalServicesHub: React.FC = () => {
               >
                 {Object.keys(STATE_JURISDICTIONS).map(st => (
                   <option key={st} value={st}>
-                    {STATE_JURISDICTIONS[st].stateName} ({st}) - Limit ${STATE_JURISDICTIONS[st].smallClaimsLimitIndividual.toLocaleString()}
+                    {STATE_JURISDICTIONS[st].stateName} ({st}) - Limit {currCountryInfo.currencySymbol}{STATE_JURISDICTIONS[st].smallClaimsLimitIndividual.toLocaleString()}
                   </option>
                 ))}
               </select>
@@ -412,7 +412,7 @@ export const LegalServicesHub: React.FC = () => {
               <div className="space-y-1.5">
                 <div className="flex justify-between text-xs">
                   <span className="font-mono text-[var(--text-muted)] uppercase font-bold">Total Gross Monthly Income:</span>
-                  <span className="font-mono font-bold text-[var(--accent-gold)]">${monthlyIncome.toLocaleString()} / mo</span>
+                  <span className="font-mono font-bold text-[var(--accent-gold)]">{currCountryInfo.currencySymbol}{monthlyIncome.toLocaleString()} / mo</span>
                 </div>
                 <input
                   type="range"
@@ -424,7 +424,7 @@ export const LegalServicesHub: React.FC = () => {
                   className="w-full accent-[var(--accent-gold)] cursor-pointer"
                 />
                 <div className="text-[10px] font-mono text-[var(--text-muted)]">
-                  Statutory 125% Poverty Ceiling for {householdSize} {householdSize === 1 ? 'person' : 'people'}: ~${monthlyPovertyThreshold.toLocaleString()} / mo
+                  Statutory 125% Poverty Ceiling for {householdSize} {householdSize === 1 ? 'person' : 'people'}: ~{currCountryInfo.currencySymbol}{monthlyPovertyThreshold.toLocaleString()} / mo
                 </div>
               </div>
 
@@ -504,8 +504,8 @@ export const LegalServicesHub: React.FC = () => {
                   </div>
                   <p className="text-xs leading-relaxed font-sans text-slate-200">
                     {isLikelyFeeWaiverEligible
-                      ? `Based on your ${hasQualifyingBenefits ? 'public benefit enrollment' : `monthly income under 125% FPL ($${monthlyIncome}/mo)`}, court clerks in ${selectedState} are mandated to grant complete waiver of initial filing fees and jury fees.`
-                      : `Your stated income ($${monthlyIncome}/mo) exceeds standard categorical guidelines, but you may still petition the judge under economic hardship by showing monthly living expenses.`}
+                      ? `Based on your ${hasQualifyingBenefits ? 'public benefit enrollment' : `monthly income under 125% FPL (${currCountryInfo.currencySymbol}${monthlyIncome}/mo)`}, court clerks in ${selectedState} are mandated to grant complete waiver of initial filing fees and jury fees.`
+                      : `Your stated income (${currCountryInfo.currencySymbol}${monthlyIncome}/mo) exceeds standard categorical guidelines, but you may still petition the judge under economic hardship by showing monthly living expenses.`}
                   </p>
                 </div>
 
@@ -548,10 +548,10 @@ export const LegalServicesHub: React.FC = () => {
             <div className="p-5 bg-[var(--bg-secondary)] border border-[var(--border-color)] custom-geometry space-y-2">
               <span className="text-[10px] font-mono text-[var(--text-muted)] uppercase font-bold">Jurisdictional Limit</span>
               <div className="text-2xl font-extrabold font-mono text-[var(--accent-gold)]">
-                ${currentJur.smallClaimsLimitIndividual.toLocaleString()}
+                {currCountryInfo.currencySymbol}{currentJur.smallClaimsLimitIndividual.toLocaleString()}
               </div>
               <p className="text-xs text-[var(--text-muted)]">
-                Maximum claim amount for individuals. Corporate limit: ${currentJur.smallClaimsLimitCorporate?.toLocaleString() || currentJur.smallClaimsLimitIndividual.toLocaleString()}.
+                Maximum claim amount for individuals. Corporate limit: {currCountryInfo.currencySymbol}{currentJur.smallClaimsLimitCorporate?.toLocaleString() || currentJur.smallClaimsLimitIndividual.toLocaleString()}.
               </p>
             </div>
 

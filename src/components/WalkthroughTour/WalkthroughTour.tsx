@@ -17,7 +17,13 @@ import {
   Building,
   Lightbulb,
   Home,
-  Navigation
+  Navigation,
+  FolderGit2,
+  Hourglass,
+  Send,
+  Volume2,
+  Briefcase,
+  Lock
 } from 'lucide-react';
 
 interface TourStep {
@@ -37,22 +43,22 @@ const TOUR_STEPS: TourStep[] = [
   {
     id: 'home',
     stepNumber: 1,
-    totalSteps: 7,
-    title: 'Executive Dashboard & Overview',
+    totalSteps: 14,
+    title: 'Executive Dashboard & Dispute Intake',
     subtitle: 'Your Central Legal Command Center',
     description: 'Track your dispute metrics, estimated damages, merit strength percentage, and calculated attorney fee savings all in one clean place.',
     targetWorkstation: 'home',
     tabLabel: '🏠 Home',
     icon: <Home className="w-5 h-5 text-amber-400" />,
-    actionTip: 'Review your case snapshot and launch any litigation workstation with 1 click.'
+    actionTip: 'Answer 4 intake questions to calculate statutory damages and generate your dispute file.'
   },
   {
     id: 'claim-kitchen',
     stepNumber: 2,
-    totalSteps: 7,
+    totalSteps: 14,
     title: '1. Build Case & Legal Elements',
-    subtitle: 'Damage Calculator & Small Claims Limits',
-    description: 'Select your dispute category, itemize your financial losses, and check your state small claims court dollar caps ($2,500 to $25,000) and statutory late penalties.',
+    subtitle: 'Damage Calculator & Statutory Multipliers',
+    description: 'Itemize direct, consequential, and bad-faith statutory penalty damages (1x/2x/3x) and verify small claims court eligibility.',
     targetWorkstation: 'claim-kitchen',
     tabLabel: '1. Build Case',
     icon: <Scale className="w-5 h-5 text-amber-400" />,
@@ -61,22 +67,22 @@ const TOUR_STEPS: TourStep[] = [
   {
     id: 'evidence-locker',
     stepNumber: 3,
-    totalSteps: 7,
+    totalSteps: 14,
     title: '2. Evidence Locker & Cryptographic Vault',
     subtitle: 'Tamper-Proof SHA-256 Digest Verification',
     description: 'Secure leases, bank wires, inspection photos, and reconstructed SMS threads with Federal Rule of Evidence 902 digital digests and privacy redactions.',
     targetWorkstation: 'evidence-locker',
     tabLabel: '2. Evidence & Proof',
     icon: <ShieldCheck className="w-5 h-5 text-amber-400" />,
-    actionTip: 'Add receipts or contracts to generate court-certified Exhibit stickers.'
+    actionTip: 'Drop files to compute live SHA-256 hash digests and generate court-ready Exhibit stickers.'
   },
   {
     id: 'pleading-builder',
     stepNumber: 4,
-    totalSteps: 7,
+    totalSteps: 14,
     title: '3. Official 28-Line Court Pleadings',
     subtitle: 'California Rule 2.105 & Formal Demand Letters',
-    description: 'Generate numbered 28-line civil complaints, 14-day pre-litigation demand letters with statutory interest, and sworn verification affidavits.',
+    description: 'Generate numbered 28-line civil complaints, 10-day pre-litigation demand letters with statutory interest, and sworn verification affidavits.',
     targetWorkstation: 'pleading-builder',
     tabLabel: '3. Court Papers',
     icon: <FileText className="w-5 h-5 text-amber-400" />,
@@ -85,38 +91,122 @@ const TOUR_STEPS: TourStep[] = [
   {
     id: 'settlement-matrix',
     stepNumber: 5,
-    totalSteps: 7,
+    totalSteps: 14,
     title: '4. Demand & Settlement Matrix',
     subtitle: 'Risk Math & Rule 408 Negotiation',
-    description: 'Model your trial expected return (EV) after filing fees and time loss. Generate 3-tier settlement brackets (Anchor, Compromise, Walk-Away Floor).',
+    description: 'Model your trial expected return (EV) after filing fees and time loss. Generate 3-tier settlement brackets and log incoming offers.',
     targetWorkstation: 'settlement-matrix',
     tabLabel: '4. Demand & Settle',
     icon: <Calculator className="w-5 h-5 text-amber-400" />,
-    actionTip: 'Copy confidential settlement compromise proposals protected under Rule 408.'
+    actionTip: 'Log settlement offers to evaluate whether to settle or proceed to trial.'
   },
   {
     id: 'second-opinion',
     stepNumber: 6,
-    totalSteps: 7,
+    totalSteps: 14,
     title: '5. AI Legal Second Opinion',
     subtitle: 'Objective Merit Grade & Defense Rebuttals',
     description: 'Get an objective case audit (Grade A-F, Win Probability %), predicted defense arguments from opposing parties, and statutory counter-citations.',
     targetWorkstation: 'second-opinion',
     tabLabel: '5. Second Opinion',
     icon: <Lightbulb className="w-5 h-5 text-amber-400" />,
-    actionTip: 'Read your strategic consultant verdict and predicted opponent traps.'
+    actionTip: 'Tick off vulnerability items to boost your calculated trial win probability score.'
   },
   {
     id: 'legal-services',
     stepNumber: 7,
-    totalSteps: 7,
+    totalSteps: 14,
     title: '6. Verified Legal Aid & Court Portals',
     subtitle: 'Connect to Free Real-Life Legal Help',
-    description: 'Direct phone numbers and intake portals for 131+ pro bono legal aid societies, court fee waivers, and free county small claims advisors.',
+    description: 'Direct phone numbers and intake portals for 131+ pro bono legal aid societies, court fee waiver screeners, and small claims advisors.',
     targetWorkstation: 'legal-services',
     tabLabel: '6. Legal Aid & Courts',
     icon: <Building className="w-5 h-5 text-amber-400" />,
-    actionTip: 'Search by category or state to find free clinics and official court portals.'
+    actionTip: 'Check your eligibility for In Forma Pauperis (100% court fee waiver).'
+  },
+  {
+    id: 'discovery-studio',
+    stepNumber: 8,
+    totalSteps: 14,
+    title: '7. Formal Discovery Studio',
+    subtitle: 'Interrogatories, RFPs, Admissions & Subpoenas',
+    description: 'Draft court-captioned discovery requests with automatic 30-day response warning traps and third-party subpoena commands.',
+    targetWorkstation: 'discovery-studio',
+    tabLabel: '7. Discovery Studio',
+    icon: <FolderGit2 className="w-5 h-5 text-amber-400" />,
+    actionTip: 'Auto-populate standard ROGs, RFPs, and RFAs tailored to your dispute category.'
+  },
+  {
+    id: 'trial-prep',
+    stepNumber: 9,
+    totalSteps: 14,
+    title: '8. Courtroom Trial & Hearing Prep',
+    subtitle: 'Objection Simulator & Witness Outlines',
+    description: 'Practice 8 realistic courtroom objection drills with immediate FRE feedback, organize witness outlines, and use the auto-scrolling teleprompter.',
+    targetWorkstation: 'trial-prep',
+    tabLabel: '8. Trial & Hearing',
+    icon: <Gavel className="w-5 h-5 text-amber-400" />,
+    actionTip: 'Set your reading WPM speed to rehearse your opening statement smoothly.'
+  },
+  {
+    id: 'sol-watcher',
+    stepNumber: 10,
+    totalSteps: 14,
+    title: '9. Statute of Limitations Docket',
+    subtitle: 'Tolling Calculator & Calendar Deadlines',
+    description: 'Track statutory filing deadlines, apply +90-day tolling events (military/COVID/minor), and export court dates to .iCal calendar.',
+    targetWorkstation: 'sol-watcher',
+    tabLabel: '9. Deadlines & SOL',
+    icon: <Hourglass className="w-5 h-5 text-amber-400" />,
+    actionTip: 'Add custom court deadlines to prevent forfeiture of legal claims.'
+  },
+  {
+    id: 'service-tracker',
+    stepNumber: 11,
+    totalSteps: 14,
+    title: '10. Process & Service Tracker',
+    subtitle: 'Proof of Service Affidavits & Log',
+    description: 'Log service attempts with GPS coordinates, verify personal or substitute service rules, and print court-ready Proof of Service returns (POS-010).',
+    targetWorkstation: 'service-tracker',
+    tabLabel: '10. Service Tracker',
+    icon: <Send className="w-5 h-5 text-amber-400" />,
+    actionTip: 'Generate signed returns of service to prove personal jurisdiction to the judge.'
+  },
+  {
+    id: 'legalese-decoder',
+    stepNumber: 12,
+    totalSteps: 14,
+    title: '11. Legalese Decoder & Clause Analyzer',
+    subtitle: 'Web Speech Pronunciation & Contract Traps',
+    description: 'Search 50+ legal terms and Latin maxims with audio pronunciation, and paste fine print clauses to detect unconscionable arbitration traps.',
+    targetWorkstation: 'legalese-decoder',
+    tabLabel: '11. Decoder & Audio',
+    icon: <Volume2 className="w-5 h-5 text-amber-400" />,
+    actionTip: 'Click the speaker button to hear authentic pronunciations of legal terms.'
+  },
+  {
+    id: 'attorney-dossier',
+    stepNumber: 13,
+    totalSteps: 14,
+    title: '12. Attorney Dossier & Binder',
+    subtitle: 'Opposing Counsel Profiler & Billable Savings',
+    description: 'Profile opposing attorneys, calculate billable hours saved ($150-$650/hr), and print a 5-section executive litigation binder.',
+    targetWorkstation: 'attorney-dossier',
+    tabLabel: '12. Attorney Binder',
+    icon: <Briefcase className="w-5 h-5 text-amber-400" />,
+    actionTip: 'Adjust your hourly billing slider to see your exact quantified legal savings.'
+  },
+  {
+    id: 'security-vault',
+    stepNumber: 14,
+    totalSteps: 14,
+    title: '13. Security Vault & Panic Shredder',
+    subtitle: 'Cryptographic Self-Audit & Zero Remote Logs',
+    description: 'Audit cryptographic integrity, export encrypted `.suechef` case backups, and use the type-to-confirm Panic Shredder for irreversible local purges.',
+    targetWorkstation: 'security-vault',
+    tabLabel: '13. Security Vault',
+    icon: <Lock className="w-5 h-5 text-amber-400" />,
+    actionTip: '100% client-side privacy: zero remote telemetry or external tracking.'
   }
 ];
 
