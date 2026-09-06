@@ -159,9 +159,25 @@ export const SolWatcher: React.FC = () => {
                     {item.title}
                   </h3>
                 </div>
-                <span className={`text-[10px] font-mono font-bold px-2 py-1 card-geom border ${badge.bg}`}>
-                  {badge.label}
-                </span>
+                <div className="flex items-center gap-2">
+                  <span className={`text-[10px] font-mono font-bold px-2 py-1 card-geom border ${badge.bg}`}>
+                    {badge.label}
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      sound.playClick();
+                      updateActiveCase(prev => ({
+                        ...prev,
+                        solDocket: prev.solDocket.filter(d => d.id !== item.id)
+                      }));
+                    }}
+                    className="text-slate-500 hover:text-rose-400 p-1"
+                    title="Remove Deadline"
+                  >
+                    <Trash2 className="w-3.5 h-3.5" />
+                  </button>
+                </div>
               </div>
 
               {/* Dates Grid */}
@@ -237,6 +253,100 @@ export const SolWatcher: React.FC = () => {
             </div>
           );
         })}
+      </div>
+
+      {/* Add Custom SOL Deadline Form */}
+      <div className="card-geom bg-[var(--bg-card)] border border-[var(--border-color)] p-5 space-y-4">
+        <h3 className="font-serif font-bold text-base text-[var(--text-main)] flex items-center gap-2">
+          <Plus className="w-4 h-4 text-[var(--accent-gold)]" />
+          Track New Statutory Deadline or Government Claim Notice
+        </h3>
+
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            if (!newTitle.trim() || !newTriggerDate) return;
+            sound.playGavelStrike();
+
+            const years = parseFloat(newLimitYears) || 3;
+            const trigDate = new Date(newTriggerDate);
+            const expDate = new Date(trigDate.getTime() + years * 365.25 * 24 * 60 * 60 * 1000)
+              .toISOString().split('T')[0];
+            const daysRem = calculateDaysRemaining(expDate);
+
+            const newItem: SolDocketItem = {
+              id: `sol_${Date.now()}`,
+              title: newTitle.trim(),
+              category: activeCase.claimEvaluation.category,
+              triggerDate: newTriggerDate,
+              statutoryLimitYears: years,
+              expirationDate: expDate,
+              tollingDays: 0,
+              tollingNotes: ['Standard statutory computation.'],
+              daysRemaining: daysRem,
+              urgencyLevel: daysRem < 0 ? 'expired' : daysRem < 30 ? 'critical' : daysRem < 90 ? 'warning' : 'safe',
+              isTolled: false
+            };
+
+            updateActiveCase(prev => ({
+              ...prev,
+              solDocket: [...prev.solDocket, newItem]
+            }));
+
+            setNewTitle('');
+            setNewTriggerDate('');
+          }}
+          className="grid grid-cols-1 sm:grid-cols-4 gap-3 text-xs"
+        >
+          <div className="sm:col-span-2 space-y-1">
+            <label className="text-[10px] font-mono uppercase text-[var(--text-muted)] font-bold">Deadline Title / Cause</label>
+            <input
+              type="text"
+              required
+              placeholder="e.g. Breach of Written Contract or Government Tort Claim"
+              value={newTitle}
+              onChange={e => setNewTitle(e.target.value)}
+              className="input-geom w-full bg-[var(--bg-secondary)] border border-[var(--border-color)] p-2 text-xs text-[var(--text-main)]"
+            />
+          </div>
+
+          <div className="space-y-1">
+            <label className="text-[10px] font-mono uppercase text-[var(--text-muted)] font-bold">Incident / Trigger Date</label>
+            <input
+              type="date"
+              required
+              value={newTriggerDate}
+              onChange={e => setNewTriggerDate(e.target.value)}
+              className="input-geom w-full bg-[var(--bg-secondary)] border border-[var(--border-color)] p-2 text-xs text-[var(--text-main)] font-mono"
+            />
+          </div>
+
+          <div className="space-y-1">
+            <label className="text-[10px] font-mono uppercase text-[var(--text-muted)] font-bold">Statute Period (Years)</label>
+            <select
+              value={newLimitYears}
+              onChange={e => setNewLimitYears(e.target.value)}
+              className="input-geom w-full bg-[var(--bg-secondary)] border border-[var(--border-color)] p-2 text-xs text-[var(--text-main)] font-mono"
+            >
+              <option value="0.5">6 Months (Gov Tort Claim)</option>
+              <option value="1">1 Year (Defamation / Slander)</option>
+              <option value="2">2 Years (Personal Injury / Oral K)</option>
+              <option value="3">3 Years (Property Damage / Fraud)</option>
+              <option value="4">4 Years (Written Contract)</option>
+              <option value="6">6 Years (NY Contract)</option>
+            </select>
+          </div>
+
+          <div className="sm:col-span-4 flex justify-end pt-1">
+            <button
+              type="submit"
+              className="btn-geom px-4 py-2 bg-[var(--accent-gold)] text-slate-950 font-bold text-xs flex items-center gap-1.5 hover:opacity-90 transition-all shadow-sm"
+            >
+              <Plus className="w-3.5 h-3.5" />
+              <span>Add Deadline to Docket</span>
+            </button>
+          </div>
+        </form>
       </div>
 
       {/* Educational Guide on Civil Limitation Traps */}
