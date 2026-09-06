@@ -203,6 +203,9 @@ export interface ServiceAttempt {
   timestamp: string;
   address: string;
   serverName: string;
+  serverLicenseNumber?: string;
+  recipientName?: string;
+  recipientTitle?: string;
   success: boolean;
   notes: string;
   gpsCoords?: string;
@@ -221,6 +224,10 @@ export interface ServiceRecord {
   dateServed?: string;
   affidavitSigned: boolean;
   serverSignatureDataUrl?: string;
+  affidavitDeclarantName?: string;
+  serverLicenseNumber?: string;
+  countyOfRegistration?: string;
+  formType?: 'CA_POS_010' | 'FRCP_AO_440' | 'UNIVERSAL_CIVIL';
 }
 
 export interface LegalTerm {
@@ -273,6 +280,18 @@ export interface WitnessOutline {
 }
 
 // Settlement Types
+export interface SettlementOfferLog {
+  id: string;
+  offerDate: string;
+  offeredBy: 'opposing_party' | 'plaintiff';
+  amount: number;
+  paymentWindowDays: number;
+  includesConfidentiality: boolean;
+  includesNonDisparagement: boolean;
+  notes: string;
+  status: 'received' | 'countered' | 'rejected' | 'accepted';
+}
+
 export interface SettlementCalculation {
   claimDamages: number;
   winProbabilityPercent: number;
@@ -283,6 +302,11 @@ export interface SettlementCalculation {
   openingDemandAnchor: number;
   targetFairSettlement: number;
   walkAwayFloor: number;
+  paymentWindowDays?: number;
+  paymentMethod?: 'certified_check' | 'wire_transfer' | 'installments';
+  includeConfidentiality?: boolean;
+  includeNonDisparagement?: boolean;
+  offerHistory?: SettlementOfferLog[];
 }
 
 // Chat Thread Types

@@ -18,30 +18,32 @@ import {
   Plus,
   Trash2,
   Maximize2,
-  FileText
+  FileText,
+  Tag,
+  Wand2
 } from 'lucide-react';
 
 const SAMPLE_SCENARIOS: ObjectionScenario[] = [
   {
     id: 'obj_1',
-    situation: 'During Plaintiff’s direct testimony, Plaintiff attempts to testify about what the landlord’s maintenance worker said.',
-    witnessStatement: '"The handyman told me that the roof has been leaking for three years and the landlord refused to buy new shingles."',
-    correctObjection: 'Hearsay (FRE 802) / Party Opponent Admission (FRE 801(d)(2)(D))',
+    situation: 'During Plaintiff’s direct testimony, Plaintiff attempts to testify about what the landlord’s property manager said during a telephone call.',
+    witnessStatement: '"The property manager told me directly that the HVAC unit had been broken since last winter and the owner refused to approve repair funds."',
+    correctObjection: 'Opposing Party Statement / Admission (FRE 801(d)(2)(D)) — Overruled (Admissible)',
     ruleCitation: 'FRE 801(d)(2)(D) / FRE 802',
-    explanation: 'Although out-of-court statements are generally inadmissible hearsay under FRE 802, statement by an employee/agent within the scope of employment is an opposing party admission under FRE 801(d)(2)(D) and is NOT hearsay!',
+    explanation: 'Although out-of-court statements are generally hearsay under FRE 802, statements made by an opposing party or their authorized agent/employee concerning a matter within the scope of employment are OPPOSING PARTY ADMISSIONS under FRE 801(d)(2)(D) and are NOT hearsay!',
     distractorOptions: [
-      'Leading the Witness (FRE 611)',
+      'Leading the Witness (FRE 611(c))',
       'Best Evidence Rule (FRE 1002)',
       'Speculation & Lack of Foundation (FRE 602)'
     ]
   },
   {
     id: 'obj_2',
-    situation: 'Defense counsel is conducting direct examination of their own witness (Property Manager).',
-    witnessStatement: 'Defense Counsel asks: "And when you arrived at the apartment on August 1st, isn’t it true that the tenant had completely trashed the bathroom?"',
-    correctObjection: 'Leading Question on Direct Examination (FRE 611(c))',
+    situation: 'Defense counsel is conducting direct examination of their own witness (Property Supervisor).',
+    witnessStatement: 'Defense Counsel asks: "And when you inspected the premises on July 1st, isn’t it true that the tenant had completely trashed the bathroom and left excessive trash everywhere?"',
+    correctObjection: 'Leading Question on Direct Examination (FRE 611(c)) — Sustained',
     ruleCitation: 'FRE 611(c)',
-    explanation: 'Leading questions (questions that suggest the desired answer) are strictly prohibited on DIRECT examination under FRE 611(c). Counsel must ask open-ended questions (e.g. "What did you observe?").',
+    explanation: 'Leading questions (questions that suggest the desired answer or put words in the witness’s mouth) are strictly prohibited on DIRECT examination under FRE 611(c). Counsel must ask non-leading open questions (e.g. "What did you observe?").',
     distractorOptions: [
       'Hearsay (FRE 802)',
       'Improper Character Evidence (FRE 404)',
@@ -50,11 +52,11 @@ const SAMPLE_SCENARIOS: ObjectionScenario[] = [
   },
   {
     id: 'obj_3',
-    situation: 'Defendant testifies about why Plaintiff left the company or vacated the apartment.',
-    witnessStatement: '"I know for a fact the tenant moved out because they ran out of money in their stock investments."',
-    correctObjection: 'Speculation & Lack of Personal Knowledge (FRE 602 / FRE 701)',
-    ruleCitation: 'FRE 602',
-    explanation: 'A witness may not testify to a matter unless evidence is introduced sufficient to support a finding that the witness has personal first-hand knowledge of the matter under FRE 602.',
+    situation: 'Defendant testifies about why Plaintiff left the company or vacated the rental premises.',
+    witnessStatement: '"I know for a fact the tenant moved out because they ran out of money and lost all their savings in crypto investments."',
+    correctObjection: 'Speculation & Lack of Personal Knowledge (FRE 602 / FRE 701) — Sustained',
+    ruleCitation: 'FRE 602 & FRE 701',
+    explanation: 'Under FRE 602, a witness may not testify to a matter unless evidence is introduced sufficient to support a finding that the witness has personal first-hand knowledge of the matter. Guessing at another person\'s private financial situation is improper speculation.',
     distractorOptions: [
       'Best Evidence Rule (FRE 1002)',
       'Authentication (FRE 901)',
@@ -63,15 +65,67 @@ const SAMPLE_SCENARIOS: ObjectionScenario[] = [
   },
   {
     id: 'obj_4',
-    situation: 'Plaintiff presents a photocopy of a bank statement showing the $3,200 wire transfer without producing the original digital bank download.',
-    witnessStatement: 'Defendant objects: "Objection, Plaintiff must bring original certified wet-ink bank books!"',
-    correctObjection: 'Admissibility of Duplicates (FRE 1003)',
+    situation: 'Plaintiff presents a printed PDF of an official bank wire confirmation showing the $3,200 payment without bringing the original wet-ink passbook.',
+    witnessStatement: 'Defendant objects: "Objection, Plaintiff must bring the original physical bank teller log under the Best Evidence Rule!"',
+    correctObjection: 'Admissibility of Duplicates (FRE 1003) & Business Records (FRE 803(6)) — Overruled',
     ruleCitation: 'FRE 1003 & FRE 803(6)',
-    explanation: 'A duplicate is admissible to the same extent as the original unless a genuine question is raised about the original’s authenticity under FRE 1003. Certified bank records are admissible duplicates under the Business Records Exception (FRE 803(6)).',
+    explanation: 'Under FRE 1003, a duplicate (including digital printouts, PDFs, and electronic copies) is admissible to the same extent as the original unless a genuine question is raised about the authenticity. Regular bank statements qualify as business records.',
     distractorOptions: [
       'Parol Evidence Rule',
       'Hearsay Exception: Excited Utterance (FRE 803(2))',
       'Judicial Notice (FRE 201)'
+    ]
+  },
+  {
+    id: 'obj_5',
+    situation: 'In a breach of contract claim, Defendant attempts to bring up that Plaintiff was sued in small claims court by an unrelated car dealer 5 years ago.',
+    witnessStatement: 'Defense Counsel asks: "Isn’t it true you were sued for an unpaid credit card balance back in 2021?"',
+    correctObjection: 'Improper Character Evidence & Unfair Prejudice (FRE 404(b) & FRE 403) — Sustained',
+    ruleCitation: 'FRE 404(b) / FRE 403',
+    explanation: 'Evidence of any other crime, wrong, or act is not admissible to prove a person’s character in order to show that on a particular occasion the person acted in accordance with the character. Prior unrelated debts have zero relevance to this contract.',
+    distractorOptions: [
+      'Hearsay (FRE 802)',
+      'Best Evidence Rule (FRE 1002)',
+      'Lack of Foundation (FRE 901)'
+    ]
+  },
+  {
+    id: 'obj_6',
+    situation: 'Plaintiff introduces a printed screenshot of an SMS text message conversation without having the recipient or sender confirm it was sent from their phone.',
+    witnessStatement: 'Defendant objects: "Objection, there is no proof this text message was actually sent by my client!"',
+    correctObjection: 'Lack of Authentication & Foundation (FRE 901(a)) — Sustained until Authenticated',
+    ruleCitation: 'FRE 901(a) / FRE 902(13)',
+    explanation: 'Under FRE 901, the proponent must produce evidence sufficient to support a finding that the item is what the proponent claims it is. The witness must testify: "I sent this from phone number X to Defendant’s phone number Y on Date Z and received this exact reply."',
+    distractorOptions: [
+      'Leading Question (FRE 611)',
+      'Parol Evidence Rule',
+      'Double Hearsay (FRE 805)'
+    ]
+  },
+  {
+    id: 'obj_7',
+    situation: 'Defense Counsel asks Plaintiff a complex four-part question on cross-examination.',
+    witnessStatement: '"Didn’t you sign the lease on June 1st, notice the water leak on June 3rd, fail to email the office until July 10th, and refuse the repair technician on July 12th?"',
+    correctObjection: 'Compound Question (FRE 611(a)) — Sustained',
+    ruleCitation: 'FRE 611(a)',
+    explanation: 'A compound question contains multiple separate factual inquiries joined together, making it impossible for the witness to give a single truthful yes or no answer. Counsel must split each question into separate individual inquiries.',
+    distractorOptions: [
+      'Hearsay (FRE 802)',
+      'Best Evidence Rule (FRE 1002)',
+      'Relevance (FRE 401)'
+    ]
+  },
+  {
+    id: 'obj_8',
+    situation: 'Plaintiff asks Defendant’s witness a simple yes/no question, but the witness launches into a 3-minute promotional speech about their company philosophy.',
+    witnessStatement: 'Witness: "Well, our company was founded in 1982 by my grandfather and we have won awards for community service and we always strive to be good neighbors..."',
+    correctObjection: 'Non-Responsive Witness / Motion to Strike (FRE 611(a)) — Sustained',
+    ruleCitation: 'FRE 611(a)',
+    explanation: 'When a witness refuses to answer the question asked and instead volunteers irrelevant self-serving commentary, the examining party may object that the answer is non-responsive and move to strike the testimony from the court record.',
+    distractorOptions: [
+      'Hearsay (FRE 802)',
+      'Leading the Witness (FRE 611(c))',
+      'Lack of Foundation (FRE 901)'
     ]
   }
 ];
@@ -84,6 +138,12 @@ const FRE_RULES = [
     proSeTip: 'If opposing counsel objects to relevance, explain to the Judge in one sentence exactly which cause of action or damage element this fact proves.'
   },
   {
+    rule: 'FRE 403',
+    title: 'Excluding Relevant Evidence for Prejudice or Confusion',
+    summary: 'The court may exclude relevant evidence if its probative value is substantially outweighed by a danger of unfair prejudice, confusing the issues, or wasting time.',
+    proSeTip: 'Object under FRE 403 if the other side tries to introduce irrelevant personal insults or past unrelated disputes.'
+  },
+  {
     rule: 'FRE 602',
     title: 'Need for Personal Knowledge',
     summary: 'A witness may testify to a matter only if evidence supports that the witness has personal firsthand knowledge.',
@@ -91,32 +151,38 @@ const FRE_RULES = [
   },
   {
     rule: 'FRE 611(c)',
-    title: 'Leading Questions',
-    summary: 'Leading questions should not be used on direct examination except as necessary to develop the witness\'s testimony.',
-    proSeTip: 'Stand up and say: "Objection, Your Honor, leading the witness on direct." Force them to ask open questions.'
+    title: 'Leading Questions on Direct vs Cross',
+    summary: 'Leading questions should not be used on direct examination except as necessary. Leading questions ARE permitted and encouraged on cross-examination.',
+    proSeTip: 'On Direct: ask open questions. On Cross: ask only leading yes/no trap questions.'
   },
   {
     rule: 'FRE 801(d)(2)',
     title: 'Opposing Party Statement / Admission',
     summary: 'An out-of-court statement offered against an opposing party made by the party or their employee/agent is NOT hearsay.',
-    proSeTip: 'Defendant’s text messages, emails, and voicemail admissions can ALWAYS be read into evidence under this rule!'
+    proSeTip: 'Defendant’s text messages, emails, voicemails, and employee statements can ALWAYS be read into evidence under this rule!'
   },
   {
     rule: 'FRE 803(6)',
-    title: 'Records of a Regularly Conducted Activity',
+    title: 'Records of a Regularly Conducted Activity (Business Records)',
     summary: 'Business records made at or near the time by someone with knowledge kept in the regular course of business are admissible exceptions to hearsay.',
     proSeTip: 'Use this rule to admit repair invoices, bank statements, lease ledgers, and certified contractor inspection estimates.'
   },
   {
+    rule: 'FRE 901 / 902',
+    title: 'Authenticating Electronic Evidence',
+    summary: 'Proponent must establish that evidence is genuine through testimony or self-authenticating digital signatures and hashes.',
+    proSeTip: 'Testify how you took the screenshot or downloaded the file to satisfy FRE 901.'
+  },
+  {
     rule: 'FRE 1002 / 1003',
-    title: 'Best Evidence Rule & Duplicates',
+    title: 'Best Evidence Rule & Admissibility of Duplicates',
     summary: 'An original writing, recording, or photograph is required, but duplicates are fully admissible unless genuine authenticity is questioned.',
     proSeTip: 'Printed PDFs and digital screenshots are fully admissible duplicates under FRE 1003.'
   }
 ];
 
 export const TrialPrep: React.FC = () => {
-  const { activeCase, updateActiveCase } = useSueChef();
+  const { activeCase, updateActiveCase, totalDamages } = useSueChef();
   const [activeTab, setActiveTab] = useState<'simulator' | 'fre' | 'witnesses' | 'speech'>('simulator');
 
   // Simulator Quiz State
@@ -133,6 +199,7 @@ export const TrialPrep: React.FC = () => {
   const [prompterMode, setPrompterMode] = useState<'opening' | 'closing'>('opening');
   const [isPlaying, setIsPlaying] = useState(false);
   const [wpm, setWpm] = useState(activeCase.trialPrep?.teleprompterWpm || 130);
+  const [prompterFontSize, setPrompterFontSize] = useState<'normal' | 'large' | 'huge'>('large');
   const prompterRef = useRef<HTMLDivElement>(null);
 
   // New Witness Form
@@ -140,6 +207,7 @@ export const TrialPrep: React.FC = () => {
   const [newWitRole, setNewWitRole] = useState<'plaintiff' | 'defendant' | 'expert' | 'eye_witness'>('plaintiff');
   const [newDirectQ, setNewDirectQ] = useState('');
   const [newCrossTrap, setNewCrossTrap] = useState('');
+  const [selectedExhibitTag, setSelectedExhibitTag] = useState('');
 
   const currentScenario = SAMPLE_SCENARIOS[currentScenarioIdx];
   const allChoices = React.useMemo(() => {
@@ -199,7 +267,7 @@ export const TrialPrep: React.FC = () => {
       witnessRole: newWitRole,
       directQuestions: newDirectQ.trim() ? [newDirectQ.trim()] : [],
       crossExamTraps: newCrossTrap.trim() ? [newCrossTrap.trim()] : [],
-      exhibitCitations: []
+      exhibitCitations: selectedExhibitTag ? [selectedExhibitTag] : []
     };
 
     updateActiveCase(prev => ({
@@ -213,6 +281,7 @@ export const TrialPrep: React.FC = () => {
     setNewWitName('');
     setNewDirectQ('');
     setNewCrossTrap('');
+    setSelectedExhibitTag('');
   };
 
   const handleDeleteWitness = (id: string) => {
@@ -236,6 +305,50 @@ export const TrialPrep: React.FC = () => {
     }));
   };
 
+  const handleAutoGenerateSpeech = () => {
+    sound.playSuccessChime();
+    const pl = activeCase.parties.find(p => p.role === 'plaintiff');
+    const df = activeCase.parties.find(p => p.role === 'defendant');
+
+    let generated = '';
+    if (prompterMode === 'opening') {
+      generated = `May it please the Court, Your Honor.
+
+My name is ${pl?.name || 'Plaintiff'}, and I appear before this Court representing myself in pro se in this matter against Defendant ${df?.name || 'Defendant'}.
+
+This case is straightforward and turns upon well-established civil principles. The evidence you will hear today demonstrates that Defendant committed a clear breach of their legal duties and contractual covenants.
+
+Specifically, the evidence will prove three essential facts:
+1. First, that a valid binding legal obligation and mutual agreement existed between the parties.
+2. Second, that Plaintiff fully performed all covenants, provided timely notice, and acted in good faith at all times.
+3. Third, that Defendant willfully failed to satisfy their statutory obligations, resulting in direct financial damages totaling $${totalDamages.toLocaleString()}.
+
+Through authenticated contemporaneous written exhibits, time-stamped text communications, and bank payment records, we will establish each prima facie element of our claim.
+
+At the conclusion of this hearing, we will respectfully request that this Court enter judgment in Plaintiff's favor for the full sum of $${totalDamages.toLocaleString()}, together with allowable statutory costs.
+
+Thank you, Your Honor.`;
+    } else {
+      generated = `Thank you, Your Honor.
+
+Having now heard all of the evidence and testimony presented in this hearing, the record is crystal clear.
+
+Defendant ${df?.name || 'Defendant'} has failed to present any credible rebuttal to the authenticated documentary exhibits in the record.
+
+Under applicable statutory law, when a party suffers direct economic loss as a proximate result of another party's failure to perform, the law mandates full restitution and compensatory relief.
+
+The evidence conclusively establishes:
+- Exhibit records prove Plaintiff suffered actual damages of $${totalDamages.toLocaleString()}.
+- Defendant's affirmative defenses are unsupported by documentary proof and contradicted by their own written admissions.
+
+Plaintiff has carried the burden of proof by a clear preponderance of the evidence. Therefore, Plaintiff respectfully moves this Court to enter judgment against Defendant ${df?.name || 'Defendant'} in the full amount of $${totalDamages.toLocaleString()}, plus court filing fees and statutory interest.
+
+Respectfully submitted, Plaintiff rests.`;
+    }
+
+    handleSpeechTextChange(generated);
+  };
+
   const filteredFRE = FRE_RULES.filter(r => 
     r.rule.toLowerCase().includes(freQuery.toLowerCase()) ||
     r.title.toLowerCase().includes(freQuery.toLowerCase()) ||
@@ -248,26 +361,28 @@ export const TrialPrep: React.FC = () => {
     : activeCase.trialPrep?.closingArgumentDraft || '';
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 max-w-7xl mx-auto p-4 md:p-6 animate-in fade-in duration-300">
       {/* Header Banner */}
-      <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 p-5 bg-card/60 border border-border/80 custom-geometry">
+      <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 p-5 bg-[var(--bg-card)] border-2 border-[var(--border-color)] custom-geometry shadow-xl">
         <div className="flex items-center gap-3">
           <div className="w-12 h-12 bg-primary/10 border border-primary/30 flex items-center justify-center text-primary custom-geometry">
             <Gavel className="w-6 h-6" />
           </div>
           <div>
-            <h1 className="text-xl font-bold tracking-wide font-serif">Trial & Hearing Prep Workstation</h1>
-            <p className="text-xs text-muted-foreground">
+            <h1 className="text-xl md:text-2xl font-bold tracking-wide font-serif text-[var(--text-main)]">
+              Trial &amp; Hearing Prep Workstation
+            </h1>
+            <p className="text-xs text-[var(--text-muted)] font-mono">
               Master evidentiary objections under fire, structure witness examination traps, and rehearse arguments on the prompter.
             </p>
           </div>
         </div>
 
-        <div className="flex items-center gap-3 bg-primary/10 px-4 py-2 border border-primary/30 custom-geometry">
-          <Award className="w-4 h-4 text-amber-400" />
+        <div className="flex items-center gap-3 bg-[var(--bg-secondary)] px-4 py-2 border border-[var(--border-color)] custom-geometry shadow-inner">
+          <Award className="w-4 h-4 text-[var(--accent-gold)]" />
           <div className="text-xs">
-            <span className="text-muted-foreground">Evidentiary Accuracy: </span>
-            <span className="font-bold text-foreground font-mono">
+            <span className="text-[var(--text-muted)]">Evidentiary Score: </span>
+            <span className="font-bold text-[var(--accent-gold)] font-mono">
               {totalAttempted > 0 ? Math.round((quizScore / totalAttempted) * 100) : 100}% ({quizScore}/{totalAttempted})
             </span>
           </div>
@@ -275,25 +390,25 @@ export const TrialPrep: React.FC = () => {
       </div>
 
       {/* Tabs */}
-      <div className="flex flex-wrap gap-2 border-b border-border/70 pb-3">
+      <div className="flex flex-wrap gap-2 border-b border-[var(--border-color)] pb-3">
         <button
           onClick={() => { sound.playClick(); setActiveTab('simulator'); }}
-          className={`flex items-center gap-2 px-4 py-2.5 text-xs font-semibold custom-geometry transition-all ${
+          className={`flex items-center gap-2 px-4 py-2 text-xs md:text-sm font-semibold custom-geometry border transition-all ${
             activeTab === 'simulator'
-              ? 'bg-primary text-primary-foreground shadow-sm'
-              : 'bg-card/40 text-muted-foreground hover:text-foreground border border-border/60'
+              ? 'bg-[var(--accent-gold)] text-slate-950 border-[var(--accent-gold)] font-bold shadow-md'
+              : 'bg-[var(--bg-card)] text-[var(--text-muted)] border-[var(--border-color)] hover:text-[var(--text-main)]'
           }`}
         >
-          <Sparkles className="w-4 h-4 text-amber-300" />
-          <span>Objection Simulator / Quiz</span>
+          <Sparkles className="w-4 h-4" />
+          <span>Objection Simulator Drill</span>
         </button>
 
         <button
           onClick={() => { sound.playClick(); setActiveTab('fre'); }}
-          className={`flex items-center gap-2 px-4 py-2.5 text-xs font-semibold custom-geometry transition-all ${
+          className={`flex items-center gap-2 px-4 py-2 text-xs md:text-sm font-semibold custom-geometry border transition-all ${
             activeTab === 'fre'
-              ? 'bg-primary text-primary-foreground shadow-sm'
-              : 'bg-card/40 text-muted-foreground hover:text-foreground border border-border/60'
+              ? 'bg-[var(--accent-gold)] text-slate-950 border-[var(--accent-gold)] font-bold shadow-md'
+              : 'bg-[var(--bg-card)] text-[var(--text-muted)] border-[var(--border-color)] hover:text-[var(--text-main)]'
           }`}
         >
           <BookOpen className="w-4 h-4" />
@@ -302,77 +417,77 @@ export const TrialPrep: React.FC = () => {
 
         <button
           onClick={() => { sound.playClick(); setActiveTab('witnesses'); }}
-          className={`flex items-center gap-2 px-4 py-2.5 text-xs font-semibold custom-geometry transition-all ${
+          className={`flex items-center gap-2 px-4 py-2 text-xs md:text-sm font-semibold custom-geometry border transition-all ${
             activeTab === 'witnesses'
-              ? 'bg-primary text-primary-foreground shadow-sm'
-              : 'bg-card/40 text-muted-foreground hover:text-foreground border border-border/60'
+              ? 'bg-[var(--accent-gold)] text-slate-950 border-[var(--accent-gold)] font-bold shadow-md'
+              : 'bg-[var(--bg-card)] text-[var(--text-muted)] border-[var(--border-color)] hover:text-[var(--text-main)]'
           }`}
         >
           <Users className="w-4 h-4" />
           <span>Witness Examination Outlines</span>
-          <span className="px-1.5 py-0.5 rounded-full text-[10px] bg-black/30 text-white font-mono">
+          <span className="px-1.5 py-0.5 rounded-full text-[10px] bg-black/40 text-white font-mono">
             {activeCase.trialPrep?.witnessOutlines?.length || 0}
           </span>
         </button>
 
         <button
           onClick={() => { sound.playClick(); setActiveTab('speech'); }}
-          className={`flex items-center gap-2 px-4 py-2.5 text-xs font-semibold custom-geometry transition-all ${
+          className={`flex items-center gap-2 px-4 py-2 text-xs md:text-sm font-semibold custom-geometry border transition-all ${
             activeTab === 'speech'
-              ? 'bg-primary text-primary-foreground shadow-sm'
-              : 'bg-card/40 text-muted-foreground hover:text-foreground border border-border/60'
+              ? 'bg-[var(--accent-gold)] text-slate-950 border-[var(--accent-gold)] font-bold shadow-md'
+              : 'bg-[var(--bg-card)] text-[var(--text-muted)] border-[var(--border-color)] hover:text-[var(--text-main)]'
           }`}
         >
           <Play className="w-4 h-4" />
-          <span>Live Argument Teleprompter</span>
+          <span>Courtroom Argument Teleprompter</span>
         </button>
       </div>
 
       {/* Tab 1: Objection Simulator */}
       {activeTab === 'simulator' && (
         <div className="space-y-4">
-          <div className="p-4 bg-primary/5 border border-primary/20 text-xs text-muted-foreground custom-geometry flex items-center justify-between">
-            <span>Scenario {currentScenarioIdx + 1} of {SAMPLE_SCENARIOS.length}</span>
-            <span className="font-mono text-primary font-bold">Rule Drills</span>
+          <div className="p-4 bg-[var(--badge-bg)] border border-[var(--badge-border)] text-xs text-[var(--text-main)] custom-geometry flex items-center justify-between">
+            <span>Drill Scenario {currentScenarioIdx + 1} of {SAMPLE_SCENARIOS.length}</span>
+            <span className="font-mono text-[var(--accent-gold)] font-bold">Federal &amp; State Evidentiary Rules</span>
           </div>
 
-          <div className="p-6 bg-card border border-border custom-geometry space-y-4 shadow-sm">
-            <div className="space-y-2">
-              <div className="text-xs uppercase tracking-wider font-mono text-primary font-bold">
-                Courtroom Situation
+          <div className="p-6 bg-[var(--bg-card)] border-2 border-[var(--border-color)] custom-geometry space-y-4 shadow-sm">
+            <div className="space-y-1.5">
+              <div className="text-xs uppercase tracking-wider font-mono text-[var(--accent-gold)] font-bold">
+                Courtroom Evidentiary Situation
               </div>
-              <div className="text-sm font-semibold text-foreground">
+              <div className="text-sm font-semibold text-[var(--text-main)] leading-relaxed">
                 {currentScenario.situation}
               </div>
             </div>
 
-            <div className="p-4 bg-muted/60 border-l-4 border-primary custom-geometry">
-              <span className="text-[10px] font-mono uppercase text-muted-foreground block mb-1">Witness Testifies:</span>
-              <p className="text-sm font-serif italic text-foreground leading-relaxed">
+            <div className="p-4 bg-[var(--bg-secondary)] border-l-4 border-[var(--accent-gold)] custom-geometry">
+              <span className="text-[10px] font-mono uppercase text-[var(--text-muted)] block mb-1">Witness Testifies / Counsel Inquires:</span>
+              <p className="text-sm font-serif italic text-[var(--text-main)] leading-relaxed">
                 {currentScenario.witnessStatement}
               </p>
             </div>
 
             <div className="space-y-2 pt-2">
-              <div className="text-xs font-bold text-muted-foreground uppercase tracking-wider">
-                What is your immediate evidentiary objection?
+              <div className="text-xs font-bold text-[var(--text-muted)] uppercase tracking-wider font-mono">
+                Select your immediate evidentiary objection / response:
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 {allChoices.map((choice, idx) => {
                   const isSelected = selectedAnswer === choice;
                   const isCorrect = choice === currentScenario.correctObjection;
                   
-                  let btnStyle = 'bg-card border-border/80 text-foreground hover:border-primary/60';
+                  let btnStyle = 'bg-[var(--bg-card)] border-[var(--border-color)] text-[var(--text-main)] hover:border-[var(--accent-gold)]';
                   if (isSelected && !isAnswerSubmitted) {
-                    btnStyle = 'bg-primary/20 border-primary text-primary font-bold';
+                    btnStyle = 'bg-[var(--badge-bg)] border-[var(--accent-gold)] text-[var(--text-main)] font-bold';
                   }
                   if (isAnswerSubmitted) {
                     if (isCorrect) {
-                      btnStyle = 'bg-emerald-500/20 border-emerald-500 text-emerald-300 font-bold';
+                      btnStyle = 'bg-emerald-950/60 border-emerald-500 text-emerald-300 font-bold';
                     } else if (isSelected && !isCorrect) {
-                      btnStyle = 'bg-destructive/20 border-destructive text-destructive font-bold';
+                      btnStyle = 'bg-rose-950/60 border-rose-500 text-rose-300 font-bold';
                     } else {
-                      btnStyle = 'bg-card/40 border-border/40 text-muted-foreground opacity-50';
+                      btnStyle = 'bg-[var(--bg-card)]/40 border-[var(--border-color)]/40 text-[var(--text-muted)] opacity-50';
                     }
                   }
 
@@ -383,7 +498,7 @@ export const TrialPrep: React.FC = () => {
                       disabled={isAnswerSubmitted}
                       className={`p-3.5 text-left text-xs border custom-geometry transition-all flex items-start gap-2.5 ${btnStyle}`}
                     >
-                      <span className="w-5 h-5 rounded-full bg-muted border border-border flex items-center justify-center shrink-0 text-[10px] font-mono">
+                      <span className="w-5 h-5 rounded-full bg-black/40 border border-[var(--border-color)] flex items-center justify-center shrink-0 text-[10px] font-mono">
                         {String.fromCharCode(65 + idx)}
                       </span>
                       <span className="leading-snug">{choice}</span>
@@ -397,23 +512,23 @@ export const TrialPrep: React.FC = () => {
             {isAnswerSubmitted && (
               <div className={`p-4 border custom-geometry space-y-2 animate-in fade-in duration-200 ${
                 selectedAnswer === currentScenario.correctObjection
-                  ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-200'
-                  : 'bg-destructive/10 border-destructive/30 text-destructive-foreground'
+                  ? 'bg-emerald-950/40 border-emerald-500 text-emerald-200'
+                  : 'bg-rose-950/40 border-rose-500 text-rose-200'
               }`}>
-                <div className="flex items-center gap-2 font-bold text-sm">
+                <div className="flex items-center gap-2 font-bold text-sm font-serif">
                   {selectedAnswer === currentScenario.correctObjection ? (
                     <>
-                      <CheckCircle2 className="w-5 h-5 text-emerald-400" />
-                      <span>THE COURT: "SUSTAINED!" (Correct Rule Citation: {currentScenario.ruleCitation})</span>
+                      <CheckCircle2 className="w-5 h-5 text-emerald-400 shrink-0" />
+                      <span>THE COURT: "SUSTAINED!" (Statutory Authority: {currentScenario.ruleCitation})</span>
                     </>
                   ) : (
                     <>
-                      <XCircle className="w-5 h-5 text-destructive" />
-                      <span>THE COURT: "OVERRULED." Correct Objection: {currentScenario.correctObjection}</span>
+                      <XCircle className="w-5 h-5 text-rose-400 shrink-0" />
+                      <span>THE COURT: "OVERRULED." Correct Rule: {currentScenario.correctObjection}</span>
                     </>
                   )}
                 </div>
-                <p className="text-xs leading-relaxed text-muted-foreground">
+                <p className="text-xs leading-relaxed text-[var(--text-muted)]">
                   {currentScenario.explanation}
                 </p>
               </div>
@@ -424,14 +539,14 @@ export const TrialPrep: React.FC = () => {
                 <button
                   onClick={handleSubmitAnswer}
                   disabled={!selectedAnswer}
-                  className="px-5 py-2.5 bg-primary text-primary-foreground text-xs font-bold disabled:opacity-40 transition-all custom-geometry"
+                  className="px-5 py-2.5 bg-[var(--accent-gold)] text-slate-950 text-xs font-bold disabled:opacity-40 transition-all custom-geometry shadow-sm"
                 >
                   Object to the Judge
                 </button>
               ) : (
                 <button
                   onClick={handleNextScenario}
-                  className="px-5 py-2.5 bg-primary text-primary-foreground text-xs font-bold transition-all custom-geometry"
+                  className="px-5 py-2.5 bg-[var(--accent-gold)] text-slate-950 text-xs font-bold transition-all custom-geometry shadow-sm"
                 >
                   Next Trial Scenario &rarr;
                 </button>
@@ -445,29 +560,29 @@ export const TrialPrep: React.FC = () => {
       {activeTab === 'fre' && (
         <div className="space-y-4">
           <div className="relative">
-            <Search className="w-4 h-4 text-muted-foreground absolute left-3 top-3" />
+            <Search className="w-4 h-4 text-[var(--text-muted)] absolute left-3 top-3" />
             <input
               type="text"
               value={freQuery}
               onChange={(e) => setFreQuery(e.target.value)}
-              placeholder="Search Rules of Evidence (e.g. hearsay, relevance, business records, duplicates)..."
-              className="w-full bg-input/50 border border-border pl-9 pr-3 py-2.5 text-xs custom-geometry focus:outline-none focus:border-primary"
+              placeholder="Search Rules of Evidence (e.g. hearsay, relevance, business records, duplicates, prejudice)..."
+              className="w-full bg-[var(--bg-card)] border border-[var(--border-color)] pl-9 pr-3 py-2.5 text-xs text-[var(--text-main)] custom-geometry focus:outline-none focus:border-[var(--accent-gold)]"
             />
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {filteredFRE.map((item, idx) => (
-              <div key={idx} className="p-4 bg-card border border-border custom-geometry space-y-2">
+              <div key={idx} className="p-4 bg-[var(--bg-card)] border border-[var(--border-color)] custom-geometry space-y-2 hover:border-[var(--accent-gold)] transition-all">
                 <div className="flex items-center justify-between">
-                  <span className="px-2 py-0.5 text-[11px] font-mono font-bold bg-primary/15 text-primary border border-primary/30 custom-geometry">
+                  <span className="px-2 py-0.5 text-[11px] font-mono font-bold bg-[var(--badge-bg)] text-[var(--accent-gold)] border border-[var(--badge-border)] custom-geometry">
                     {item.rule}
                   </span>
                 </div>
-                <h3 className="text-sm font-bold text-foreground font-serif">{item.title}</h3>
-                <p className="text-xs text-muted-foreground leading-relaxed">{item.summary}</p>
-                <div className="p-2.5 bg-muted/40 border border-border/40 text-[11px] custom-geometry">
-                  <strong className="text-primary font-semibold">Pro Se Courtroom Tip: </strong>
-                  <span className="text-foreground/90">{item.proSeTip}</span>
+                <h3 className="text-sm font-bold text-[var(--text-main)] font-serif">{item.title}</h3>
+                <p className="text-xs text-[var(--text-muted)] leading-relaxed">{item.summary}</p>
+                <div className="p-2.5 bg-[var(--bg-secondary)] border border-[var(--border-color)]/60 text-[11px] custom-geometry">
+                  <strong className="text-[var(--accent-gold)] font-semibold">Pro Se Courtroom Tip: </strong>
+                  <span className="text-[var(--text-main)]">{item.proSeTip}</span>
                 </div>
               </div>
             ))}
@@ -478,23 +593,23 @@ export const TrialPrep: React.FC = () => {
       {/* Tab 3: Witness Examination Outlines */}
       {activeTab === 'witnesses' && (
         <div className="space-y-4">
-          <div className="p-4 bg-primary/5 border border-primary/20 text-xs leading-relaxed text-muted-foreground custom-geometry">
-            <strong className="text-foreground">Direct & Cross Examination Protocols:</strong> On Direct Examination, ask open-ended non-leading questions ("What", "When", "Why"). On Cross Examination, only ask leading yes/no trap questions based directly on written exhibits.
+          <div className="p-4 bg-[var(--badge-bg)] border border-[var(--badge-border)] text-xs leading-relaxed text-[var(--text-main)] custom-geometry">
+            <strong className="text-[var(--accent-gold)]">Direct &amp; Cross Examination Protocols:</strong> On Direct Examination of your own witnesses, ask open-ended questions ("What happened next?", "What did you observe?"). On Cross Examination of adverse witnesses, only ask leading yes/no trap questions based strictly on authenticated exhibits.
           </div>
 
           <div className="space-y-4">
             {(activeCase.trialPrep?.witnessOutlines || []).map((wit) => (
-              <div key={wit.id} className="p-5 bg-card border border-border custom-geometry space-y-4">
+              <div key={wit.id} className="p-5 bg-[var(--bg-card)] border border-[var(--border-color)] custom-geometry space-y-4 shadow-sm">
                 <div className="flex items-start justify-between">
                   <div>
-                    <span className="px-2 py-0.5 text-[10px] font-mono uppercase bg-primary/15 text-primary border border-primary/30 custom-geometry mr-2">
-                      {wit.witnessRole}
+                    <span className="px-2 py-0.5 text-[10px] font-mono uppercase bg-[var(--badge-bg)] text-[var(--accent-gold)] border border-[var(--badge-border)] custom-geometry mr-2">
+                      {wit.witnessRole.replace(/_/g, ' ')}
                     </span>
-                    <h3 className="text-sm font-bold text-foreground inline">{wit.witnessName}</h3>
+                    <h3 className="text-sm font-bold text-[var(--text-main)] inline font-serif">{wit.witnessName}</h3>
                   </div>
                   <button
                     onClick={() => handleDeleteWitness(wit.id)}
-                    className="text-muted-foreground hover:text-destructive p-1 transition-colors"
+                    className="text-[var(--text-muted)] hover:text-rose-400 p-1 transition-colors"
                   >
                     <Trash2 className="w-4 h-4" />
                   </button>
@@ -505,17 +620,17 @@ export const TrialPrep: React.FC = () => {
                     <div className="text-xs font-bold text-primary uppercase tracking-wider font-mono">
                       Direct Examination Outline (Open Questions)
                     </div>
-                    <ul className="space-y-1.5 pl-4 text-xs list-decimal text-muted-foreground">
+                    <ul className="space-y-1.5 pl-4 text-xs list-decimal text-[var(--text-muted)]">
                       {wit.directQuestions.map((q, qIdx) => (
-                        <li key={qIdx} className="leading-relaxed text-foreground">{q}</li>
+                        <li key={qIdx} className="leading-relaxed text-[var(--text-main)]">{q}</li>
                       ))}
                     </ul>
                   </div>
                 )}
 
                 {wit.crossExamTraps.length > 0 && (
-                  <div className="space-y-2 pt-2 border-t border-border/40">
-                    <div className="text-xs font-bold text-amber-500 uppercase tracking-wider font-mono">
+                  <div className="space-y-2 pt-2 border-t border-[var(--border-color)]/60">
+                    <div className="text-xs font-bold text-amber-400 uppercase tracking-wider font-mono">
                       Cross-Examination Traps (Leading Yes/No Lock-Ins)
                     </div>
                     <ul className="space-y-1.5 pl-4 text-xs list-disc text-amber-300/90">
@@ -525,69 +640,92 @@ export const TrialPrep: React.FC = () => {
                     </ul>
                   </div>
                 )}
+
+                {wit.exhibitCitations && wit.exhibitCitations.length > 0 && (
+                  <div className="flex items-center gap-2 pt-1 border-t border-[var(--border-color)]/40 text-[11px] font-mono text-[var(--accent-gold)]">
+                    <Tag className="w-3.5 h-3.5" />
+                    <span>Linked Exhibits: {wit.exhibitCitations.join(', ')}</span>
+                  </div>
+                )}
               </div>
             ))}
           </div>
 
           {/* Add Witness */}
-          <div className="p-4 bg-card border border-dashed border-border custom-geometry space-y-3">
-            <h3 className="text-xs font-bold uppercase tracking-wider text-foreground flex items-center gap-1.5">
-              <Plus className="w-4 h-4 text-primary" />
+          <div className="p-5 bg-[var(--bg-card)] border border-dashed border-[var(--border-color)] custom-geometry space-y-4">
+            <h3 className="text-xs font-bold uppercase tracking-wider text-[var(--text-main)] flex items-center gap-1.5 font-mono">
+              <Plus className="w-4 h-4 text-[var(--accent-gold)]" />
               <span>Add Witness Examination Outline</span>
             </h3>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
               <div>
-                <label className="text-[10px] font-mono uppercase text-muted-foreground">Witness Full Name</label>
+                <label className="text-[10px] font-mono uppercase text-[var(--text-muted)]">Witness Full Name</label>
                 <input
                   type="text"
                   value={newWitName}
                   onChange={(e) => setNewWitName(e.target.value)}
-                  placeholder="e.g., Alex Johnson (Contractor Foreman)"
-                  className="w-full bg-input/50 border border-border p-2 text-xs focus:outline-none focus:border-primary mt-1"
+                  placeholder="e.g. Alex Johnson (General Contractor)"
+                  className="w-full bg-[var(--bg-secondary)] border border-[var(--border-color)] p-2 text-xs text-[var(--text-main)] focus:outline-none focus:border-[var(--accent-gold)] mt-1"
                 />
               </div>
 
               <div>
-                <label className="text-[10px] font-mono uppercase text-muted-foreground">Witness Role</label>
+                <label className="text-[10px] font-mono uppercase text-[var(--text-muted)]">Witness Role</label>
                 <select
                   value={newWitRole}
                   onChange={(e) => setNewWitRole(e.target.value as any)}
-                  className="w-full bg-input/50 border border-border p-2 text-xs focus:outline-none focus:border-primary mt-1"
+                  className="w-full bg-[var(--bg-secondary)] border border-[var(--border-color)] p-2 text-xs text-[var(--text-main)] focus:outline-none focus:border-[var(--accent-gold)] mt-1 font-semibold"
                 >
-                  <option value="plaintiff">Plaintiff</option>
+                  <option value="plaintiff">Plaintiff (Pro Se)</option>
                   <option value="defendant">Defendant / Adverse Witness</option>
                   <option value="expert">Expert Witness (Inspector / Appraiser)</option>
                   <option value="eye_witness">Eye Witness / Third Party</option>
                 </select>
               </div>
+
+              <div>
+                <label className="text-[10px] font-mono uppercase text-[var(--text-muted)]">Link Case Exhibit</label>
+                <select
+                  value={selectedExhibitTag}
+                  onChange={(e) => setSelectedExhibitTag(e.target.value)}
+                  className="w-full bg-[var(--bg-secondary)] border border-[var(--border-color)] p-2 text-xs text-[var(--text-main)] focus:outline-none focus:border-[var(--accent-gold)] mt-1"
+                >
+                  <option value="">No Exhibit Linked</option>
+                  {activeCase.evidenceList.map(ev => (
+                    <option key={ev.id} value={ev.exhibitTag}>
+                      {ev.exhibitTag}: {ev.title}
+                    </option>
+                  ))}
+                </select>
+              </div>
             </div>
 
             <div>
-              <label className="text-[10px] font-mono uppercase text-muted-foreground">Direct Examination Question</label>
+              <label className="text-[10px] font-mono uppercase text-[var(--text-muted)]">Direct Examination Question (Open-Ended)</label>
               <textarea
                 rows={2}
                 value={newDirectQ}
                 onChange={(e) => setNewDirectQ(e.target.value)}
-                placeholder="e.g., What did you observe when you inspected the bathroom plumbing on October 14th?"
-                className="w-full bg-input/50 border border-border p-2 text-xs focus:outline-none focus:border-primary mt-1"
+                placeholder="e.g. What did you observe when you inspected the leaking ceiling on August 14th?"
+                className="w-full bg-[var(--bg-secondary)] border border-[var(--border-color)] p-2 text-xs text-[var(--text-main)] focus:outline-none focus:border-[var(--accent-gold)] mt-1"
               />
             </div>
 
             <div>
-              <label className="text-[10px] font-mono uppercase text-muted-foreground">Cross-Examination Trap Question (Yes/No)</label>
+              <label className="text-[10px] font-mono uppercase text-[var(--text-muted)]">Cross-Examination Trap Question (Yes/No Question)</label>
               <textarea
                 rows={2}
                 value={newCrossTrap}
                 onChange={(e) => setNewCrossTrap(e.target.value)}
-                placeholder="e.g., Isn't it true that you never obtained a building permit prior to beginning demolition?"
-                className="w-full bg-input/50 border border-border p-2 text-xs focus:outline-none focus:border-primary mt-1"
+                placeholder="e.g. Isn't it true that you received Plaintiff's certified notice on August 15th and never responded?"
+                className="w-full bg-[var(--bg-secondary)] border border-[var(--border-color)] p-2 text-xs text-[var(--text-main)] focus:outline-none focus:border-[var(--accent-gold)] mt-1"
               />
             </div>
 
             <button
               onClick={handleAddWitness}
-              className="px-4 py-2 bg-primary text-primary-foreground text-xs font-semibold hover:bg-primary/90 transition-all custom-geometry"
+              className="px-4 py-2 bg-[var(--accent-gold)] text-slate-950 text-xs font-bold hover:opacity-90 transition-all custom-geometry shadow-sm"
             >
               Add Witness Outline
             </button>
@@ -598,12 +736,12 @@ export const TrialPrep: React.FC = () => {
       {/* Tab 4: Live Teleprompter */}
       {activeTab === 'speech' && (
         <div className="space-y-4">
-          <div className="flex flex-wrap items-center justify-between gap-3 p-4 bg-card border border-border custom-geometry">
+          <div className="flex flex-wrap items-center justify-between gap-3 p-4 bg-[var(--bg-card)] border border-[var(--border-color)] custom-geometry shadow-sm">
             <div className="flex items-center gap-2">
               <button
                 onClick={() => { sound.playClick(); setPrompterMode('opening'); }}
                 className={`px-3 py-1.5 text-xs font-semibold custom-geometry ${
-                  prompterMode === 'opening' ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground'
+                  prompterMode === 'opening' ? 'bg-[var(--accent-gold)] text-slate-950 font-bold' : 'bg-[var(--bg-secondary)] text-[var(--text-muted)]'
                 }`}
               >
                 Opening Statement
@@ -611,34 +749,59 @@ export const TrialPrep: React.FC = () => {
               <button
                 onClick={() => { sound.playClick(); setPrompterMode('closing'); }}
                 className={`px-3 py-1.5 text-xs font-semibold custom-geometry ${
-                  prompterMode === 'closing' ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground'
+                  prompterMode === 'closing' ? 'bg-[var(--accent-gold)] text-slate-950 font-bold' : 'bg-[var(--bg-secondary)] text-[var(--text-muted)]'
                 }`}
               >
                 Closing Argument
               </button>
             </div>
 
-            <div className="flex items-center gap-4">
+            <div className="flex flex-wrap items-center gap-4">
+              <button
+                onClick={handleAutoGenerateSpeech}
+                className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold bg-[var(--badge-bg)] text-[var(--accent-gold)] border border-[var(--badge-border)] custom-geometry hover:bg-[var(--accent-gold)] hover:text-black transition-all"
+                title="Auto-Generate tailored courtroom script from case facts"
+              >
+                <Wand2 className="w-3.5 h-3.5" />
+                <span>Auto-Draft {prompterMode === 'opening' ? 'Opening' : 'Closing'}</span>
+              </button>
+
               <div className="flex items-center gap-2 text-xs">
-                <span className="text-muted-foreground">Speed: </span>
-                <span className="font-mono font-bold text-foreground">{wpm} WPM</span>
+                <span className="text-[var(--text-muted)]">Speed: </span>
+                <span className="font-mono font-bold text-[var(--text-main)]">{wpm} WPM</span>
                 <input
                   type="range"
-                  min="90"
-                  max="190"
+                  min="80"
+                  max="220"
                   step="5"
                   value={wpm}
                   onChange={(e) => setWpm(parseInt(e.target.value))}
-                  className="w-24 accent-primary"
+                  className="w-20 accent-[var(--accent-gold)] cursor-pointer"
                 />
+              </div>
+
+              <div className="flex items-center gap-1">
+                {(['normal', 'large', 'huge'] as const).map(sz => (
+                  <button
+                    key={sz}
+                    onClick={() => setPrompterFontSize(sz)}
+                    className={`px-2 py-1 text-[10px] uppercase font-mono border ${
+                      prompterFontSize === sz 
+                        ? 'bg-[var(--accent-gold)] text-slate-950 font-bold' 
+                        : 'bg-[var(--bg-secondary)] text-[var(--text-muted)]'
+                    }`}
+                  >
+                    {sz[0].toUpperCase()}
+                  </button>
+                ))}
               </div>
 
               <button
                 onClick={() => { sound.playClick(); setIsPlaying(!isPlaying); }}
-                className="flex items-center gap-1.5 px-4 py-1.5 bg-primary text-primary-foreground text-xs font-bold custom-geometry shadow-sm"
+                className="flex items-center gap-1.5 px-4 py-1.5 bg-[var(--accent-gold)] text-slate-950 text-xs font-bold custom-geometry shadow-sm hover:opacity-90"
               >
                 {isPlaying ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
-                <span>{isPlaying ? 'Pause Prompter' : 'Start Prompter'}</span>
+                <span>{isPlaying ? 'Pause' : 'Start Prompter'}</span>
               </button>
 
               <button
@@ -647,7 +810,7 @@ export const TrialPrep: React.FC = () => {
                   if (prompterRef.current) prompterRef.current.scrollTop = 0;
                   setIsPlaying(false);
                 }}
-                className="p-1.5 bg-muted text-muted-foreground hover:text-foreground custom-geometry"
+                className="p-1.5 bg-[var(--bg-secondary)] text-[var(--text-muted)] hover:text-[var(--text-main)] custom-geometry border border-[var(--border-color)]"
                 title="Reset to Top"
               >
                 <RotateCcw className="w-4 h-4" />
@@ -658,29 +821,32 @@ export const TrialPrep: React.FC = () => {
           {/* Prompter Visual Viewport */}
           <div
             ref={prompterRef}
-            className="h-80 overflow-y-auto bg-black border-2 border-primary/40 p-8 custom-geometry font-serif text-lg leading-loose text-amber-100 select-none shadow-inner scroll-smooth"
+            className={`h-80 overflow-y-auto bg-black border-2 border-[var(--accent-gold)]/50 p-8 custom-geometry font-serif leading-loose text-amber-100 select-none shadow-2xl scroll-smooth ${
+              prompterFontSize === 'huge' ? 'text-2xl leading-loose' : prompterFontSize === 'large' ? 'text-lg leading-relaxed' : 'text-base'
+            }`}
           >
             <div className="max-w-3xl mx-auto space-y-6">
-              <div className="text-center font-mono text-xs uppercase tracking-widest text-primary/70 pb-4 border-b border-primary/20">
+              <div className="text-center font-mono text-xs uppercase tracking-widest text-[var(--accent-gold)] pb-4 border-b border-white/10">
                 PRO SE COURTROOM ORAL ARGUMENT PROMPTER • {prompterMode.toUpperCase()}
               </div>
-              <p className="whitespace-pre-wrap">{activeSpeechText}</p>
+              <p className="whitespace-pre-wrap">{activeSpeechText || '(Click "Auto-Draft" above or type your script below to rehearse your argument)'}</p>
               <div className="text-center font-mono text-xs uppercase tracking-widest text-emerald-400 pt-8 pb-16">
-                [ CONCLUDE ARGUMENT &amp; REQUEST ENTRY OF JUDGMENT ]
+                [ CONCLUDE ARGUMENT &amp; REQUEST ENTRY OF JUDGMENT IN PLAINTIFF'S FAVOR ]
               </div>
             </div>
           </div>
 
           {/* Editable Draft */}
-          <div className="p-4 bg-card border border-border custom-geometry space-y-2">
-            <label className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
+          <div className="p-4 bg-[var(--bg-card)] border border-[var(--border-color)] custom-geometry space-y-2">
+            <label className="text-xs font-bold uppercase tracking-wider text-[var(--text-muted)] font-mono">
               Edit {prompterMode === 'opening' ? 'Opening Statement' : 'Closing Argument'} Script Draft
             </label>
             <textarea
               rows={6}
               value={activeSpeechText}
               onChange={(e) => handleSpeechTextChange(e.target.value)}
-              className="w-full bg-input/50 border border-border p-3 text-xs font-serif leading-relaxed focus:outline-none focus:border-primary custom-geometry"
+              placeholder="Type or paste your courtroom speech here..."
+              className="w-full bg-[var(--bg-secondary)] border border-[var(--border-color)] p-3 text-xs font-serif leading-relaxed text-[var(--text-main)] focus:outline-none focus:border-[var(--accent-gold)] custom-geometry"
             />
           </div>
         </div>
@@ -688,3 +854,4 @@ export const TrialPrep: React.FC = () => {
     </div>
   );
 };
+
