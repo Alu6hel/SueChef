@@ -15,7 +15,10 @@ import {
   Building, 
   HelpCircle,
   ShieldCheck,
-  Download
+  Download,
+  RefreshCw,
+  Edit3,
+  Sparkles
 } from 'lucide-react';
 
 export const DiscoveryStudio: React.FC = () => {
@@ -27,6 +30,10 @@ export const DiscoveryStudio: React.FC = () => {
   const [newQuestionText, setNewQuestionText] = useState('');
   const [newObjective, setNewObjective] = useState('');
   const [newObjectionRisk, setNewObjectionRisk] = useState('');
+
+  // Editing state
+  const [editingItemId, setEditingItemId] = useState<string | null>(null);
+  const [editingText, setEditingText] = useState('');
 
   // Subpoena form
   const [subThirdParty, setSubThirdParty] = useState('');
@@ -40,6 +47,154 @@ export const DiscoveryStudio: React.FC = () => {
     rfps: [],
     rfas: [],
     subpoenas: []
+  };
+
+  const handleLoadDiscoveryTemplate = () => {
+    sound.playDocketStamp();
+    const dName = activeCase.parties.find(p => p.role === 'defendant')?.name || 'Defendant';
+    const cat = activeCase.claimEvaluation.category;
+
+    let newRogs: DiscoveryItem[] = [];
+    let newRfps: DiscoveryItem[] = [];
+    let newRfas: DiscoveryItem[] = [];
+    let newSubs: SubpoenaRequest[] = [];
+
+    if (cat === 'security_deposit') {
+      newRogs = [
+        {
+          id: `disc_rog_1`,
+          number: 1,
+          questionText: `Identify the financial institution, account number, and escrow title where Plaintiff's security deposit was held throughout tenancy.`,
+          targetObjective: 'Verify whether deposit was commingled with landlord personal operating funds.',
+          objectionRiskNotes: 'Directly relevant under state security deposit statutory trust requirements.',
+          category: 'interrogatory'
+        },
+        {
+          id: `disc_rog_2`,
+          number: 2,
+          questionText: `State the exact date, time, and identity of all individuals who conducted the move-out inspection of the subject premises.`,
+          targetObjective: 'Establish lack of contemporaneous inspection or unqualified inspector.',
+          objectionRiskNotes: 'Standard factual inquiry regarding basis of withholding.',
+          category: 'interrogatory'
+        },
+        {
+          id: `disc_rog_3`,
+          number: 3,
+          questionText: `Itemize every deduction made from Plaintiff's deposit, including vendor name, invoice date, amount paid, and description of work.`,
+          targetObjective: 'Lock in defendant to specific itemized invoices or expose fabricated repair charges.',
+          objectionRiskNotes: 'Statutory disclosure requirement under civil deposit code.',
+          category: 'interrogatory'
+        }
+      ];
+
+      newRfps = [
+        {
+          id: `disc_rfp_1`,
+          number: 1,
+          questionText: `All original canceled checks, bank statements, wire confirmations, and deposit escrow ledgers reflecting Plaintiff's security deposit payment.`,
+          targetObjective: 'Prove payment in full and trace escrowed funds.',
+          objectionRiskNotes: 'Standard financial document production.',
+          category: 'rfp'
+        },
+        {
+          id: `disc_rfp_2`,
+          number: 2,
+          questionText: `All itemized contractor invoices, paid receipts, timecards, and material receipts supporting any deduction claimed against Plaintiff's deposit.`,
+          targetObjective: 'Expose inflated repair claims or absence of actual out-of-pocket expenditures.',
+          objectionRiskNotes: 'Direct evidentiary support for affirmative defense.',
+          category: 'rfp'
+        },
+        {
+          id: `disc_rfp_3`,
+          number: 3,
+          questionText: `All move-in and move-out photographic evidence, video walkthroughs, and inspection checklists depicting the condition of the subject premises.`,
+          targetObjective: 'Demonstrate pre-existing wear and tear versus tenant damage.',
+          objectionRiskNotes: 'Standard property condition evidence.',
+          category: 'rfp'
+        }
+      ];
+
+      newRfas = [
+        {
+          id: `disc_rfa_1`,
+          number: 1,
+          questionText: `Admit that Plaintiff surrendered physical possession and returned all premises keys on the move-out date.`,
+          targetObjective: 'Trigger 30-day statutory admission trap establishing tenancy surrender date.',
+          objectionRiskNotes: 'Clear factual admission request under civil discovery rules.',
+          category: 'rfa'
+        },
+        {
+          id: `disc_rfa_2`,
+          number: 2,
+          questionText: `Admit that Defendant failed to deliver an itemized disposition letter and refund check to Plaintiff within the statutory window.`,
+          targetObjective: 'Conclusively establish per se statutory breach authorizing bad-faith multiplier.',
+          objectionRiskNotes: 'Dispositive admission on statutory deadline.',
+          category: 'rfa'
+        }
+      ];
+
+      newSubs = [
+        {
+          id: `disc_sub_1`,
+          thirdPartyName: 'JPMorgan Chase Bank / Escrow Dept',
+          thirdPartyAddress: 'National Subpoena Processing, Dallas, TX',
+          documentsRequested: 'Bank account monthly statements and deposit transaction slips for account ending in #9912.',
+          relevanceDeclaration: 'Proves whether security deposit was commingled and date of deposit clearance.',
+          complianceDeadlineDays: 20
+        }
+      ];
+    } else {
+      newRogs = [
+        {
+          id: `disc_rog_1`,
+          number: 1,
+          questionText: `Identify all agreements, written statements of work, invoices, and communications between Plaintiff and ${dName}.`,
+          targetObjective: 'Establish complete contract formation and scope.',
+          objectionRiskNotes: 'Standard contract liability scope.',
+          category: 'interrogatory'
+        },
+        {
+          id: `disc_rog_2`,
+          number: 2,
+          questionText: `State the factual basis for Defendant's non-payment or refusal to perform contract obligations.`,
+          targetObjective: 'Lock in defense arguments under oath prior to trial.',
+          objectionRiskNotes: 'Core contention interrogatory.',
+          category: 'interrogatory'
+        }
+      ];
+
+      newRfps = [
+        {
+          id: `disc_rfp_1`,
+          number: 1,
+          questionText: `All written contracts, email threads, text messages, and internal notes concerning Plaintiff and transaction in dispute.`,
+          targetObjective: 'Uncover admissions and verify contract terms.',
+          objectionRiskNotes: 'Standard business communications request.',
+          category: 'rfp'
+        }
+      ];
+
+      newRfas = [
+        {
+          id: `disc_rfa_1`,
+          number: 1,
+          questionText: `Admit that Plaintiff performed agreed obligations and delivered required deliverables/consideration.`,
+          targetObjective: 'Conclusively admit Plaintiff substantial performance.',
+          objectionRiskNotes: 'Direct claim element admission.',
+          category: 'rfa'
+        }
+      ];
+    }
+
+    updateActiveCase(prev => ({
+      ...prev,
+      discovery: {
+        interrogatories: newRogs,
+        rfps: newRfps,
+        rfas: newRfas,
+        subpoenas: newSubs.length > 0 ? newSubs : prev.discovery?.subpoenas || []
+      }
+    }));
   };
 
   const handleCopyFormattedPleading = (type: 'rog' | 'rfp' | 'rfa' | 'subpoena') => {
@@ -189,7 +344,16 @@ export const DiscoveryStudio: React.FC = () => {
           </div>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 flex-wrap">
+          <button
+            type="button"
+            onClick={handleLoadDiscoveryTemplate}
+            className="flex items-center gap-1.5 px-3 py-2 bg-muted text-foreground text-xs font-semibold hover:bg-muted/80 border border-border custom-geometry transition-all"
+            title="Populate complete sets of ROGs, RFPs, and RFAs for your dispute type"
+          >
+            <Sparkles className="w-3.5 h-3.5 text-amber-400" />
+            <span>Load Category Discovery Suite</span>
+          </button>
           <button
             onClick={() => handleCopyFormattedPleading(activeTab)}
             className="flex items-center gap-2 px-3.5 py-2 bg-primary text-primary-foreground text-xs font-semibold hover:bg-primary/90 transition-all custom-geometry"

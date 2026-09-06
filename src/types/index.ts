@@ -327,6 +327,7 @@ export interface CaseFile {
       declarantName: string;
       county: string;
       isSworn: boolean;
+      signedDate?: string;
       signatureDataUrl?: string;
     };
   };
