@@ -32,9 +32,41 @@ public class MainActivity extends Activity {
             getWindow().setNavigationBarColor(Color.parseColor("#0B0D13"));
         }
 
+        WebView.setWebContentsDebuggingEnabled(true);
         webView = new WebView(this);
         webView.setBackgroundColor(Color.parseColor("#0B0D13"));
-        setContentView(webView);
+
+        android.widget.FrameLayout rootLayout = new android.widget.FrameLayout(this);
+        rootLayout.addView(webView, new android.widget.FrameLayout.LayoutParams(
+            android.widget.FrameLayout.LayoutParams.MATCH_PARENT,
+            android.widget.FrameLayout.LayoutParams.MATCH_PARENT
+        ));
+
+        // Floating Exit / Close button for external pages
+        final android.widget.Button exitButton = new android.widget.Button(this);
+        exitButton.setText("✕ Exit / Return to App");
+        exitButton.setTextSize(13);
+        exitButton.setTextColor(Color.WHITE);
+        exitButton.setBackgroundColor(Color.parseColor("#E11D48")); // Vibrant red
+        exitButton.setPadding(32, 16, 32, 16);
+        exitButton.setVisibility(android.view.View.GONE);
+
+        android.widget.FrameLayout.LayoutParams btnParams = new android.widget.FrameLayout.LayoutParams(
+            android.widget.FrameLayout.LayoutParams.WRAP_CONTENT,
+            android.widget.FrameLayout.LayoutParams.WRAP_CONTENT
+        );
+        btnParams.gravity = android.view.Gravity.TOP | android.view.Gravity.END;
+        btnParams.setMargins(0, 48, 48, 0);
+        exitButton.setLayoutParams(btnParams);
+
+        exitButton.setOnClickListener(v -> {
+            webView.stopLoading();
+            webView.loadUrl("file:///android_asset/index.html");
+            exitButton.setVisibility(android.view.View.GONE);
+        });
+
+        rootLayout.addView(exitButton);
+        setContentView(rootLayout);
 
         WebSettings settings = webView.getSettings();
         settings.setJavaScriptEnabled(true);
@@ -49,7 +81,33 @@ public class MainActivity extends Activity {
         settings.setUseWideViewPort(true);
         settings.setLoadWithOverviewMode(true);
 
-        webView.setWebViewClient(new WebViewClient());
+        webView.setWebViewClient(new WebViewClient() {
+            @Override
+            public boolean shouldOverrideUrlLoading(WebView view, String url) {
+                if (url.startsWith("file:///android_asset/")) {
+                    return false;
+                }
+                try {
+                    Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    startActivity(intent);
+                    return true;
+                } catch (Exception e) {
+                    return false;
+                }
+            }
+
+            @Override
+            public void onPageFinished(WebView view, String url) {
+                super.onPageFinished(view, url);
+                if (url != null && !url.startsWith("file:///android_asset/")) {
+                    exitButton.setVisibility(android.view.View.VISIBLE);
+                    exitButton.bringToFront();
+                } else {
+                    exitButton.setVisibility(android.view.View.GONE);
+                }
+            }
+        });
         webView.setWebChromeClient(new WebChromeClient() {
             @Override
             public boolean onShowFileChooser(WebView webView, ValueCallback<Uri[]> filePathCallback,

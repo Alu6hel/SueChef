@@ -16,15 +16,21 @@ import {
   Trash2,
   Copy,
   Check,
-  Scale
+  Scale,
+  Calendar
 } from 'lucide-react';
 import { ServiceRecord, ServiceAttempt } from '../../types';
 import { sound } from '../../services/soundEngine';
+import { RegisteredAgentModal } from './RegisteredAgentModal';
+import { RegisteredAgentService } from '../../services/registeredAgents';
+import { CalendarSyncService } from '../../services/calendarSync';
 
 export const ServiceTracker: React.FC = () => {
   const { activeCase, updateActiveCase } = useSueChef();
   const [showAddAttemptModal, setShowAddAttemptModal] = useState(false);
   const [showAffidavitPreview, setShowAffidavitPreview] = useState(false);
+  const [showAgentModal, setShowAgentModal] = useState(false);
+  const [calendarExported, setCalendarExported] = useState(false);
   const [selectedRecordIndex, setSelectedRecordIndex] = useState(0);
   const [copiedAffidavit, setCopiedAffidavit] = useState(false);
 
@@ -243,7 +249,32 @@ ${currentRecord.serverLicenseNumber ? `Registered Process Server #${currentRecor
           </div>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
+          <button
+            onClick={() => {
+              sound.playClick();
+              setShowAgentModal(true);
+            }}
+            className="btn-geom flex items-center gap-1.5 px-3 py-2 text-xs font-mono font-bold bg-[var(--bg-secondary)] border border-[var(--border-color)] hover:border-[var(--accent-gold)] text-[var(--accent-gold)] hover:bg-[var(--bg-hover)] transition-all shadow-sm"
+          >
+            <Building className="w-3.5 h-3.5" />
+            <span>🏢 Secretary of State Directory</span>
+          </button>
+
+          <button
+            onClick={() => {
+              const res = CalendarSyncService.exportDocketToCalendar(activeCase);
+              if (res.success) {
+                setCalendarExported(true);
+                setTimeout(() => setCalendarExported(false), 3000);
+              }
+            }}
+            className="btn-geom flex items-center gap-1.5 px-3 py-2 text-xs font-mono font-bold bg-[var(--bg-secondary)] border border-[var(--border-color)] hover:border-emerald-500 text-emerald-400 hover:bg-[var(--bg-hover)] transition-all shadow-sm"
+          >
+            <Calendar className="w-3.5 h-3.5" />
+            <span>{calendarExported ? '✓ Added to Calendar (.ics)' : '📅 Add Deadlines (.ics)'}</span>
+          </button>
+
           <button
             onClick={() => {
               sound.playClick();
@@ -256,6 +287,33 @@ ${currentRecord.serverLicenseNumber ? `Registered Process Server #${currentRecor
           </button>
         </div>
       </div>
+
+      {/* Corporate Defendant Warning Banner */}
+      {RegisteredAgentService.getCorporateServiceWarning(primaryDefendant.name, primaryDefendant.registeredAgent) && (
+        <div className="p-4 bg-amber-950/40 border-2 border-amber-500/60 rounded card-geom flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-md animate-in fade-in">
+          <div className="flex items-start gap-3">
+            <AlertTriangle className="w-5 h-5 text-amber-400 shrink-0 mt-0.5" />
+            <div className="space-y-1">
+              <h4 className="text-xs font-mono uppercase font-bold text-amber-300">
+                Corporate Entity Service Warning: {primaryDefendant.name}
+              </h4>
+              <p className="text-xs text-slate-300 leading-relaxed">
+                Serving an on-site property manager or receptionist instead of the official <strong>Registered Agent for Service of Process</strong> will cause the court to dismiss your claim or vacate default judgments.
+              </p>
+            </div>
+          </div>
+          <button
+            type="button"
+            onClick={() => {
+              sound.playClick();
+              setShowAgentModal(true);
+            }}
+            className="px-3.5 py-2 text-xs font-mono font-bold bg-amber-400 hover:bg-amber-300 text-slate-950 rounded card-geom shrink-0 shadow transition-all"
+          >
+            Look Up Registered Agent
+          </button>
+        </div>
+      )}
 
       {/* Main Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
@@ -686,6 +744,12 @@ ${currentRecord.serverLicenseNumber ? `Registered Process Server #${currentRecor
           </div>
         </div>
       )}
+
+      {/* Registered Agent 50-State SOS Modal */}
+      <RegisteredAgentModal
+        isOpen={showAgentModal}
+        onClose={() => setShowAgentModal(false)}
+      />
     </div>
   );
 };

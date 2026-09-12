@@ -17,28 +17,30 @@ export function createDefaultCase(): CaseFile {
     parties: [
       {
         id: 'p_1',
-        name: 'Jordan Smith',
+        name: 'Jordan Smith [Sample — Tap to Put Your Name]',
         entityType: 'individual',
         role: 'plaintiff',
-        address: '450 University Avenue, Apt 3B',
-        city: 'Palo Alto',
+        address: '[e.g., 450 University Avenue, Apt 3B]',
+        city: '[e.g., Palo Alto]',
         state: 'CA',
-        zip: '94301',
-        phone: '(650) 555-0192',
-        email: 'jordan.smith@example.com'
+        zip: '[e.g., 94301]',
+        phone: '[e.g., (650) 555-0192]',
+        email: '[e.g., your.name@example.com]',
+        isPlaceholder: true
       },
       {
         id: 'd_1',
-        name: 'Vanguard Property Management LLC',
+        name: 'Vanguard Property Management LLC [Sample — Tap to Put Opponent Name]',
         entityType: 'llc',
         role: 'defendant',
-        address: '1200 Silicon Valley Blvd, Suite 400',
-        city: 'San Jose',
+        address: '[e.g., 1200 Silicon Valley Blvd, Suite 400]',
+        city: '[e.g., San Jose]',
         state: 'CA',
-        zip: '95110',
-        phone: '(408) 555-8840',
-        email: 'legal@vanguardpropmgmt.com',
-        registeredAgent: 'CSC Lawyers Incorporating Service, 2710 Gateway Oaks Dr, Sacramento, CA 95833'
+        zip: '[e.g., 95110]',
+        phone: '[e.g., (408) 555-8840]',
+        email: '[e.g., landlord@example.com]',
+        registeredAgent: '[e.g., Registered Agent or Corporate Office]',
+        isPlaceholder: true
       }
     ],
     claimEvaluation: {
@@ -63,16 +65,16 @@ export function createDefaultCase(): CaseFile {
           legalStandard: 'Cal. Civ. Code § 1950.5(b)',
           description: 'Plaintiff paid a security deposit to Defendant pursuant to a valid residential lease agreement.',
           isSatisfied: true,
-          userEvidenceNotes: 'Signed lease agreement dated Aug 1, 2024 and bank wire receipt of $3,200 deposit.',
+          userEvidenceNotes: '[e.g., Signed lease agreement dated Aug 1, 2024 and bank wire receipt of $3,200 deposit. Tap to edit with your facts.]',
           linkedEvidenceIds: ['ev_1', 'ev_2']
         },
         {
           id: 'elem_2',
-          title: 'Surrender of Possession & Termination of Tenancy',
+          title: 'Surrender of Possession & Key Return',
           legalStandard: 'Cal. Civ. Code § 1950.5(g)(1)',
           description: 'Tenant fully vacated the premises, restored condition, and returned all keys to landlord.',
           isSatisfied: true,
-          userEvidenceNotes: 'Keys delivered in lockbox on July 31, 2025; email confirmation received from building manager.',
+          userEvidenceNotes: '[e.g., Keys returned in lockbox on July 31, 2025; email confirmation received from building manager. Tap to edit with your facts.]',
           linkedEvidenceIds: ['ev_3']
         },
         {
@@ -81,7 +83,7 @@ export function createDefaultCase(): CaseFile {
           legalStandard: 'Cal. Civ. Code § 1950.5(g)(1)',
           description: 'Landlord failed to deliver the remaining deposit and itemized deduction list within 21 calendar days after vacating.',
           isSatisfied: true,
-          userEvidenceNotes: 'No itemized deduction statement or refund received as of day 35 after move-out.',
+          userEvidenceNotes: '[e.g., No itemized deduction statement or refund received as of day 35 after move-out. Tap to edit with your facts.]',
           linkedEvidenceIds: ['ev_4']
         },
         {
@@ -90,7 +92,7 @@ export function createDefaultCase(): CaseFile {
           legalStandard: 'Cal. Civ. Code § 1950.5(l)',
           description: 'Landlord acted in bad faith by retaining the deposit without legal basis or timely notice, subjecting them to up to 2x statutory penalty.',
           isSatisfied: true,
-          userEvidenceNotes: 'Defendant ignored two written inquiries and falsely claimed apartment needed full repaint after 1 year.',
+          userEvidenceNotes: '[e.g., Defendant ignored two written inquiries and falsely claimed apartment needed full repaint after 1 year. Tap to edit with your facts.]',
           linkedEvidenceIds: ['ev_5']
         }
       ],

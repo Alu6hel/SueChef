@@ -4,6 +4,7 @@ import { WorkstationId } from '../../types';
 import { getCountryInfo } from '../../services/countries';
 import { sound } from '../../services/soundEngine';
 import { AluLogo } from '../Branding/AluLogo';
+import { formatDisplayCaption } from '../../services/caseUtils';
 import { 
   Home,
   Scale, 
@@ -19,7 +20,8 @@ import {
   Settings, 
   Clock, 
   Lightbulb, 
-  Building 
+  Building,
+  Users
 } from 'lucide-react';
 
 export const Header: React.FC = () => {
@@ -29,12 +31,16 @@ export const Header: React.FC = () => {
     setActiveWorkstation,
     activeCase,
     setIsCaseManagerOpen,
+    setIsPartiesModalOpen,
     setIsQuickSearchOpen,
     setIsTourOpen,
     setIsSettingsOpen
   } = useSueChef();
 
   const currCountry = getCountryInfo(country);
+  const plaintiff = activeCase.parties.find(p => p.role === 'plaintiff');
+  const defendant = activeCase.parties.find(p => p.role === 'defendant');
+  const { shortTitle, fullTitle } = formatDisplayCaption(activeCase.title, plaintiff?.name, defendant?.name);
 
   // Numbered workstation tabs starting with Home
   const workstations: { id: WorkstationId; stepNum?: string; label: string; icon: React.ReactNode; badge?: string }[] = [
@@ -56,16 +62,16 @@ export const Header: React.FC = () => {
 
   return (
     <header className="border-b-2 border-[var(--border-color)] bg-[var(--bg-secondary)] sticky top-0 z-40 transition-colors shadow-md">
-      <div className="max-w-7xl mx-auto px-3 sm:px-4 py-2.5 space-y-2.5">
+      <div className="max-w-7xl mx-auto px-2.5 sm:px-4 py-2 sm:py-2.5 space-y-2">
         {/* Top Tier: Alu Brand, Case Switcher, Quick Search, Tour & Settings */}
-        <div className="flex items-center justify-between gap-2 sm:gap-3">
+        <div className="flex items-center justify-between gap-1.5 sm:gap-3">
           {/* Official Alu Logo & Platform Name (Clickable -> Home) */}
           <button
             onClick={() => {
               sound.playClick();
               setActiveWorkstation('home');
             }}
-            className="flex items-center gap-2 text-left hover:opacity-90 transition-opacity shrink-0 select-none"
+            className="flex items-center gap-1.5 sm:gap-2 text-left hover:opacity-90 transition-opacity shrink-0 select-none"
             title="Return to Home Dashboard"
           >
             <AluLogo size="md" showLabel={true} />
@@ -76,21 +82,21 @@ export const Header: React.FC = () => {
             </div>
           </button>
 
-          {/* Center: Active Dispute Switcher & Country Venue */}
-          <div className="flex items-center gap-1.5 min-w-0 max-w-[160px] xs:max-w-[220px] sm:max-w-[280px]">
+          {/* Center: Active Dispute Switcher & Edit Parties */}
+          <div className="flex items-center gap-1 sm:gap-1.5 min-w-0 flex-1 max-w-[280px] xs:max-w-[340px] sm:max-w-md mx-1 sm:mx-2">
             <button
               onClick={() => {
                 sound.playClick();
                 setIsCaseManagerOpen(true);
               }}
-              className="btn-geom flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3.5 py-1.5 sm:py-2 text-xs md:text-sm bg-[var(--bg-card)] border-2 border-[var(--border-color)] text-[var(--text-main)] hover:border-[var(--accent-gold)] transition-all shadow-sm min-w-0 w-full"
-              title="Switch or create legal dispute cases"
+              className="btn-geom flex items-center gap-1.5 sm:gap-2 px-2 sm:px-3 py-1.5 sm:py-2 text-xs md:text-sm bg-[var(--bg-card)] border-2 border-[var(--border-color)] text-[var(--text-main)] hover:border-[var(--accent-gold)] transition-all shadow-sm min-w-0 flex-1"
+              title={`Active Dispute: ${fullTitle} (Click to switch cases)`}
             >
               <FolderGit2 className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[var(--accent-gold)] shrink-0" />
               <div className="flex flex-col text-left leading-tight min-w-0 flex-1">
                 <div className="flex items-center gap-1 min-w-0">
-                  <span className="font-bold font-serif text-xs md:text-sm truncate">
-                    {activeCase.title}
+                  <span className="font-bold font-serif text-xs md:text-sm truncate text-[var(--text-main)]" title={fullTitle}>
+                    {shortTitle}
                   </span>
                   <span className="text-xs shrink-0">{currCountry.flag}</span>
                 </div>
@@ -98,6 +104,18 @@ export const Header: React.FC = () => {
                   {activeCase.state} • {activeCase.claimEvaluation.category.replace(/_/g, ' ').toUpperCase()}
                 </span>
               </div>
+            </button>
+
+            <button
+              onClick={() => {
+                sound.playClick();
+                setIsPartiesModalOpen(true);
+              }}
+              className="btn-geom p-1.5 sm:px-2.5 sm:py-2 text-xs bg-[var(--bg-card)] border border-[var(--border-color)] text-[var(--text-muted)] hover:text-[var(--accent-gold)] hover:border-[var(--accent-gold)] transition-all shrink-0 flex items-center gap-1 shadow-sm"
+              title="Edit Dispute Parties (You & Opponent names / details)"
+            >
+              <Users className="w-3.5 h-3.5 text-[var(--accent-gold)] shrink-0" />
+              <span className="hidden md:inline text-[11px] font-bold">Edit Parties</span>
             </button>
           </div>
 
@@ -129,8 +147,7 @@ export const Header: React.FC = () => {
               title="Start Interactive Guided Tour"
             >
               <Sparkles className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-slate-950 fill-slate-950" />
-              <span className="hidden xs:inline">Tour Guide</span>
-              <span className="xs:hidden">Tour</span>
+              <span className="hidden sm:inline">Tour Guide</span>
             </button>
 
             {/* Settings Button */}
@@ -155,6 +172,11 @@ export const Header: React.FC = () => {
             return (
               <button
                 key={ws.id}
+                ref={el => {
+                  if (isActive && el) {
+                    el.scrollIntoView({ behavior: 'smooth', inline: 'nearest', block: 'nearest' });
+                  }
+                }}
                 onClick={() => {
                   sound.playClick();
                   setActiveWorkstation(ws.id);

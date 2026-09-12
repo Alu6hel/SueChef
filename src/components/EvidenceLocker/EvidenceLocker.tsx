@@ -21,27 +21,35 @@ import {
   Scissors,
   UploadCloud,
   FileUp,
-  Check
+  Check,
+  Camera,
+  Scan
 } from 'lucide-react';
 import { EvidenceItem } from '../../types';
 import { sound } from '../../services/soundEngine';
 import { CryptoDbService } from '../../services/cryptoDb';
 import { ChatThreadMaker } from './ChatThreadMaker';
 import { RedactionCanvas } from './RedactionCanvas';
+import { cleanPartyName } from '../../services/caseUtils';
+import { ReceiptOcrModal } from './ReceiptOcrModal';
 
 export const EvidenceLocker: React.FC = () => {
   const { activeCase, updateActiveCase, addEvidence } = useSueChef();
   const [activeTab, setActiveTab] = useState<'vault' | 'chat' | 'redaction'>('vault');
   const [selectedEvidence, setSelectedEvidence] = useState<EvidenceItem | null>(activeCase.evidenceList[0] || null);
   const [showAddModal, setShowAddModal] = useState(false);
+  const [showOcrModal, setShowOcrModal] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+
+  const plaintiff = activeCase.parties.find(p => p.role === 'plaintiff');
+  const defaultCustodianName = plaintiff ? cleanPartyName(plaintiff.name) : 'Plaintiff';
 
   // Form State for new evidence
   const [newTitle, setNewTitle] = useState('');
   const [newCategory, setNewCategory] = useState<EvidenceItem['category']>('receipt');
   const [newFileName, setNewFileName] = useState('');
   const [newDateOccurred, setNewDateOccurred] = useState(new Date().toISOString().split('T')[0]);
-  const [newCustodian, setNewCustodian] = useState(activeCase.parties.find(p => p.role === 'plaintiff')?.name || 'Jordan Smith');
+  const [newCustodian, setNewCustodian] = useState(defaultCustodianName);
   const [newNotes, setNewNotes] = useState('');
   const [computedHash, setComputedHash] = useState<string>('');
   const [realFileSize, setRealFileSize] = useState<number>(0);
@@ -197,7 +205,19 @@ export const EvidenceLocker: React.FC = () => {
               </div>
             </div>
 
-            <div className="flex items-center gap-3">
+            <div className="flex flex-wrap items-center gap-2.5">
+              <button
+                type="button"
+                onClick={() => {
+                  sound.playClick();
+                  setShowOcrModal(true);
+                }}
+                className="btn-geom flex items-center gap-1.5 px-3.5 py-2 text-xs font-mono font-bold bg-[var(--bg-secondary)] border border-[var(--border-color)] hover:border-[var(--accent-gold)] text-[var(--accent-gold)] hover:bg-[var(--bg-hover)] transition-all shadow-sm"
+              >
+                <Camera className="w-4 h-4" />
+                <span>📷 Scan Receipt / Camera OCR</span>
+              </button>
+
               <button
                 onClick={() => {
                   sound.playClick();
@@ -584,6 +604,12 @@ export const EvidenceLocker: React.FC = () => {
           </div>
         </div>
       )}
+
+      {/* Instant Camera & Receipt OCR Modal */}
+      <ReceiptOcrModal
+        isOpen={showOcrModal}
+        onClose={() => setShowOcrModal(false)}
+      />
     </div>
   );
 };

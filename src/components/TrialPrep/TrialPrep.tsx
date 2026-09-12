@@ -20,8 +20,14 @@ import {
   Maximize2,
   FileText,
   Tag,
-  Wand2
+  Wand2,
+  Scale,
+  MessageSquare,
+  AlertTriangle,
+  ShieldAlert,
+  ArrowRight
 } from 'lucide-react';
+import { MockHearingEngine, MockJudgeQuestion, HearingEvaluationResult } from '../../services/mockHearingEngine';
 
 const SAMPLE_SCENARIOS: ObjectionScenario[] = [
   {
@@ -183,7 +189,16 @@ const FRE_RULES = [
 
 export const TrialPrep: React.FC = () => {
   const { activeCase, updateActiveCase, totalDamages } = useSueChef();
-  const [activeTab, setActiveTab] = useState<'simulator' | 'fre' | 'witnesses' | 'speech'>('simulator');
+  const [activeTab, setActiveTab] = useState<'mock_hearing' | 'simulator' | 'fre' | 'witnesses' | 'speech'>('mock_hearing');
+
+  // Mock Hearing State
+  const [mockQuestions, setMockQuestions] = useState<MockJudgeQuestion[]>(() => 
+    MockHearingEngine.getQuestionsForCategory(activeCase.claimEvaluation.category)
+  );
+  const [mockIdx, setMockIdx] = useState(0);
+  const [userHearingAnswer, setUserHearingAnswer] = useState('');
+  const [hearingEvaluation, setHearingEvaluation] = useState<HearingEvaluationResult | null>(null);
+  const [isEvaluatingHearing, setIsEvaluatingHearing] = useState(false);
 
   // Simulator Quiz State
   const [currentScenarioIdx, setCurrentScenarioIdx] = useState(0);
@@ -392,6 +407,21 @@ Respectfully submitted, Plaintiff rests.`;
       {/* Tabs */}
       <div className="flex flex-wrap gap-2 border-b border-[var(--border-color)] pb-3">
         <button
+          onClick={() => { sound.playClick(); setActiveTab('mock_hearing'); }}
+          className={`flex items-center gap-2 px-4 py-2 text-xs md:text-sm font-semibold custom-geometry border transition-all ${
+            activeTab === 'mock_hearing'
+              ? 'bg-[var(--accent-gold)] text-slate-950 border-[var(--accent-gold)] font-bold shadow-md'
+              : 'bg-[var(--bg-card)] text-[var(--text-muted)] border-[var(--border-color)] hover:text-[var(--text-main)]'
+          }`}
+        >
+          <Scale className="w-4 h-4" />
+          <span>Mock Hearing Rehearsal</span>
+          <span className="px-1.5 py-0.5 rounded text-[10px] bg-emerald-950 text-emerald-300 border border-emerald-500/40 uppercase font-bold">
+            Interactive
+          </span>
+        </button>
+
+        <button
           onClick={() => { sound.playClick(); setActiveTab('simulator'); }}
           className={`flex items-center gap-2 px-4 py-2 text-xs md:text-sm font-semibold custom-geometry border transition-all ${
             activeTab === 'simulator'
@@ -442,6 +472,232 @@ Respectfully submitted, Plaintiff rests.`;
           <span>Courtroom Argument Teleprompter</span>
         </button>
       </div>
+
+      {/* Tab 0: Interactive Mock Hearing Rehearsal */}
+      {activeTab === 'mock_hearing' && (() => {
+        const currQ = mockQuestions[mockIdx] || mockQuestions[0];
+        
+        const handleEvaluate = () => {
+          if (!userHearingAnswer.trim()) return;
+          sound.playGavelStrike();
+          setIsEvaluatingHearing(true);
+          setTimeout(() => {
+            const res = MockHearingEngine.evaluateUserResponse(userHearingAnswer, currQ, activeCase);
+            setHearingEvaluation(res);
+            setIsEvaluatingHearing(false);
+            if (res.score >= 70) sound.playSuccessChime();
+            else sound.playWarningBell();
+          }, 350);
+        };
+
+        return (
+          <div className="space-y-6 animate-in fade-in duration-200">
+            {/* Judge Question Card */}
+            <div className="bg-gradient-to-br from-[var(--bg-card)] via-[var(--bg-secondary)] to-[var(--bg-card)] border-2 border-[var(--accent-gold)]/60 p-5 md:p-6 custom-geometry shadow-xl space-y-4">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-[var(--border-color)] pb-3">
+                <div className="flex items-center gap-3">
+                  <div className="p-2.5 rounded-xl bg-amber-950/40 border border-amber-500/40 text-amber-300">
+                    <Gavel className="w-6 h-6" />
+                  </div>
+                  <div>
+                    <h3 className="font-serif font-bold text-base text-[var(--text-main)]">
+                      {currQ.judgeName}
+                    </h3>
+                    <p className="text-xs text-[var(--accent-gold)] font-mono">
+                      {currQ.judgeTitle} &bull; Inquiry #{mockIdx + 1} of {mockQuestions.length}
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <button
+                    disabled={mockIdx === 0}
+                    onClick={() => {
+                      sound.playClick();
+                      setMockIdx(prev => Math.max(0, prev - 1));
+                      setHearingEvaluation(null);
+                    }}
+                    className="px-2.5 py-1 text-xs font-mono bg-[var(--bg-card)] border border-[var(--border-color)] text-[var(--text-main)] disabled:opacity-40 rounded"
+                  >
+                    &larr; Prev
+                  </button>
+                  <button
+                    disabled={mockIdx >= mockQuestions.length - 1}
+                    onClick={() => {
+                      sound.playClick();
+                      setMockIdx(prev => Math.min(mockQuestions.length - 1, prev + 1));
+                      setHearingEvaluation(null);
+                    }}
+                    className="px-2.5 py-1 text-xs font-mono bg-[var(--bg-card)] border border-[var(--border-color)] text-[var(--text-main)] disabled:opacity-40 rounded"
+                  >
+                    Next &rarr;
+                  </button>
+                </div>
+              </div>
+
+              {/* The Question */}
+              <div className="p-4 bg-[var(--bg-primary)] border border-[var(--border-color)] rounded custom-geometry space-y-2">
+                <div className="text-xs font-mono uppercase text-amber-400 font-bold flex items-center gap-2">
+                  <span>Question From The Bench:</span>
+                </div>
+                <blockquote className="font-serif italic text-base text-slate-100 leading-relaxed">
+                  "{currQ.question}"
+                </blockquote>
+              </div>
+
+              {/* Objective & Legal Grounding */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
+                <div className="p-3 bg-[var(--bg-card)] border border-[var(--border-color)] rounded">
+                  <span className="font-mono uppercase text-[10px] text-[var(--text-muted)] font-bold block">
+                    What The Magistrate Is Evaluating:
+                  </span>
+                  <p className="text-[var(--text-main)] mt-1">{currQ.objective}</p>
+                </div>
+                <div className="p-3 bg-[var(--bg-card)] border border-[var(--border-color)] rounded">
+                  <span className="font-mono uppercase text-[10px] text-[var(--text-muted)] font-bold block">
+                    Governing Statutory Authority:
+                  </span>
+                  <p className="text-[var(--accent-gold)] font-mono mt-1">{currQ.statutoryBasis}</p>
+                </div>
+              </div>
+
+              {/* Answer Input Area */}
+              <div className="space-y-3 pt-2">
+                <div className="flex items-center justify-between">
+                  <label className="text-xs font-mono uppercase text-[var(--text-muted)] font-bold">
+                    Your In-Court Response To The Judge:
+                  </label>
+                  <div className="flex items-center gap-2 text-xs">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        sound.playClick();
+                        setUserHearingAnswer(currQ.modelAnswer);
+                      }}
+                      className="text-[11px] font-mono text-[var(--accent-gold)] hover:underline"
+                    >
+                      Use Model Answer
+                    </button>
+                    <span className="text-[var(--text-muted)]">&bull;</span>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        sound.playClick();
+                        setUserHearingAnswer(currQ.flawedAnswer);
+                      }}
+                      className="text-[11px] font-mono text-rose-400 hover:underline"
+                    >
+                      Test Flawed Hearsay
+                    </button>
+                  </div>
+                </div>
+
+                <textarea
+                  rows={4}
+                  value={userHearingAnswer}
+                  onChange={(e) => setUserHearingAnswer(e.target.value)}
+                  placeholder="Address the court: 'Your Honor, under... as shown in Exhibit...' (Avoid emotional accusations or hearsay statements)..."
+                  className="w-full p-3 bg-[var(--bg-secondary)] border-2 border-[var(--border-color)] focus:border-[var(--accent-gold)] text-sm text-[var(--text-main)] custom-geometry outline-none"
+                />
+
+                <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-1">
+                  <div className="text-xs font-mono text-[var(--text-muted)]">
+                    {userHearingAnswer.trim().split(/\s+/).filter(Boolean).length} words &bull; Est. spoken time: ~{Math.round((userHearingAnswer.trim().split(/\s+/).filter(Boolean).length / 130) * 60)}s (Goal: &lt; 60s)
+                  </div>
+                  <button
+                    type="button"
+                    disabled={isEvaluatingHearing || !userHearingAnswer.trim()}
+                    onClick={handleEvaluate}
+                    className="w-full sm:w-auto px-6 py-2.5 bg-[var(--accent-gold)] text-slate-950 font-bold text-xs font-mono uppercase rounded hover:opacity-90 disabled:opacity-50 transition-all flex items-center justify-center gap-2 shadow-md"
+                  >
+                    {isEvaluatingHearing ? (
+                      <div className="w-4 h-4 border-2 border-slate-950 border-t-transparent rounded-full animate-spin" />
+                    ) : (
+                      <Gavel className="w-4 h-4" />
+                    )}
+                    <span>Evaluate Courtroom Readiness</span>
+                  </button>
+                </div>
+              </div>
+
+              {/* Real-time Evaluation Results */}
+              {hearingEvaluation && (
+                <div className="mt-4 p-5 bg-[var(--bg-primary)] border-2 border-[var(--border-color)] rounded custom-geometry space-y-4 animate-in fade-in">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-[var(--border-color)] pb-3">
+                    <div>
+                      <div className="text-[10px] font-mono uppercase text-[var(--text-muted)] font-bold">
+                        Bench Assessment Verdict:
+                      </div>
+                      <div className="font-serif font-bold text-base text-[var(--text-main)]">
+                        {hearingEvaluation.verdict}
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2 px-3 py-1.5 bg-[var(--bg-card)] border border-[var(--border-color)] rounded">
+                      <Award className="w-4 h-4 text-[var(--accent-gold)]" />
+                      <span className="font-mono font-bold text-sm text-[var(--accent-gold)]">
+                        Score: {hearingEvaluation.score}/100
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Hearsay Violations Warning */}
+                  {hearingEvaluation.hearsayViolations.length > 0 && (
+                    <div className="p-3 bg-rose-950/60 border border-rose-500/60 rounded text-xs text-rose-200 space-y-1">
+                      <div className="flex items-center gap-2 font-bold font-mono text-rose-300">
+                        <ShieldAlert className="w-4 h-4 text-rose-400" />
+                        <span>EVIDENTIARY RULE VIOLATIONS DETECTED:</span>
+                      </div>
+                      {hearingEvaluation.hearsayViolations.map((v, i) => (
+                        <div key={i} className="pl-6">&bull; {v}</div>
+                      ))}
+                    </div>
+                  )}
+
+                  {/* Checklist */}
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 text-xs font-mono">
+                    <div className={`p-2.5 border rounded flex items-center gap-2 ${
+                      hearingEvaluation.foundationCheck.addressedJudgeRespectfully ? 'bg-emerald-950/40 border-emerald-500/40 text-emerald-300' : 'bg-slate-900 border-slate-700 text-slate-400'
+                    }`}>
+                      <CheckCircle2 className="w-3.5 h-3.5 shrink-0" />
+                      <span>Respectful "Your Honor"</span>
+                    </div>
+                    <div className={`p-2.5 border rounded flex items-center gap-2 ${
+                      hearingEvaluation.foundationCheck.citedExhibits ? 'bg-emerald-950/40 border-emerald-500/40 text-emerald-300' : 'bg-slate-900 border-slate-700 text-slate-400'
+                    }`}>
+                      <CheckCircle2 className="w-3.5 h-3.5 shrink-0" />
+                      <span>Cites Specific Exhibit</span>
+                    </div>
+                    <div className={`p-2.5 border rounded flex items-center gap-2 ${
+                      hearingEvaluation.foundationCheck.citedDatesOrAmounts ? 'bg-emerald-950/40 border-emerald-500/40 text-emerald-300' : 'bg-slate-900 border-slate-700 text-slate-400'
+                    }`}>
+                      <CheckCircle2 className="w-3.5 h-3.5 shrink-0" />
+                      <span>States Exact Amounts/Dates</span>
+                    </div>
+                  </div>
+
+                  {/* Magistrate's Feedback */}
+                  <div className="space-y-1 text-xs">
+                    <span className="font-mono uppercase text-[10px] text-[var(--text-muted)] font-bold block">
+                      Magistrate's Ruling &amp; Critique:
+                    </span>
+                    <p className="text-slate-200 leading-relaxed">{hearingEvaluation.critique}</p>
+                  </div>
+
+                  {/* Suggested Courtroom Script */}
+                  <div className="p-3.5 bg-[var(--bg-secondary)] border border-[var(--accent-gold)]/40 rounded space-y-1.5">
+                    <span className="font-mono uppercase text-[10px] text-[var(--accent-gold)] font-bold block">
+                      Recommended Courtroom Rebuttal:
+                    </span>
+                    <p className="text-xs font-serif italic text-slate-100 leading-relaxed">
+                      "{hearingEvaluation.suggestedRevision}"
+                    </p>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        );
+      })()}
 
       {/* Tab 1: Objection Simulator */}
       {activeTab === 'simulator' && (

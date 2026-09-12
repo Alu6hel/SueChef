@@ -17,12 +17,14 @@ import {
 import { SolDocketItem } from '../../types';
 import { getJurisdiction } from '../../services/jurisdictions';
 import { sound } from '../../services/soundEngine';
+import { CalendarSyncService } from '../../services/calendarSync';
 
 export const SolWatcher: React.FC = () => {
   const { activeCase, updateActiveCase } = useSueChef();
   const [newTitle, setNewTitle] = useState('');
   const [newTriggerDate, setNewTriggerDate] = useState('');
   const [newLimitYears, setNewLimitYears] = useState('4');
+  const [calendarExported, setCalendarExported] = useState(false);
 
   const currJurisdiction = getJurisdiction(activeCase.state);
 
@@ -126,6 +128,20 @@ export const SolWatcher: React.FC = () => {
         </div>
 
         <div className="flex items-center gap-2">
+          <button
+            onClick={() => {
+              const res = CalendarSyncService.exportDocketToCalendar(activeCase);
+              if (res.success) {
+                setCalendarExported(true);
+                setTimeout(() => setCalendarExported(false), 3000);
+              }
+            }}
+            className="btn-geom flex items-center gap-1.5 px-3 py-1.5 text-xs font-mono font-bold bg-[var(--bg-secondary)] border border-[var(--border-color)] hover:border-emerald-500 text-emerald-400 hover:bg-[var(--bg-hover)] transition-all shadow-sm"
+          >
+            <Calendar className="w-3.5 h-3.5" />
+            <span>{calendarExported ? '✓ Added to Calendar (.ics)' : '📅 Add Deadlines (.ics)'}</span>
+          </button>
+
           <button
             onClick={() => {
               sound.playWarningBell();

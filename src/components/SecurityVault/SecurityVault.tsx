@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { useSueChef } from '../../context/SueChefContext';
 import { 
   Lock, 
@@ -23,6 +23,7 @@ import { sound } from '../../services/soundEngine';
 
 export const SecurityVault: React.FC = () => {
   const { panicWipe, exportCaseBundle, importCaseBundle, activeCase, updateActiveCase } = useSueChef();
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const [importJsonText, setImportJsonText] = useState('');
   const [wipeConfirmed, setWipeConfirmed] = useState(false);
   const [shredConfirmInput, setShredConfirmInput] = useState('');
@@ -81,10 +82,32 @@ export const SecurityVault: React.FC = () => {
     try {
       await importCaseBundle(importJsonText);
       setImportJsonText('');
+      sound.playSuccessChime();
       setStatusMessage('Case imported and decrypted successfully.');
     } catch {
+      sound.playWarningBell();
       setStatusMessage('Error: Invalid SueChef encrypted case format.');
     }
+  };
+
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    sound.playDocketStamp();
+    const reader = new FileReader();
+    reader.onload = async (evt) => {
+      const text = evt.target?.result as string;
+      if (!text) return;
+      try {
+        await importCaseBundle(text);
+        sound.playSuccessChime();
+        setStatusMessage(`✓ Case archive "${file.name}" imported and decrypted successfully.`);
+      } catch {
+        sound.playWarningBell();
+        setStatusMessage('Error: Invalid .suechef encrypted archive format.');
+      }
+    };
+    reader.readAsText(file);
   };
 
   const handleRunIntegrityAudit = async () => {
@@ -144,19 +167,24 @@ export const SecurityVault: React.FC = () => {
   };
 
   return (
-    <div className="space-y-6 max-w-7xl mx-auto p-4 md:p-6 animate-fadeIn">
+    <div className="space-y-6 max-w-7xl mx-auto p-4 md:p-6 pb-32 animate-fadeIn">
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-[var(--border-color)] pb-5">
-        <div className="flex items-center gap-2.5">
-          <div className="p-2 card-geom bg-rose-500/10 border border-rose-500/30 text-rose-400">
+        <div className="flex items-start sm:items-center gap-3">
+          <div className="p-2.5 card-geom bg-rose-500/10 border border-rose-500/30 text-rose-400 shrink-0">
             <Lock className="w-6 h-6" />
           </div>
           <div>
-            <h1 className="font-serif font-bold text-2xl text-[var(--text-main)]">
-              Ironclad Confidentiality & Security Vault
+            <div className="flex items-center gap-2">
+              <span className="text-[10px] font-mono font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-rose-500/20 text-rose-300 border border-rose-500/30">
+                Station 13 • Privacy & File Integrity
+              </span>
+            </div>
+            <h1 className="font-serif font-bold text-xl md:text-2xl text-[var(--text-main)] mt-1">
+              Case Security & Privacy Vault
             </h1>
-            <p className="text-xs text-[var(--text-muted)] font-mono">
-              Client-Side WebCrypto SHA-256 Integrity Verification, Zero-Cloud Telemetry & Emergency Panic Shredder
+            <p className="text-xs text-[var(--text-muted)] font-sans mt-0.5">
+              Everything is stored privately on your device. Run tamper checks, export backups, or shred data when resolved.
             </p>
           </div>
         </div>
@@ -164,7 +192,7 @@ export const SecurityVault: React.FC = () => {
         <div className="flex items-center gap-2">
           <span className="p-2 card-geom bg-emerald-950/80 border border-emerald-500/40 text-emerald-400 flex items-center gap-1.5 text-xs font-mono font-semibold">
             <ShieldCheck className="w-4 h-4" />
-            OFFLINE INTEGRITY VERIFIED
+            100% PRIVATE & OFFLINE
           </span>
         </div>
       </div>
@@ -183,10 +211,10 @@ export const SecurityVault: React.FC = () => {
             <Cpu className="w-5 h-5" />
           </div>
           <h3 className="font-serif font-bold text-base text-[var(--text-main)]">
-            100% Bare-Metal Local
+            🔒 100% Private On Your Device
           </h3>
-          <p className="text-xs text-[var(--text-muted)] leading-relaxed">
-            Zero cloud databases, zero telemetry, and zero remote logging. Everything executes client-side on your device’s hardware.
+          <p className="text-xs text-[var(--text-muted)] leading-relaxed font-sans">
+            No outside cloud databases, no tracking, and no external servers. Your case details and evidence stay strictly on your phone or computer.
           </p>
         </div>
 
@@ -195,10 +223,10 @@ export const SecurityVault: React.FC = () => {
             <Key className="w-5 h-5" />
           </div>
           <h3 className="font-serif font-bold text-base text-[var(--text-main)]">
-            Web Crypto SHA-256
+            🛡️ Tamper-Proof Evidence Fingerprints
           </h3>
-          <p className="text-xs text-[var(--text-muted)] leading-relaxed">
-            Evidence documents are fingerprinted using deterministic SHA-256 digests in-browser, preventing unauthorized tampering.
+          <p className="text-xs text-[var(--text-muted)] leading-relaxed font-sans">
+            Every receipt and photo gets a unique digital SHA-256 seal. This proves in court that files were never altered after the incident date.
           </p>
         </div>
 
@@ -207,10 +235,10 @@ export const SecurityVault: React.FC = () => {
             <EyeOff className="w-5 h-5" />
           </div>
           <h3 className="font-serif font-bold text-base text-[var(--text-main)]">
-            Adversary Safe
+            👁️ Protected From Prying Eyes
           </h3>
-          <p className="text-xs text-[var(--text-muted)] leading-relaxed">
-            Your opposing party and their legal team cannot subpoena or harvest your dispute notes from a third-party cloud provider.
+          <p className="text-xs text-[var(--text-muted)] leading-relaxed font-sans">
+            The other party cannot subpoena your private case notes or strategy from any cloud company because only you hold the keys.
           </p>
         </div>
       </div>
@@ -300,6 +328,30 @@ export const SecurityVault: React.FC = () => {
               Restore / Import Case Archive
             </h3>
           </div>
+
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept=".suechef,.json"
+            className="hidden"
+            onChange={handleFileSelect}
+          />
+
+          <button
+            type="button"
+            onClick={() => fileInputRef.current?.click()}
+            className="btn-geom w-full flex items-center justify-center gap-2 py-3 text-xs font-mono font-bold bg-[var(--accent-gold)] text-slate-950 hover:opacity-90 transition-all shadow-sm"
+          >
+            <Upload className="w-4 h-4" />
+            <span>📂 Choose &amp; Restore .suechef File</span>
+          </button>
+
+          <div className="relative flex py-1 items-center">
+            <div className="flex-grow border-t border-[var(--border-color)]"></div>
+            <span className="flex-shrink mx-2 text-[10px] font-mono text-[var(--text-muted)] uppercase">Or Paste Raw JSON</span>
+            <div className="flex-grow border-t border-[var(--border-color)]"></div>
+          </div>
+
           <textarea
             placeholder="Paste .suechef JSON backup data here..."
             value={importJsonText}
@@ -309,10 +361,10 @@ export const SecurityVault: React.FC = () => {
           />
           <button
             onClick={handleImport}
-            className="btn-geom w-full flex items-center justify-center gap-2 py-2.5 text-xs font-semibold bg-[var(--bg-secondary)] border border-[var(--border-color)] text-[var(--text-main)] hover:bg-[var(--bg-hover)]"
+            className="btn-geom w-full flex items-center justify-center gap-2 py-2 text-xs font-semibold bg-[var(--bg-secondary)] border border-[var(--border-color)] text-[var(--text-main)] hover:bg-[var(--bg-hover)]"
           >
             <Upload className="w-4 h-4 text-sky-400" />
-            Restore Case Archive
+            Restore From Text
           </button>
         </div>
       </div>

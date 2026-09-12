@@ -143,13 +143,394 @@ export const DiscoveryStudio: React.FC = () => {
           complianceDeadlineDays: 20
         }
       ];
+    } else if (cat === 'wage_theft') {
+      newRogs = [
+        {
+          id: `disc_rog_1`,
+          number: 1,
+          questionText: `State Plaintiff's complete dates of employment, job classification (exempt vs non-exempt), agreed regular hourly wage rate, and overtime rate.`,
+          targetObjective: 'Establish baseline wage agreement and statutory non-exempt classification.',
+          objectionRiskNotes: 'Fundamental employment and wage liability baseline.',
+          category: 'interrogatory'
+        },
+        {
+          id: `disc_rog_2`,
+          number: 2,
+          questionText: `Identify all timekeeping systems, electronic badge swipe records, POS sign-ins, and manual timesheets tracking Plaintiff's daily hours worked.`,
+          targetObjective: 'Capture objective electronic records of uncompensated overtime and off-the-clock work.',
+          objectionRiskNotes: 'Core electronic discovery under FLSA and state labor codes.',
+          category: 'interrogatory'
+        },
+        {
+          id: `disc_rog_3`,
+          number: 3,
+          questionText: `State the exact date, payment method, check number, and breakdown of all funds tendered to Plaintiff as final wages upon termination of employment.`,
+          targetObjective: 'Establish prompt-payment penalty liability and willful withholding.',
+          objectionRiskNotes: 'Direct inquiry on statutory waiting time penalties.',
+          category: 'interrogatory'
+        }
+      ];
+
+      newRfps = [
+        {
+          id: `disc_rfp_1`,
+          number: 1,
+          questionText: `All contemporaneous electronic punch logs, timecards, biometric clock logs, and supervisor time-edit audit trails for Plaintiff.`,
+          targetObjective: 'Expose unauthorized supervisor shave-downs or unrecorded shift hours.',
+          objectionRiskNotes: 'Mandatory statutory employer payroll record retention.',
+          category: 'rfp'
+        },
+        {
+          id: `disc_rfp_2`,
+          number: 2,
+          questionText: `All itemized wage statements (paystubs), direct deposit confirmations, and W-2 / 1099 tax forms issued to Plaintiff.`,
+          targetObjective: 'Document exact gross wages, statutory deductions, and overtime pay discrepancies.',
+          objectionRiskNotes: 'Standard statutory wage records.',
+          category: 'rfp'
+        },
+        {
+          id: `disc_rfp_3`,
+          number: 3,
+          questionText: `Defendant's written meal and rest break policies, employee handbook, and acknowledgement forms signed by Plaintiff.`,
+          targetObjective: 'Prove lack of statutory break compliance and employer notice.',
+          objectionRiskNotes: 'Standard employer policy production.',
+          category: 'rfp'
+        }
+      ];
+
+      newRfas = [
+        {
+          id: `disc_rfa_1`,
+          number: 1,
+          questionText: `Admit that Plaintiff was classified as a non-exempt hourly employee eligible for statutory overtime compensation.`,
+          targetObjective: 'Conclusively eliminate misclassification exemption defense.',
+          objectionRiskNotes: 'Key claim element admission.',
+          category: 'rfa'
+        },
+        {
+          id: `disc_rfa_2`,
+          number: 2,
+          questionText: `Admit that Defendant did not pay Plaintiff all accrued final wages on the date of employment separation or within statutory waiting time limits.`,
+          targetObjective: 'Lock in full statutory waiting time penalties under labor code.',
+          objectionRiskNotes: 'Dispositive timing admission under state wage statutes.',
+          category: 'rfa'
+        }
+      ];
+
+      newSubs = [
+        {
+          id: `disc_sub_1`,
+          thirdPartyName: 'ADP / Gusto / Paychex Legal Department',
+          thirdPartyAddress: 'Subpoena Operations, National Headquarters',
+          documentsRequested: 'Certified electronic payroll audit logs, gross earnings ledgers, and direct deposit confirmation records for Plaintiff.',
+          relevanceDeclaration: 'Unbiased third-party verification of gross pay, net pay, and transmission timestamps.',
+          complianceDeadlineDays: 20
+        }
+      ];
+    } else if (cat === 'consumer_fraud') {
+      newRogs = [
+        {
+          id: `disc_rog_1`,
+          number: 1,
+          questionText: `Identify all advertising claims, promotional marketing materials, specifications, and sales presentations provided to Plaintiff concerning the subject transaction.`,
+          targetObjective: 'Lock in the explicit representations and factual warranties made to consumer.',
+          objectionRiskNotes: 'Directly relevant to deceptive trade practices and statutory fraud.',
+          category: 'interrogatory'
+        },
+        {
+          id: `disc_rog_2`,
+          number: 2,
+          questionText: `State all consumer complaints, warranty claims, BBB arbitrations, or state attorney general inquiries received by Defendant regarding identical product/service defects within the past 24 months.`,
+          targetObjective: 'Establish Defendant scienter, pattern of deceptive conduct, and willful non-disclosure.',
+          objectionRiskNotes: 'Pattern and practice evidence admissible under consumer protection statutes.',
+          category: 'interrogatory'
+        },
+        {
+          id: `disc_rog_3`,
+          number: 3,
+          questionText: `State the factual and legal basis for Defendant's refusal to provide a full statutory refund or repair upon Plaintiff's timely demand.`,
+          targetObjective: 'Commit Defendant to affirmative defenses and identify purported contractual disclaimers.',
+          objectionRiskNotes: 'Standard contention interrogatory.',
+          category: 'interrogatory'
+        }
+      ];
+
+      newRfps = [
+        {
+          id: `disc_rfp_1`,
+          number: 1,
+          questionText: `All sales agreements, invoices, receipts, written warranty brochures, and return policies provided to Plaintiff at or before the time of purchase.`,
+          targetObjective: 'Establish contract terms and unconscionable or misleading clauses.',
+          objectionRiskNotes: 'Primary transaction documents.',
+          category: 'rfp'
+        },
+        {
+          id: `disc_rfp_2`,
+          number: 2,
+          questionText: `All internal emails, customer service tickets, chat transcripts, and repair logs regarding Plaintiff's complaints and requests for remedy.`,
+          targetObjective: 'Uncover internal admissions of product defect or bad-faith stonewalling.',
+          objectionRiskNotes: 'Standard business communications.',
+          category: 'rfp'
+        }
+      ];
+
+      newRfas = [
+        {
+          id: `disc_rfa_1`,
+          number: 1,
+          questionText: `Admit that Defendant represented the subject merchandise/service possessed specific attributes or quality that it did not in fact possess.`,
+          targetObjective: 'Conclusively establish deceptive representation under consumer protection statutes.',
+          objectionRiskNotes: 'Dispositive admission of misrepresentation.',
+          category: 'rfa'
+        },
+        {
+          id: `disc_rfa_2`,
+          number: 2,
+          questionText: `Admit that Plaintiff provided timely written notice of defect and demanded rescission or refund within 30 days of discovery.`,
+          targetObjective: 'Establish compliance with statutory notice prerequisites.',
+          objectionRiskNotes: 'Factual notice admission.',
+          category: 'rfa'
+        }
+      ];
+
+      newSubs = [
+        {
+          id: `disc_sub_1`,
+          thirdPartyName: 'Stripe / Square / Merchant Payment Processor',
+          thirdPartyAddress: 'Subpoena Compliance Unit, San Francisco, CA',
+          documentsRequested: 'Payment transaction authorization logs, dispute correspondence, and chargeback arbitration records for transaction.',
+          relevanceDeclaration: 'Establishes payment flow, merchant representations, and financial dispute chronology.',
+          complianceDeadlineDays: 20
+        }
+      ];
+    } else if (cat === 'contractor_dispute') {
+      newRogs = [
+        {
+          id: `disc_rog_1`,
+          number: 1,
+          questionText: `State Defendant's official state contractor license number, specialty classification, active bonding company, and commercial general liability insurance policy number.`,
+          targetObjective: 'Verify statutory licensure status and identify surety bond assets for collection.',
+          objectionRiskNotes: 'Public statutory licensing requirements for home improvement contractors.',
+          category: 'interrogatory'
+        },
+        {
+          id: `disc_rog_2`,
+          number: 2,
+          questionText: `Itemize all labor hours, subcontractor payments, materials purchased, and equipment rentals billed to Plaintiff on the subject improvement project.`,
+          targetObjective: 'Expose inflated billing, ghost labor, or markups unauthorized by contract.',
+          objectionRiskNotes: 'Direct cost itemization under construction contract.',
+          category: 'interrogatory'
+        },
+        {
+          id: `disc_rog_3`,
+          number: 3,
+          questionText: `State the factual reasons why project milestones were not completed by the agreed substantial completion deadline.`,
+          targetObjective: 'Lock in excuses (weather, supply chain, homeowner changes) prior to trial.',
+          objectionRiskNotes: 'Core breach of contract defense inquiry.',
+          category: 'interrogatory'
+        }
+      ];
+
+      newRfps = [
+        {
+          id: `disc_rfp_1`,
+          number: 1,
+          questionText: `The complete executed construction agreement, change orders, architectural drawings, project timeline, and daily superintendent job logs.`,
+          targetObjective: 'Prove contractual scope, unapproved changes, and daily job site delays.',
+          objectionRiskNotes: 'Fundamental construction project documentation.',
+          category: 'rfp'
+        },
+        {
+          id: `disc_rfp_2`,
+          number: 2,
+          questionText: `All municipal building permits, permit applications, inspection sign-off cards, correction notices, and certificates of occupancy for Plaintiff's premises.`,
+          targetObjective: 'Demonstrate code violations, unpermitted work, or failed municipal inspections.',
+          objectionRiskNotes: 'Official public safety and building code compliance records.',
+          category: 'rfp'
+        },
+        {
+          id: `disc_rfp_3`,
+          number: 3,
+          questionText: `All invoices, material receipts, and unconditional lien waivers from all subcontractors and suppliers who provided labor or materials.`,
+          targetObjective: 'Prevent mechanic lien exposure and verify true wholesale material expenditures.',
+          objectionRiskNotes: 'Essential construction financial records.',
+          category: 'rfp'
+        }
+      ];
+
+      newRfas = [
+        {
+          id: `disc_rfa_1`,
+          number: 1,
+          questionText: `Admit that Defendant did not obtain final municipal building inspection approval for the work performed on Plaintiff's property.`,
+          targetObjective: 'Establish incomplete performance and building code non-compliance as a matter of law.',
+          objectionRiskNotes: 'Dispositive admission regarding completion.',
+          category: 'rfa'
+        },
+        {
+          id: `disc_rfa_2`,
+          number: 2,
+          questionText: `Admit that Plaintiff paid Defendant all installment sums due under the contract prior to Defendant abandoning or halting work.`,
+          targetObjective: 'Conclusively establish Plaintiff full performance of payment covenants.',
+          objectionRiskNotes: 'Direct claim element admission.',
+          category: 'rfa'
+        }
+      ];
+
+      newSubs = [
+        {
+          id: `disc_sub_1`,
+          thirdPartyName: 'City Department of Building & Safety',
+          thirdPartyAddress: 'Office of Records & Code Enforcement, City Hall',
+          documentsRequested: 'Certified permit history, building inspector field notes, and correction notices issued for the subject parcel.',
+          relevanceDeclaration: 'Neutral municipal documentation of defective work or missing mandatory permits.',
+          complianceDeadlineDays: 20
+        }
+      ];
+    } else if (cat === 'property_damage') {
+      newRogs = [
+        {
+          id: `disc_rog_1`,
+          number: 1,
+          questionText: `Describe in complete detail the exact sequence of events, date, time, and physical mechanism whereby Defendant or Defendant's agents caused damage to Plaintiff's property.`,
+          targetObjective: 'Pin down Defendant narrative of incident under oath before trial.',
+          objectionRiskNotes: 'Core factual inquiry regarding liability.',
+          category: 'interrogatory'
+        },
+        {
+          id: `disc_rog_2`,
+          number: 2,
+          questionText: `Identify all liability insurance policies (carrier name, policy number, and policy limits) providing coverage for Defendant for the incident in question.`,
+          targetObjective: 'Discover insurance indemnity assets and trigger carrier settlement reserves.',
+          objectionRiskNotes: 'Mandatory insurance disclosure under modern rules of civil procedure.',
+          category: 'interrogatory'
+        },
+        {
+          id: `disc_rog_3`,
+          number: 3,
+          questionText: `Identify all eyewitnesses, employees, or third parties who observed or investigated the damage to Plaintiff's property.`,
+          targetObjective: 'Identify trial witnesses and unearth prior admissions.',
+          objectionRiskNotes: 'Standard witness identification.',
+          category: 'interrogatory'
+        }
+      ];
+
+      newRfps = [
+        {
+          id: `disc_rfp_1`,
+          number: 1,
+          questionText: `All photographs, video surveillance footage, incident reports, and internal memos documenting the damage incident.`,
+          targetObjective: 'Secure visual evidence before spoliation or automatic overwrite.',
+          objectionRiskNotes: 'Direct physical and video evidence.',
+          category: 'rfp'
+        },
+        {
+          id: `disc_rfp_2`,
+          number: 2,
+          questionText: `All repair estimates, salvage value calculations, and insurance adjuster appraisals regarding Plaintiff's damaged property.`,
+          targetObjective: 'Establish benchmark cost of repair or diminution in fair market value.',
+          objectionRiskNotes: 'Standard property damage assessment.',
+          category: 'rfp'
+        }
+      ];
+
+      newRfas = [
+        {
+          id: `disc_rfa_1`,
+          number: 1,
+          questionText: `Admit that Defendant or Defendant's agents exercised exclusive control over the instrumentality that caused damage to Plaintiff's property.`,
+          targetObjective: 'Establish res ipsa loquitur and prima facie negligence.',
+          objectionRiskNotes: 'Dispositive admission of control and causation.',
+          category: 'rfa'
+        },
+        {
+          id: `disc_rfa_2`,
+          number: 2,
+          questionText: `Admit that Defendant has not reimbursed Plaintiff for the documented repair or replacement cost of the damaged property.`,
+          targetObjective: 'Eliminate affirmative defenses of accord and satisfaction or prior payment.',
+          objectionRiskNotes: 'Direct damages admission.',
+          category: 'rfa'
+        }
+      ];
+
+      newSubs = [
+        {
+          id: `disc_sub_1`,
+          thirdPartyName: 'Commercial Liability Insurance Carrier / Claims Dept',
+          thirdPartyAddress: 'Subpoena Processing Center, National Claims Office',
+          documentsRequested: 'Certified claim file, field adjuster photographs, recorded statements, and preliminary property loss reports.',
+          relevanceDeclaration: 'Uncovers contemporaneous liability assessments and insurer loss appraisals.',
+          complianceDeadlineDays: 20
+        }
+      ];
+    } else if (cat === 'auto_accident') {
+      newRogs = [
+        {
+          id: `disc_rog_1`,
+          number: 1,
+          questionText: `State Defendant operator's full name, driver's license number, registered vehicle owner, and vehicular insurance policy details.`,
+          targetObjective: 'Establish permissive use, agency, and vicarious ownership liability.',
+          objectionRiskNotes: 'Standard automobile collision discovery.',
+          category: 'interrogatory'
+        },
+        {
+          id: `disc_rog_2`,
+          number: 2,
+          questionText: `State Defendant's exact speed, braking distance, lane of travel, and whether Defendant was utilizing a mobile device immediately preceding collision.`,
+          targetObjective: 'Establish per se statutory vehicle code violations and distracted driving.',
+          objectionRiskNotes: 'Direct causation and negligence inquiry.',
+          category: 'interrogatory'
+        }
+      ];
+
+      newRfps = [
+        {
+          id: `disc_rfp_1`,
+          number: 1,
+          questionText: `All dashcam footage, event data recorder (black box) telemetry, collision scene photographs, and repair shop estimates for Defendant vehicle.`,
+          targetObjective: 'Prove vehicle impact velocity and physical point of impact.',
+          objectionRiskNotes: 'Direct physical evidence.',
+          category: 'rfp'
+        },
+        {
+          id: `disc_rfp_2`,
+          number: 2,
+          questionText: `Police collision reports, traffic citations, and recorded witness statements arising from the accident.`,
+          targetObjective: 'Document official law enforcement liability findings.',
+          objectionRiskNotes: 'Public and official accident records.',
+          category: 'rfp'
+        }
+      ];
+
+      newRfas = [
+        {
+          id: `disc_rfa_1`,
+          number: 1,
+          questionText: `Admit that Defendant vehicle struck Plaintiff vehicle in the rear or failed to yield the statutory right of way.`,
+          targetObjective: 'Conclusively establish prima facie driver negligence.',
+          objectionRiskNotes: 'Dispositive liability admission.',
+          category: 'rfa'
+        }
+      ];
+
+      newSubs = [
+        {
+          id: `disc_sub_1`,
+          thirdPartyName: 'Cellular Service Carrier (Verizon / AT&T / T-Mobile)',
+          thirdPartyAddress: 'Law Enforcement & Civil Subpoena Compliance Dept',
+          documentsRequested: 'Call detail records, SMS transmission logs, and data session timestamps for Defendant mobile number during the 30-minute window surrounding collision.',
+          relevanceDeclaration: 'Establishes whether Defendant was texting or using mobile device at exact time of crash.',
+          complianceDeadlineDays: 20
+        }
+      ];
     } else {
+      // Default: Breach of Contract & General Dispute
       newRogs = [
         {
           id: `disc_rog_1`,
           number: 1,
           questionText: `Identify all agreements, written statements of work, invoices, and communications between Plaintiff and ${dName}.`,
-          targetObjective: 'Establish complete contract formation and scope.',
+          targetObjective: 'Establish complete contract formation, terms, and scope.',
           objectionRiskNotes: 'Standard contract liability scope.',
           category: 'interrogatory'
         },
@@ -159,6 +540,14 @@ export const DiscoveryStudio: React.FC = () => {
           questionText: `State the factual basis for Defendant's non-payment or refusal to perform contract obligations.`,
           targetObjective: 'Lock in defense arguments under oath prior to trial.',
           objectionRiskNotes: 'Core contention interrogatory.',
+          category: 'interrogatory'
+        },
+        {
+          id: `disc_rog_3`,
+          number: 3,
+          questionText: `Identify each person who reviewed, accepted, or rejected Plaintiff's performance or deliverables under the agreement.`,
+          targetObjective: 'Identify key corporate witnesses and prevent surprise trial testimony.',
+          objectionRiskNotes: 'Standard witness and personnel identification.',
           category: 'interrogatory'
         }
       ];
@@ -171,6 +560,14 @@ export const DiscoveryStudio: React.FC = () => {
           targetObjective: 'Uncover admissions and verify contract terms.',
           objectionRiskNotes: 'Standard business communications request.',
           category: 'rfp'
+        },
+        {
+          id: `disc_rfp_2`,
+          number: 2,
+          questionText: `All invoices, purchase orders, delivery confirmations, and accounts payable ledgers relating to Plaintiff's claim.`,
+          targetObjective: 'Document receipt of invoices and lack of timely written dispute.',
+          objectionRiskNotes: 'Essential accounting and transactional records.',
+          category: 'rfp'
         }
       ];
 
@@ -178,10 +575,29 @@ export const DiscoveryStudio: React.FC = () => {
         {
           id: `disc_rfa_1`,
           number: 1,
-          questionText: `Admit that Plaintiff performed agreed obligations and delivered required deliverables/consideration.`,
+          questionText: `Admit that Plaintiff performed agreed obligations and delivered required deliverables/consideration under the contract.`,
           targetObjective: 'Conclusively admit Plaintiff substantial performance.',
           objectionRiskNotes: 'Direct claim element admission.',
           category: 'rfa'
+        },
+        {
+          id: `disc_rfa_2`,
+          number: 2,
+          questionText: `Admit that Defendant failed to pay the agreed contract sum within the time specified in Plaintiff's invoices.`,
+          targetObjective: 'Conclusively establish breach of contract payment covenants.',
+          objectionRiskNotes: 'Dispositive admission of non-payment.',
+          category: 'rfa'
+        }
+      ];
+
+      newSubs = [
+        {
+          id: `disc_sub_1`,
+          thirdPartyName: `Commercial Banking Institution of ${dName}`,
+          thirdPartyAddress: 'Legal Subpoena Processing Division',
+          documentsRequested: 'Accounts payable ledgers and wire transfer records related to transactions with Plaintiff.',
+          relevanceDeclaration: 'Verifies whether payment was ever authorized, disbursed, or blocked.',
+          complianceDeadlineDays: 20
         }
       ];
     }

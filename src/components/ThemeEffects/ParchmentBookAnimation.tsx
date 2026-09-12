@@ -20,15 +20,24 @@ export const ParchmentBookAnimation: React.FC = () => {
     if (!ctx) return;
 
     let animationFrameId: number;
-    let width = (canvas.width = canvas.parentElement?.clientWidth || 300);
-    let height = (canvas.height = canvas.parentElement?.clientHeight || 240);
+    const parent = canvas.parentElement;
+    let width = (canvas.width = Math.max(300, parent?.clientWidth || 340));
+    let height = (canvas.height = Math.max(180, parent?.clientHeight || 200));
 
     const handleResize = () => {
       if (!canvas.parentElement) return;
-      width = canvas.width = canvas.parentElement.clientWidth;
-      height = canvas.height = canvas.parentElement.clientHeight;
+      width = canvas.width = Math.max(300, canvas.parentElement.clientWidth);
+      height = canvas.height = Math.max(180, canvas.parentElement.clientHeight);
     };
     window.addEventListener('resize', handleResize);
+
+    let resizeObserver: ResizeObserver | null = null;
+    if (canvas.parentElement && typeof ResizeObserver !== 'undefined') {
+      resizeObserver = new ResizeObserver(() => {
+        handleResize();
+      });
+      resizeObserver.observe(canvas.parentElement);
+    }
 
     // Particle system for floating ink & parchment dust
     interface Particle {
@@ -205,6 +214,7 @@ export const ParchmentBookAnimation: React.FC = () => {
     return () => {
       cancelAnimationFrame(animationFrameId);
       window.removeEventListener('resize', handleResize);
+      if (resizeObserver) resizeObserver.disconnect();
     };
   }, [theme, pageIndex]);
 

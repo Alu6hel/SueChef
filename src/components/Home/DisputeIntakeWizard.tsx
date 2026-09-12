@@ -81,9 +81,12 @@ export const DisputeIntakeWizard: React.FC = () => {
   const { createCustomCase, setActiveWorkstation, activeCase, country } = useSueChef();
   const countryInfo = getCountryInfo(country);
   
+  const plaintiff = activeCase.parties.find(p => p.role === 'plaintiff');
+  const defendant = activeCase.parties.find(p => p.role === 'defendant');
+
   const [selectedType, setSelectedType] = useState<DisputeCategory>('security_deposit');
-  const [claimantName, setClaimantName] = useState('You (Claimant)');
-  const [opponentName, setOpponentName] = useState('Apex Property Holdings LLC');
+  const [claimantName, setClaimantName] = useState(plaintiff?.name || 'You (Claimant)');
+  const [opponentName, setOpponentName] = useState(defendant?.name || 'Apex Property Holdings LLC');
   const [principalAmount, setPrincipalAmount] = useState<number>(2500);
   const [stateCode, setStateCode] = useState<string>(activeCase.state || 'CA');
   const [incidentDate, setIncidentDate] = useState<string>(() => {
@@ -94,6 +97,13 @@ export const DisputeIntakeWizard: React.FC = () => {
   const [disputeSummary, setDisputeSummary] = useState(
     'Landlord retained $2,500 security deposit after move-out without providing itemized repair deductions or receipts within the statutory deadline.'
   );
+
+  // Sync when activeCase parties update
+  React.useEffect(() => {
+    if (plaintiff?.name) setClaimantName(plaintiff.name);
+    if (defendant?.name) setOpponentName(defendant.name);
+    if (activeCase.state) setStateCode(activeCase.state);
+  }, [plaintiff?.name, defendant?.name, activeCase.state]);
 
   const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
 

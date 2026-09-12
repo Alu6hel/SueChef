@@ -15,27 +15,29 @@ export function createContractorBreachCase(): CaseFile {
     parties: [
       {
         id: 'p_cm',
-        name: 'Elena Martinez',
+        name: '[e.g., Elena Martinez (Your Name)]',
         entityType: 'individual',
         role: 'plaintiff',
-        address: '1840 Pasadena Ave',
-        city: 'Los Angeles',
+        address: '[e.g., 1840 Pasadena Ave]',
+        city: '[e.g., Los Angeles]',
         state: 'CA',
-        zip: '90031',
-        phone: '(213) 555-4921',
-        email: 'elena.m@example.com'
+        zip: '[e.g., 90031]',
+        phone: '[e.g., (213) 555-4921]',
+        email: '[e.g., your.name@example.com]',
+        isPlaceholder: true
       },
       {
         id: 'd_apex',
-        name: 'Apex Horizon Construction LLC',
+        name: '[e.g., Apex Horizon Construction LLC (Contractor)]',
         entityType: 'llc',
         role: 'defendant',
-        address: '4200 Wilshire Blvd, Suite 210',
-        city: 'Los Angeles',
+        address: '[e.g., 4200 Wilshire Blvd, Suite 210]',
+        city: '[e.g., Los Angeles]',
         state: 'CA',
-        zip: '90010',
-        phone: '(323) 555-8800',
-        registeredAgent: 'National Registered Agents, 818 W 7th St, Los Angeles, CA'
+        zip: '[e.g., 90010]',
+        phone: '[e.g., (323) 555-8800]',
+        registeredAgent: '[e.g., Registered Agents, 818 W 7th St, Los Angeles, CA]',
+        isPlaceholder: true
       }
     ],
     claimEvaluation: {
@@ -60,7 +62,7 @@ export function createContractorBreachCase(): CaseFile {
           legalStandard: 'Cal. Bus. & Prof. Code § 7159',
           description: 'Parties executed a formal home improvement contract specifying scope of kitchen and bathroom remodel.',
           isSatisfied: true,
-          userEvidenceNotes: 'Signed contract dated October 12, 2024 with itemized payment milestones.',
+          userEvidenceNotes: '[e.g., Signed contract dated October 12, 2024 with itemized payment milestones. Tap to edit with your facts.]',
           linkedEvidenceIds: ['ev_c1']
         },
         {
@@ -69,7 +71,7 @@ export function createContractorBreachCase(): CaseFile {
           legalStandard: 'Restatement (Second) of Contracts § 235',
           description: 'Homeowner timely paid $18,000 across 3 initial milestones pursuant to contract schedule.',
           isSatisfied: true,
-          userEvidenceNotes: 'Canceled checks and bank statements verifying $18k total payments.',
+          userEvidenceNotes: '[e.g., Canceled checks and bank statements verifying $18k total payments. Tap to edit with your facts.]',
           linkedEvidenceIds: ['ev_c2']
         },
         {
@@ -78,7 +80,7 @@ export function createContractorBreachCase(): CaseFile {
           legalStandard: 'Cal. Bus. & Prof. Code § 7107',
           description: 'Contractor walked off job on Day 45, leaving plumbing unsealed and tile unlevel, causing water leakage.',
           isSatisfied: true,
-          userEvidenceNotes: 'Certified home inspection report detailing $14,500 cost to tear out and repair defective plumbing.',
+          userEvidenceNotes: '[e.g., Certified home inspection report detailing $14,500 cost to tear out and repair defective plumbing. Tap to edit with your facts.]',
           linkedEvidenceIds: ['ev_c3']
         }
       ],
@@ -137,27 +139,29 @@ export function createFreelanceUnpaidCase(): CaseFile {
     parties: [
       {
         id: 'p_chen',
-        name: 'Alex Chen',
+        name: '[e.g., Alex Chen (Your Name / Studio)]',
         entityType: 'individual',
         role: 'plaintiff',
-        address: '320 E 21st St, Apt 4F',
-        city: 'New York',
+        address: '[e.g., 320 E 21st St, Apt 4F]',
+        city: '[e.g., New York]',
         state: 'NY',
-        zip: '10010',
-        phone: '(917) 555-3021',
-        email: 'alex.chen.dev@example.com'
+        zip: '[e.g., 10010]',
+        phone: '[e.g., (917) 555-3021]',
+        email: '[e.g., your.email@example.com]',
+        isPlaceholder: true
       },
       {
         id: 'd_media',
-        name: 'HyperScale Media Group Inc.',
+        name: '[e.g., HyperScale Media Group Inc. (Client)]',
         entityType: 'corporation',
         role: 'defendant',
-        address: '575 Broadway, 8th Floor',
-        city: 'New York',
+        address: '[e.g., 575 Broadway, 8th Floor]',
+        city: '[e.g., New York]',
         state: 'NY',
-        zip: '10012',
-        phone: '(212) 555-7700',
-        registeredAgent: 'Corporation Service Company, 80 State St, Albany, NY'
+        zip: '[e.g., 10012]',
+        phone: '[e.g., (212) 555-7700]',
+        registeredAgent: '[e.g., Corporation Service Company, 80 State St, Albany, NY]',
+        isPlaceholder: true
       }
     ],
     claimEvaluation: {
@@ -179,7 +183,7 @@ export function createFreelanceUnpaidCase(): CaseFile {
           legalStandard: 'N.Y.C. Admin. Code § 20-928',
           description: 'Written Statement of Work (SOW) executed for React/Node.js web application frontend development.',
           isSatisfied: true,
-          userEvidenceNotes: 'Executed SOW signed via DocuSign specifying $8,400 project fee.',
+          userEvidenceNotes: '[e.g., Executed SOW signed via DocuSign specifying $8,400 project fee. Tap to edit with your facts.]',
           linkedEvidenceIds: ['ev_f1']
         },
         {
@@ -188,7 +192,7 @@ export function createFreelanceUnpaidCase(): CaseFile {
           legalStandard: 'UCC § 2-606',
           description: 'Plaintiff delivered production code repository, passed QA, and received written approval from CEO.',
           isSatisfied: true,
-          userEvidenceNotes: 'Slack approval messages from CEO stating: "Looks great, launched to prod!".',
+          userEvidenceNotes: '[e.g., Slack approval messages from CEO stating: "Looks great, launched to prod!". Tap to edit with your facts.]',
           linkedEvidenceIds: ['ev_f2']
         },
         {
@@ -197,7 +201,7 @@ export function createFreelanceUnpaidCase(): CaseFile {
           legalStandard: 'N.Y.C. Admin. Code § 20-929',
           description: 'Client failed to pay invoice within 30 days of completion, triggering statutory double damages under NYC FIFA.',
           isSatisfied: true,
-          userEvidenceNotes: 'Invoice #1042 issued 65 days ago; three overdue notices ignored.',
+          userEvidenceNotes: '[e.g., Invoice #1042 issued 65 days ago; three overdue notices ignored. Tap to edit with your facts.]',
           linkedEvidenceIds: ['ev_f3']
         }
       ],
@@ -249,26 +253,28 @@ export function createAutoAccidentCase(): CaseFile {
     parties: [
       {
         id: 'p_auto',
-        name: 'Jordan Taylor',
+        name: '[e.g., Jordan Taylor (Your Name)]',
         entityType: 'individual',
         role: 'plaintiff',
-        address: '5120 Westheimer Rd',
-        city: 'Houston',
+        address: '[e.g., 5120 Westheimer Rd]',
+        city: '[e.g., Houston]',
         state: 'TX',
-        zip: '77056',
-        phone: '(713) 555-8120',
-        email: 'jtaylor@example.com'
+        zip: '[e.g., 77056]',
+        phone: '[e.g., (713) 555-8120]',
+        email: '[e.g., your.email@example.com]',
+        isPlaceholder: true
       },
       {
         id: 'd_auto',
-        name: 'Carlos Ramirez',
+        name: '[e.g., Carlos Ramirez (Other Driver)]',
         entityType: 'individual',
         role: 'defendant',
-        address: '2900 Richmond Ave',
-        city: 'Houston',
+        address: '[e.g., 2900 Richmond Ave]',
+        city: '[e.g., Houston]',
         state: 'TX',
-        zip: '77098',
-        phone: '(832) 555-9011'
+        zip: '[e.g., 77098]',
+        phone: '[e.g., (832) 555-9011]',
+        isPlaceholder: true
       }
     ],
     claimEvaluation: {
@@ -290,7 +296,7 @@ export function createAutoAccidentCase(): CaseFile {
           legalStandard: 'Tex. Transp. Code § 545.151',
           description: 'Defendant had a legal duty to obey traffic signals and yield right-of-way when entering intersection.',
           isSatisfied: true,
-          userEvidenceNotes: 'Clear statutory duty under Texas Transportation Code.',
+          userEvidenceNotes: '[e.g., Clear statutory duty under Texas Transportation Code. Tap to edit with your facts.]',
           linkedEvidenceIds: []
         },
         {
@@ -299,7 +305,7 @@ export function createAutoAccidentCase(): CaseFile {
           legalStandard: 'Tex. Transp. Code § 544.007',
           description: 'Defendant ran steady red signal at Montrose & Westheimer, striking Plaintiff’s vehicle.',
           isSatisfied: true,
-          userEvidenceNotes: 'Police report citing Defendant for running red light + dashcam video.',
+          userEvidenceNotes: '[e.g., Police report citing Defendant for running red light + dashcam video. Tap to edit with your facts.]',
           linkedEvidenceIds: ['ev_a1', 'ev_a2']
         },
         {
@@ -308,7 +314,7 @@ export function createAutoAccidentCase(): CaseFile {
           legalStandard: 'Restatement (Second) of Torts § 928',
           description: 'Vehicle sustained structural door frame damage, rendering it undriveable for 14 days.',
           isSatisfied: true,
-          userEvidenceNotes: 'Repair invoice $5,400 + Enterprise rental car receipts $800.',
+          userEvidenceNotes: '[e.g., Repair invoice $5,400 + Enterprise rental car receipts $800. Tap to edit with your facts.]',
           linkedEvidenceIds: ['ev_a3']
         }
       ],
@@ -360,15 +366,16 @@ export function createConsumerFraudCase(): CaseFile {
     parties: [
       {
         id: 'p_walker',
-        name: 'David Walker',
+        name: '[e.g., David Walker (Your Name)]',
         entityType: 'individual',
         role: 'plaintiff',
-        address: '742 Biscayne Blvd',
-        city: 'Miami',
+        address: '[e.g., 742 Biscayne Blvd]',
+        city: '[e.g., Miami]',
         state: 'FL',
-        zip: '33132',
-        phone: '(305) 555-1920',
-        email: 'dwalker@example.com'
+        zip: '[e.g., 33132]',
+        phone: '[e.g., (305) 555-1920]',
+        email: '[e.g., your.email@example.com]',
+        isPlaceholder: true
       },
       {
         id: 'd_dealer',
@@ -404,7 +411,7 @@ export function createConsumerFraudCase(): CaseFile {
           legalStandard: 'Fla. Stat. § 501.204(1)',
           description: 'Dealership advertised vehicle as "Clean Title, 1-Owner, Accident-Free" while knowing frame was previously welded after structural total loss.',
           isSatisfied: true,
-          userEvidenceNotes: 'Online listing screenshots and certified pre-purchase inspection.',
+          userEvidenceNotes: '[e.g., Online listing screenshots and certified pre-purchase inspection. Tap to edit with your facts.]',
           linkedEvidenceIds: ['ev_cf1']
         },
         {
@@ -413,7 +420,7 @@ export function createConsumerFraudCase(): CaseFile {
           legalStandard: 'Fla. Stat. § 501.211',
           description: 'Plaintiff relied upon the false accident-free disclosure to pay full market price of $14,500.',
           isSatisfied: true,
-          userEvidenceNotes: 'Buyer purchase agreement and written salesperson warranty assurances.',
+          userEvidenceNotes: '[e.g., Buyer purchase agreement and written salesperson warranty assurances. Tap to edit with your facts.]',
           linkedEvidenceIds: ['ev_cf2']
         },
         {
@@ -422,7 +429,7 @@ export function createConsumerFraudCase(): CaseFile {
           legalStandard: 'Rollins, Inc. v. Butland, 951 So. 2d 860',
           description: 'Structural inspection revealed catastrophic frame defect reducing vehicle market value by $8,500 + repair diagnostic costs.',
           isSatisfied: true,
-          userEvidenceNotes: 'Master mechanic appraisal and structural laser measurement report.',
+          userEvidenceNotes: '[e.g., Master mechanic appraisal and structural laser measurement report. Tap to edit with your facts.]',
           linkedEvidenceIds: ['ev_cf3']
         }
       ],
@@ -481,27 +488,29 @@ export function createWageTheftCase(): CaseFile {
     parties: [
       {
         id: 'p_jenkins',
-        name: 'Marcus Jenkins',
+        name: '[e.g., Marcus Jenkins (Your Name / Worker)]',
         entityType: 'individual',
         role: 'plaintiff',
-        address: '4820 S Michigan Ave',
-        city: 'Chicago',
+        address: '[e.g., 4820 S Michigan Ave]',
+        city: '[e.g., Chicago]',
         state: 'IL',
-        zip: '60615',
-        phone: '(312) 555-6610',
-        email: 'mjenkins@example.com'
+        zip: '[e.g., 60615]',
+        phone: '[e.g., (312) 555-6610]',
+        email: '[e.g., your.email@example.com]',
+        isPlaceholder: true
       },
       {
         id: 'd_prime',
-        name: 'Prime Logistics Solutions Inc.',
+        name: '[e.g., Prime Logistics Solutions Inc. (Employer)]',
         entityType: 'corporation',
         role: 'defendant',
-        address: '1200 S Canal St',
-        city: 'Chicago',
+        address: '[e.g., 1200 S Canal St]',
+        city: '[e.g., Chicago]',
         state: 'IL',
-        zip: '60607',
-        phone: '(312) 555-8833',
-        registeredAgent: 'Illinois Corporation Service Co, Springfield, IL'
+        zip: '[e.g., 60607]',
+        phone: '[e.g., (312) 555-8833]',
+        registeredAgent: '[e.g., Corporation Service Co, Springfield, IL]',
+        isPlaceholder: true
       }
     ],
     claimEvaluation: {
@@ -523,7 +532,7 @@ export function createWageTheftCase(): CaseFile {
           legalStandard: '820 ILCS 115/2 & 29 U.S.C. § 207',
           description: 'Plaintiff was employed as warehouse dispatcher/loader with zero managerial authority, non-exempt under FLSA and IWPCA.',
           isSatisfied: true,
-          userEvidenceNotes: 'Job description, hourly pay stubs, shift logs.',
+          userEvidenceNotes: '[e.g., Job description, hourly pay stubs, shift logs. Tap to edit with your facts.]',
           linkedEvidenceIds: ['ev_w1']
         },
         {
@@ -532,7 +541,7 @@ export function createWageTheftCase(): CaseFile {
           legalStandard: '820 ILCS 105/4a',
           description: 'Plaintiff logged 140 uncompensated overtime hours over 7-month period with manager knowledge.',
           isSatisfied: true,
-          userEvidenceNotes: 'Digital GPS badge punches and Google timeline location logs.',
+          userEvidenceNotes: '[e.g., Digital GPS badge punches and Google timeline location logs. Tap to edit with your facts.]',
           linkedEvidenceIds: ['ev_w2']
         },
         {
@@ -541,7 +550,7 @@ export function createWageTheftCase(): CaseFile {
           legalStandard: '820 ILCS 115/14(a)',
           description: 'Employer unlawfully withheld overtime wages for >180 days, triggering statutory 5% per month interest penalty.',
           isSatisfied: true,
-          userEvidenceNotes: 'Pay stubs missing overtime calculations and demand letter.',
+          userEvidenceNotes: '[e.g., Pay stubs missing overtime calculations and demand letter. Tap to edit with your facts.]',
           linkedEvidenceIds: ['ev_w3']
         }
       ],
@@ -656,7 +665,7 @@ export function generateElementsForCategory(category: DisputeCategory, jurisdict
           legalStandard: jurisdiction.securityDepositStatuteCitation || 'Cal. Civ. Code § 1950.5(b)',
           description: `Plaintiff paid security deposit to Defendant ${dName} pursuant to a valid residential lease.`,
           isSatisfied: true,
-          userEvidenceNotes: 'Signed lease agreement and payment receipt attached as Exhibit A.',
+          userEvidenceNotes: '[e.g., Signed lease agreement and payment receipt attached as Exhibit A. Tap to edit with your facts.]',
           linkedEvidenceIds: []
         },
         {
@@ -665,7 +674,7 @@ export function generateElementsForCategory(category: DisputeCategory, jurisdict
           legalStandard: 'Statutory Surrender of Tenancy',
           description: 'Tenant restored premises condition and surrendered all keys to landlord.',
           isSatisfied: true,
-          userEvidenceNotes: 'Keys returned and move-out confirmation confirmed.',
+          userEvidenceNotes: '[e.g., Keys returned and move-out confirmation confirmed. Tap to edit with your facts.]',
           linkedEvidenceIds: []
         },
         {
@@ -674,7 +683,7 @@ export function generateElementsForCategory(category: DisputeCategory, jurisdict
           legalStandard: jurisdiction.securityDepositStatuteCitation || 'Statutory Return Window',
           description: `Landlord failed to deliver deposit refund or itemized repair list within ${jurisdiction.securityDepositReturnDays || 21} statutory days.`,
           isSatisfied: true,
-          userEvidenceNotes: 'No itemization or refund delivered within statutory period.',
+          userEvidenceNotes: '[e.g., No itemization or refund delivered within statutory period. Tap to edit with your facts.]',
           linkedEvidenceIds: []
         },
         {
@@ -683,7 +692,7 @@ export function generateElementsForCategory(category: DisputeCategory, jurisdict
           legalStandard: jurisdiction.securityDepositStatuteCitation || 'Bad-Faith Multiplier',
           description: `Landlord retained funds in bad faith without lawful cause, authorizing up to ${jurisdiction.securityDepositBadFaithPenaltyMultiplier || 2}x statutory penalty.`,
           isSatisfied: true,
-          userEvidenceNotes: 'Written demand delivered; Defendant failed to cure violation.',
+          userEvidenceNotes: '[e.g., Written demand delivered; Defendant failed to cure violation. Tap to edit with your facts.]',
           linkedEvidenceIds: []
         }
       ];
@@ -697,7 +706,7 @@ export function generateElementsForCategory(category: DisputeCategory, jurisdict
           legalStandard: 'Restatement (Second) of Contracts § 1',
           description: `Valid mutual assent between Plaintiff and ${dName} with defined scope, price, and consideration.`,
           isSatisfied: true,
-          userEvidenceNotes: 'Written contract / signed invoice / written electronic confirmation.',
+          userEvidenceNotes: '[e.g., Written contract / signed invoice / written electronic confirmation. Tap to edit with your facts.]',
           linkedEvidenceIds: []
         },
         {
@@ -706,7 +715,7 @@ export function generateElementsForCategory(category: DisputeCategory, jurisdict
           legalStandard: 'Restatement (Second) of Contracts § 235',
           description: 'Plaintiff timely performed all required terms and paid agreed consideration.',
           isSatisfied: true,
-          userEvidenceNotes: 'Bank transfer and proof of payment.',
+          userEvidenceNotes: '[e.g., Bank transfer and proof of payment. Tap to edit with your facts.]',
           linkedEvidenceIds: []
         },
         {
@@ -715,7 +724,7 @@ export function generateElementsForCategory(category: DisputeCategory, jurisdict
           legalStandard: 'Restatement (Second) of Contracts § 241',
           description: `Defendant failed to perform agreed services, deliver promised goods, or cure material defects.`,
           isSatisfied: true,
-          userEvidenceNotes: 'Photos of incomplete work, defective deliverables, and communication records.',
+          userEvidenceNotes: '[e.g., Photos of incomplete work, defective deliverables, and communication records. Tap to edit with your facts.]',
           linkedEvidenceIds: []
         },
         {
@@ -724,7 +733,7 @@ export function generateElementsForCategory(category: DisputeCategory, jurisdict
           legalStandard: 'UCC § 2-715 / Expectation Damages',
           description: 'Direct out-of-pocket costs to cure breach, cover losses, or repair defects.',
           isSatisfied: true,
-          userEvidenceNotes: 'Third-party replacement invoices and repair estimates.',
+          userEvidenceNotes: '[e.g., Third-party replacement invoices and repair estimates. Tap to edit with your facts.]',
           linkedEvidenceIds: []
         }
       ];
@@ -737,7 +746,7 @@ export function generateElementsForCategory(category: DisputeCategory, jurisdict
           legalStandard: 'UDAP / State Deceptive Trade Practices Act',
           description: `Defendant ${dName} made false representations or concealed material facts in commercial trade.`,
           isSatisfied: true,
-          userEvidenceNotes: 'Advertisements, written representations, and discrepancy logs.',
+          userEvidenceNotes: '[e.g., Advertisements, written representations, and discrepancy logs. Tap to edit with your facts.]',
           linkedEvidenceIds: []
         },
         {
@@ -746,7 +755,7 @@ export function generateElementsForCategory(category: DisputeCategory, jurisdict
           legalStandard: 'Restatement (Second) of Torts § 538',
           description: 'Plaintiff reasonably relied upon Defendant’s material representation in purchasing.',
           isSatisfied: true,
-          userEvidenceNotes: 'Purchase agreement and contemporaneous communications.',
+          userEvidenceNotes: '[e.g., Purchase agreement and contemporaneous communications. Tap to edit with your facts.]',
           linkedEvidenceIds: []
         },
         {
@@ -755,7 +764,7 @@ export function generateElementsForCategory(category: DisputeCategory, jurisdict
           legalStandard: 'Benefit-of-the-Bargain Rule',
           description: 'Plaintiff suffered quantifiable pecuniary loss or received goods of diminished worth.',
           isSatisfied: true,
-          userEvidenceNotes: 'Comparative appraisal and certified repair / replacement quotes.',
+          userEvidenceNotes: '[e.g., Comparative appraisal and certified repair / replacement quotes. Tap to edit with your facts.]',
           linkedEvidenceIds: []
         },
         {
@@ -764,7 +773,7 @@ export function generateElementsForCategory(category: DisputeCategory, jurisdict
           legalStandard: 'Treble / Statutory Damages Under State Consumer Protection Code',
           description: 'Willful bad-faith misrepresentation authorizes statutory multipliers or penalties.',
           isSatisfied: true,
-          userEvidenceNotes: 'Formal notice letter demanding cure ignored by merchant.',
+          userEvidenceNotes: '[e.g., Formal notice letter demanding cure ignored by merchant. Tap to edit with your facts.]',
           linkedEvidenceIds: []
         }
       ];
@@ -777,7 +786,7 @@ export function generateElementsForCategory(category: DisputeCategory, jurisdict
           legalStandard: 'FLSA § 206 / State Labor Code',
           description: `Plaintiff rendered compensable labor and services for the benefit of Defendant ${dName}.`,
           isSatisfied: true,
-          userEvidenceNotes: 'Timecards, GPS check-in logs, and schedule assignments.',
+          userEvidenceNotes: '[e.g., Timecards, GPS check-in logs, and schedule assignments. Tap to edit with your facts.]',
           linkedEvidenceIds: []
         },
         {
@@ -786,7 +795,7 @@ export function generateElementsForCategory(category: DisputeCategory, jurisdict
           legalStandard: 'Statutory Wage Payment Mandate',
           description: 'Defendant withheld earned wages, refused overtime rates, or delayed final paycheck.',
           isSatisfied: true,
-          userEvidenceNotes: 'Paystubs, bank deposit records, and non-payment discrepancy ledger.',
+          userEvidenceNotes: '[e.g., Paystubs, bank deposit records, and non-payment discrepancy ledger. Tap to edit with your facts.]',
           linkedEvidenceIds: []
         },
         {
@@ -795,7 +804,7 @@ export function generateElementsForCategory(category: DisputeCategory, jurisdict
           legalStandard: 'FLSA § 216(b) / State Waiting Time Penalty Code',
           description: 'Willful non-payment triggers statutory daily wage penalties and liquidated damages.',
           isSatisfied: true,
-          userEvidenceNotes: 'Formal demand for unpaid wages delivered to management.',
+          userEvidenceNotes: '[e.g., Formal demand for unpaid wages delivered to management. Tap to edit with your facts.]',
           linkedEvidenceIds: []
         }
       ];
@@ -808,7 +817,7 @@ export function generateElementsForCategory(category: DisputeCategory, jurisdict
           legalStandard: 'Property Ownership / Leasehold Right',
           description: 'Plaintiff held lawful title, lease, or possessory interest in damaged property.',
           isSatisfied: true,
-          userEvidenceNotes: 'Title certificate, lease, or proof of purchase.',
+          userEvidenceNotes: '[e.g., Title certificate, lease, or proof of purchase. Tap to edit with your facts.]',
           linkedEvidenceIds: []
         },
         {
@@ -817,7 +826,7 @@ export function generateElementsForCategory(category: DisputeCategory, jurisdict
           legalStandard: 'Tortious Interference / Negligence',
           description: `Defendant ${dName} committed an unauthorized, negligent, or unlawful act harming property.`,
           isSatisfied: true,
-          userEvidenceNotes: 'Incident report, witness statements, and video/photo evidence.',
+          userEvidenceNotes: '[e.g., Incident report, witness statements, and video/photo evidence. Tap to edit with your facts.]',
           linkedEvidenceIds: []
         },
         {
@@ -826,7 +835,7 @@ export function generateElementsForCategory(category: DisputeCategory, jurisdict
           legalStandard: 'Restatement (Second) of Torts § 928',
           description: 'Property sustained demonstrable physical damage requiring restoration or replacement.',
           isSatisfied: true,
-          userEvidenceNotes: 'Licensed contractor / mechanic estimates and paid repair receipts.',
+          userEvidenceNotes: '[e.g., Licensed contractor / mechanic estimates and paid repair receipts. Tap to edit with your facts.]',
           linkedEvidenceIds: []
         }
       ];
@@ -840,7 +849,7 @@ export function generateElementsForCategory(category: DisputeCategory, jurisdict
           legalStandard: 'Common Law Duty / State Vehicle & Safety Code',
           description: `Defendant ${dName} owed a legal duty to exercise reasonable care under the circumstances.`,
           isSatisfied: true,
-          userEvidenceNotes: 'Statutory driving standard or premise safety standard.',
+          userEvidenceNotes: '[e.g., Statutory driving standard or premise safety standard. Tap to edit with your facts.]',
           linkedEvidenceIds: []
         },
         {
@@ -849,7 +858,7 @@ export function generateElementsForCategory(category: DisputeCategory, jurisdict
           legalStandard: 'Negligence Per Se / Reasonable Person Standard',
           description: 'Defendant failed to act as a reasonably prudent party, committing a moving violation or hazard.',
           isSatisfied: true,
-          userEvidenceNotes: 'Police collision report, traffic citation, or dashcam footage.',
+          userEvidenceNotes: '[e.g., Police collision report, traffic citation, or dashcam footage. Tap to edit with your facts.]',
           linkedEvidenceIds: []
         },
         {
@@ -858,7 +867,7 @@ export function generateElementsForCategory(category: DisputeCategory, jurisdict
           legalStandard: 'Proximate Cause / But-For Causation',
           description: 'Defendant’s negligent conduct was the unbroken direct cause of Plaintiff’s harm.',
           isSatisfied: true,
-          userEvidenceNotes: 'Accident reconstruction details and eyewitness corroboration.',
+          userEvidenceNotes: '[e.g., Accident reconstruction details and eyewitness corroboration. Tap to edit with your facts.]',
           linkedEvidenceIds: []
         },
         {
@@ -867,7 +876,7 @@ export function generateElementsForCategory(category: DisputeCategory, jurisdict
           legalStandard: 'Actual Compensatory Property & Out-of-Pocket Damages',
           description: 'Plaintiff incurred collision repair expenses, rental vehicle fees, and towing charges.',
           isSatisfied: true,
-          userEvidenceNotes: 'Itemized body shop invoices and rental car payment records.',
+          userEvidenceNotes: '[e.g., Itemized body shop invoices and rental car payment records. Tap to edit with your facts.]',
           linkedEvidenceIds: []
         }
       ];
@@ -880,7 +889,7 @@ export function generateElementsForCategory(category: DisputeCategory, jurisdict
           legalStandard: 'Freelance Worker Protection Act / Common Law SOW',
           description: `Plaintiff and Defendant ${dName} agreed to written statement of work with defined compensation.`,
           isSatisfied: true,
-          userEvidenceNotes: 'Executed freelance agreement or email confirmation.',
+          userEvidenceNotes: '[e.g., Executed freelance agreement or email confirmation. Tap to edit with your facts.]',
           linkedEvidenceIds: []
         },
         {
@@ -889,7 +898,7 @@ export function generateElementsForCategory(category: DisputeCategory, jurisdict
           legalStandard: 'UCC § 2-606 Substantial Performance',
           description: 'Plaintiff delivered all contractual milestones, code, or creative assets.',
           isSatisfied: true,
-          userEvidenceNotes: 'Delivery confirmation, repository merges, and client approval messages.',
+          userEvidenceNotes: '[e.g., Delivery confirmation, repository merges, and client approval messages. Tap to edit with your facts.]',
           linkedEvidenceIds: []
         },
         {
@@ -898,7 +907,7 @@ export function generateElementsForCategory(category: DisputeCategory, jurisdict
           legalStandard: 'Statutory Double Damages Mandate',
           description: 'Client failed to tender invoice payment within required statutory window.',
           isSatisfied: true,
-          userEvidenceNotes: 'Unpaid invoice records and repeated overdue reminder notices.',
+          userEvidenceNotes: '[e.g., Unpaid invoice records and repeated overdue reminder notices. Tap to edit with your facts.]',
           linkedEvidenceIds: []
         }
       ];
@@ -911,7 +920,7 @@ export function generateElementsForCategory(category: DisputeCategory, jurisdict
           legalStandard: 'Real Property Covenants, Conditions & Restrictions (CC&Rs)',
           description: 'Parties are subject to established property rights and neighborhood covenants.',
           isSatisfied: true,
-          userEvidenceNotes: 'Property deed, CC&R charter, or survey boundary map.',
+          userEvidenceNotes: '[e.g., Property deed, CC&R charter, or survey boundary map. Tap to edit with your facts.]',
           linkedEvidenceIds: []
         },
         {
@@ -920,7 +929,7 @@ export function generateElementsForCategory(category: DisputeCategory, jurisdict
           legalStandard: 'Private Nuisance Standard / HOA Procedural Due Process',
           description: `Defendant ${dName} caused substantial unreasonable interference or levied illegal fines.`,
           isSatisfied: true,
-          userEvidenceNotes: 'Notice of violation, boundary survey, and photographic evidence.',
+          userEvidenceNotes: '[e.g., Notice of violation, boundary survey, and photographic evidence. Tap to edit with your facts.]',
           linkedEvidenceIds: []
         },
         {
@@ -929,7 +938,7 @@ export function generateElementsForCategory(category: DisputeCategory, jurisdict
           legalStandard: 'Actual Economic Damages / Restitution',
           description: 'Direct repair costs, landscape restoration, or improperly collected fine funds.',
           isSatisfied: true,
-          userEvidenceNotes: 'Bank debit records and licensed contractor repair bids.',
+          userEvidenceNotes: '[e.g., Bank debit records and licensed contractor repair bids. Tap to edit with your facts.]',
           linkedEvidenceIds: []
         }
       ];
@@ -942,7 +951,7 @@ export function generateElementsForCategory(category: DisputeCategory, jurisdict
           legalStandard: 'Common Law Duty / Statutory Mandate',
           description: `Defendant ${dName} owed a clear legal or contractual obligation to Plaintiff.`,
           isSatisfied: true,
-          userEvidenceNotes: 'Documented transaction or legal relationship.',
+          userEvidenceNotes: '[e.g., Documented transaction or legal relationship. Tap to edit with your facts.]',
           linkedEvidenceIds: []
         },
         {
@@ -951,7 +960,7 @@ export function generateElementsForCategory(category: DisputeCategory, jurisdict
           legalStandard: 'Prima Facie Breach Standard',
           description: `Defendant committed an act or omission violating the duty or agreement.`,
           isSatisfied: true,
-          userEvidenceNotes: 'Direct records, written messages, and date logs.',
+          userEvidenceNotes: '[e.g., Direct records, written messages, and date logs. Tap to edit with your facts.]',
           linkedEvidenceIds: []
         },
         {
@@ -960,7 +969,7 @@ export function generateElementsForCategory(category: DisputeCategory, jurisdict
           legalStandard: 'Proximate Cause / But-For Test',
           description: 'The Defendant’s breach was the direct and proximate cause of the claimant’s loss.',
           isSatisfied: true,
-          userEvidenceNotes: 'Chain of custody and incident timeline.',
+          userEvidenceNotes: '[e.g., Chain of custody and incident timeline. Tap to edit with your facts.]',
           linkedEvidenceIds: []
         },
         {
@@ -969,7 +978,7 @@ export function generateElementsForCategory(category: DisputeCategory, jurisdict
           legalStandard: 'Actual Compensatory Damages',
           description: 'Verifiable monetary loss resulting directly from Defendant’s wrongful conduct.',
           isSatisfied: true,
-          userEvidenceNotes: 'Itemized receipts, bank statements, and paid invoices.',
+          userEvidenceNotes: '[e.g., Itemized receipts, bank statements, and paid invoices. Tap to edit with your facts.]',
           linkedEvidenceIds: []
         }
       ];
@@ -1148,27 +1157,29 @@ export function createCustomDispute(input: CustomDisputeInput): CaseFile {
     parties: [
       {
         id: `p_${Date.now()}`,
-        name: pName,
+        name: pName || '[e.g., Your Name]',
         entityType: 'individual',
         role: 'plaintiff',
-        address: '100 Main Street',
-        city: 'Metropolis',
+        address: '[e.g., 100 Main Street]',
+        city: '[e.g., Metropolis]',
         state: input.state,
-        zip: '90001',
-        phone: '(555) 019-2834',
-        email: input.plaintiffEmail || 'claimant@example.com'
+        zip: '[e.g., 90001]',
+        phone: '[e.g., (555) 019-2834]',
+        email: input.plaintiffEmail || '[e.g., claimant@example.com]',
+        isPlaceholder: !input.plaintiffName
       },
       {
         id: `d_${Date.now()}`,
-        name: dName,
+        name: dName || '[e.g., Opposing Party / Business]',
         entityType: input.opponentType || 'corporation',
         role: 'defendant',
-        address: input.opponentAddress || '200 Commercial Way, Suite 100',
-        city: 'Metropolis',
+        address: input.opponentAddress || '[e.g., 200 Commercial Way, Suite 100]',
+        city: '[e.g., Metropolis]',
         state: input.state,
-        zip: '90001',
-        phone: '(555) 018-9922',
-        email: 'legal@opposingparty.com'
+        zip: '[e.g., 90001]',
+        phone: '[e.g., (555) 018-9922]',
+        email: '[e.g., legal@opposingparty.com]',
+        isPlaceholder: !input.opponentName
       }
     ],
     claimEvaluation: {

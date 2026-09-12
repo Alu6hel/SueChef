@@ -1,6 +1,7 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { useSueChef } from '../../context/SueChefContext';
 import { sound } from '../../services/soundEngine';
+import { cleanPartyName } from '../../services/caseUtils';
 import { 
   ShieldAlert, 
   RotateCcw, 
@@ -20,7 +21,7 @@ interface Rect {
 }
 
 export const RedactionCanvas: React.FC = () => {
-  const { addEvidence, activeCase } = useSueChef();
+  const { activeCase, addEvidence } = useSueChef();
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const [redactions, setRedactions] = useState<Rect[]>([]);
   const [isDrawing, setIsDrawing] = useState(false);
@@ -28,14 +29,16 @@ export const RedactionCanvas: React.FC = () => {
   const [currentRect, setCurrentRect] = useState<Rect | null>(null);
   const [savedSuccess, setSavedSuccess] = useState(false);
 
-  // Draw default legal document sample on canvas
-  const drawBaseDocument = (ctx: CanvasRenderingContext2D) => {
-    // White document background
-    ctx.fillStyle = '#FFFFFF';
-    ctx.fillRect(0, 0, 700, 500);
+  const plaintiff = activeCase.parties.find(p => p.role === 'plaintiff');
+  const accountHolderName = plaintiff ? cleanPartyName(plaintiff.name) : 'Plaintiff (Claimant)';
 
-    // Document header
-    ctx.fillStyle = '#1A202C';
+  // Draw simulated lease/financial document
+  const drawBaseDocument = (ctx: CanvasRenderingContext2D) => {
+    ctx.fillStyle = '#FFFFFF';
+    ctx.fillRect(0, 0, 700, 450);
+
+    // Document Header
+    ctx.fillStyle = '#0F172A';
     ctx.font = 'bold 16px "Times New Roman", serif';
     ctx.fillText('CONFIDENTIAL FINANCIAL STATEMENT & LEASE SUMMARY', 40, 45);
 
@@ -50,7 +53,7 @@ export const RedactionCanvas: React.FC = () => {
     ctx.font = '13px "Times New Roman", serif';
     ctx.fillStyle = '#2D3748';
     
-    ctx.fillText(`Account Holder: ${activeCase.parties.find(p => p.role === 'plaintiff')?.name || 'Jordan Smith'}`, 40, 85);
+    ctx.fillText(`Account Holder: ${accountHolderName}`, 40, 85);
     ctx.fillText('Social Security Number: 123-45-6789  [SENSITIVE PII - REDACT]', 40, 115);
     ctx.fillText('JPMorgan Chase Bank Checking: #4912-0883-9912  [REDACT]', 40, 145);
     ctx.fillText('Routing Number: 121000358', 40, 175);

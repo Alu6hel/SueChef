@@ -4,7 +4,7 @@ import { SecondOpinionEngine } from '../../services/secondOpinionEngine';
 import { sound } from '../../services/soundEngine';
 import { getCountryInfo } from '../../services/countries';
 import { AluLogo } from '../Branding/AluLogo';
-import { PredictedDefense } from '../../types';
+import { PredictedDefense, AdvisorConsultationResult } from '../../types';
 import { 
   Sparkles, 
   ShieldCheck, 
@@ -18,25 +18,51 @@ import {
   Scale, 
   DollarSign, 
   Lightbulb, 
-  ArrowRight,
-  Printer,
-  HelpCircle,
-  Clock,
-  Phone,
-  Building,
-  Plus,
-  Trash2,
-  Calculator,
-  CheckSquare,
-  Square,
-  X
+  ArrowRight, 
+  Printer, 
+  HelpCircle, 
+  Clock, 
+  Phone, 
+  Building, 
+  Plus, 
+  Trash2, 
+  Calculator, 
+  CheckSquare, 
+  Square, 
+  X,
+  Send,
+  Copy,
+  Check,
+  BookOpen,
+  MessageSquare
 } from 'lucide-react';
 
 export const SecondOpinionConsultant: React.FC = () => {
   const { activeCase, updateActiveCase, setActiveWorkstation, country } = useSueChef();
   const countryInfo = getCountryInfo(country);
-  const [activeTab, setActiveTab] = useState<'overview' | 'vulnerabilities' | 'defenses' | 'ev_calculator' | 'roadmap' | 'local_aid'>('overview');
+  const [activeTab, setActiveTab] = useState<'advisor_chat' | 'overview' | 'vulnerabilities' | 'defenses' | 'ev_calculator' | 'roadmap' | 'local_aid'>('advisor_chat');
   const [copiedMemo, setCopiedMemo] = useState(false);
+
+  const plaintiff = activeCase.parties.find(p => p.role === 'plaintiff');
+  const defendant = activeCase.parties.find(p => p.role === 'defendant');
+  const plaintiffName = plaintiff?.name || 'Claimant';
+  const defendantName = defendant?.name || 'Defendant';
+
+  // AI Advisor Interactive Consultation State
+  const [queryInput, setQueryInput] = useState('');
+  const [isConsulting, setIsConsulting] = useState(false);
+  const [copiedCitation, setCopiedCitation] = useState<string | null>(null);
+  const [copiedConsultMemo, setCopiedConsultMemo] = useState(false);
+
+  const [activeConsultation, setActiveConsultation] = useState<AdvisorConsultationResult>(() => {
+    if (activeCase.advisorConsultationHistory && activeCase.advisorConsultationHistory.length > 0) {
+      return activeCase.advisorConsultationHistory[0];
+    }
+    return SecondOpinionEngine.consultAdvisor(
+      activeCase,
+      `What exact statutes, evidence rules, and court hearing tactics apply to my case against ${defendantName}?`
+    );
+  });
 
   // Custom defense builder modal state
   const [isAddDefenseModalOpen, setIsAddDefenseModalOpen] = useState(false);
@@ -55,6 +81,74 @@ export const SecondOpinionConsultant: React.FC = () => {
   const [travelParkingCosts, setTravelParkingCosts] = useState<number>(35);
 
   const report = SecondOpinionEngine.generateReport(activeCase);
+
+  const handleConsult = (customQuery?: string) => {
+    const q = (customQuery !== undefined ? customQuery : queryInput).trim();
+    if (!q) return;
+
+    sound.playGavelStrike();
+    setIsConsulting(true);
+
+    setTimeout(() => {
+      const result = SecondOpinionEngine.consultAdvisor(activeCase, q);
+      setActiveConsultation(result);
+      setIsConsulting(false);
+      setQueryInput('');
+      sound.playSuccessChime();
+
+      updateActiveCase(prev => {
+        const existing = prev.advisorConsultationHistory || [];
+        const filtered = existing.filter(c => c.query.toLowerCase() !== q.toLowerCase());
+        return {
+          ...prev,
+          advisorConsultationHistory: [result, ...filtered]
+        };
+      });
+    }, 150);
+  };
+
+  const handleCopyCitation = (citation: string) => {
+    sound.playClick();
+    navigator.clipboard.writeText(citation);
+    setCopiedCitation(citation);
+    setTimeout(() => setCopiedCitation(null), 2000);
+  };
+
+  const handleCopyConsultMemo = () => {
+    sound.playClick();
+    const text = `
+=== SUECHEF PRO SE LEGAL ADVISORY MEMORANDUM ===
+MATTER: ${activeCase.title}
+TOPIC: ${activeConsultation.topic}
+JURISDICTION: ${activeCase.state}, ${countryInfo.name}
+CLAIMANT: ${plaintiffName} | OPPONENT: ${defendantName}
+DATE: ${new Date(activeConsultation.timestamp).toLocaleDateString()}
+
+--- 1. EXECUTIVE LEGAL SUMMARY & VIABILITY ---
+${activeConsultation.summary}
+
+--- 2. APPLICABLE STATUTES & GOVERNING AUTHORITIES ---
+${activeConsultation.statutesAndAuthorities.map(s => `• ${s}`).join('\n')}
+
+--- 3. FACTUAL CASE & EVIDENTIARY ANALYSIS ---
+${activeConsultation.factualCaseAnalysis}
+
+--- 4. IN-COURT HEARING TACTICS & REBUTTAL SCRIPT ---
+${activeConsultation.hearingTacticsAndRebuttal}
+
+--- 5. DEFENSE TRAPS & CRITICAL PITFALLS TO AVOID ---
+${activeConsultation.pitfallsToAvoid}
+
+--- 6. IMMEDIATE ACTION CHECKLIST ---
+${activeConsultation.actionItems.map((a, i) => `[ ] Step ${i + 1}: ${a}`).join('\n')}
+
+Certified by SueChef Privacy-First Legal Technology Suite
+    `.trim();
+
+    navigator.clipboard.writeText(text);
+    setCopiedConsultMemo(true);
+    setTimeout(() => setCopiedConsultMemo(false), 2000);
+  };
 
   const handleToggleVulnerability = (vulnId: string) => {
     sound.playClick();
@@ -220,6 +314,7 @@ Certified by SueChef Privacy-First Pro Se Legal Suite
         <div className="flex flex-wrap items-center justify-between gap-3 pt-2">
           <div className="flex flex-wrap items-center gap-2">
             {[
+              { id: 'advisor_chat', label: 'Ask AI Legal Advisor', icon: <Sparkles className="w-4 h-4 text-[var(--accent-gold)]" />, badge: 'Interactive' },
               { id: 'overview', label: 'Strengths & Overview', icon: <TrendingUp className="w-4 h-4" /> },
               { id: 'vulnerabilities', label: `Risk Checklist (${report.vulnerabilityItems?.length || 0})`, icon: <CheckCircle2 className="w-4 h-4" /> },
               { id: 'defenses', label: `Defense Traps (${report.predictedDefenses.length})`, icon: <Gavel className="w-4 h-4" /> },
@@ -241,6 +336,13 @@ Certified by SueChef Privacy-First Pro Se Legal Suite
               >
                 {tab.icon}
                 <span>{tab.label}</span>
+                {tab.badge && (
+                  <span className={`text-[9px] font-mono px-1 py-0.2 rounded uppercase font-bold ${
+                    activeTab === tab.id ? 'bg-slate-950 text-[var(--accent-gold)]' : 'bg-amber-500/20 text-amber-300'
+                  }`}>
+                    {tab.badge}
+                  </span>
+                )}
               </button>
             ))}
           </div>
@@ -263,6 +365,282 @@ Certified by SueChef Privacy-First Pro Se Legal Suite
           </div>
         </div>
       </div>
+
+      {/* Tab 0: Interactive AI Legal Advisor & Case Consultant */}
+      {activeTab === 'advisor_chat' && (
+        <div className="space-y-6 animate-in fade-in duration-200">
+          {/* Top Interactive Advisory Input Box */}
+          <div className="bg-gradient-to-br from-[var(--bg-card)] via-[var(--bg-secondary)] to-[var(--bg-card)] border-2 border-[var(--accent-gold)]/60 p-5 md:p-6 custom-geometry shadow-xl space-y-4">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-[var(--border-color)] pb-3">
+              <div className="flex items-center gap-2.5">
+                <div className="p-2 rounded-lg bg-[var(--badge-bg)] border border-[var(--badge-border)] text-[var(--accent-gold)]">
+                  <Sparkles className="w-5 h-5" />
+                </div>
+                <div>
+                  <h2 className="font-serif font-bold text-lg text-[var(--text-main)] flex items-center gap-2">
+                    <span>Ask AI Legal Advisor &amp; Case Consultant</span>
+                    <span className="text-[10px] font-mono px-2 py-0.5 bg-emerald-950/60 text-emerald-400 border border-emerald-500/30 rounded uppercase font-bold">
+                      Factual &amp; Grounded
+                    </span>
+                  </h2>
+                  <p className="text-xs text-[var(--text-muted)] font-mono">
+                    Grounded in {countryInfo.flag} {activeCase.state} Civil Codes, Court Local Rules &amp; Federal Rules of Evidence
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-2 text-xs font-mono text-[var(--text-muted)] bg-[var(--bg-card)] px-3 py-1.5 border border-[var(--border-color)] rounded">
+                <Scale className="w-3.5 h-3.5 text-[var(--accent-gold)]" />
+                <span>Matter: <strong className="text-[var(--text-main)]">{activeCase.title}</strong></span>
+              </div>
+            </div>
+
+            {/* Instant One-Click Topic Prompts */}
+            <div className="space-y-1.5">
+              <span className="text-[10px] font-mono uppercase text-[var(--text-muted)] font-bold">
+                1-Tap Instant Case Consultations:
+              </span>
+              <div className="flex flex-wrap gap-2">
+                {[
+                  { label: `📜 Statutes for ${activeCase.state}`, query: `What exact statutes and citations apply to my case in ${activeCase.state}?` },
+                  { label: '⚖️ Proving Bad Faith & Multipliers', query: 'How do I prove bad faith and win maximum statutory penalties?' },
+                  { label: '📁 Evidence Demanded by Judge', query: `What evidence will the Judge demand to see for ${activeCase.claimEvaluation.category.replace(/_/g, ' ')}?` },
+                  { label: `🛡️ Defeating ${defendantName}'s Defenses`, query: `How do I defeat ${defendantName}'s likely defenses?` },
+                  { label: '💰 Settlement vs. Trial EV Math', query: 'Should I settle or take this to court (EV calculation)?' },
+                  { label: `⏰ Deadlines & Service in ${activeCase.state}`, query: `What deadlines and service of process rules apply in ${activeCase.state}?` }
+                ].map((prompt, i) => (
+                  <button
+                    key={i}
+                    type="button"
+                    onClick={() => handleConsult(prompt.query)}
+                    className="px-3 py-1.5 bg-[var(--bg-card)] border border-[var(--border-color)] hover:border-[var(--accent-gold)] hover:text-[var(--accent-gold)] text-xs font-mono text-[var(--text-muted)] custom-geometry transition-all flex items-center gap-1.5"
+                  >
+                    <span>{prompt.label}</span>
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Custom Query Input Bar */}
+            <form 
+              onSubmit={e => {
+                e.preventDefault();
+                handleConsult();
+              }}
+              className="flex items-center gap-2 pt-1"
+            >
+              <div className="relative flex-1">
+                <input
+                  type="text"
+                  value={queryInput}
+                  onChange={e => setQueryInput(e.target.value)}
+                  placeholder={`Ask anything about your dispute against ${defendantName} (e.g. Can landlord deduct painting? How to subpoena records?)...`}
+                  className="w-full px-4 py-3 bg-[var(--bg-secondary)] border-2 border-[var(--border-color)] focus:border-[var(--accent-gold)] text-sm text-[var(--text-main)] custom-geometry outline-none placeholder:text-[var(--text-muted)]"
+                />
+              </div>
+
+              <button
+                type="submit"
+                disabled={isConsulting || !queryInput.trim()}
+                className="px-5 py-3 bg-[var(--accent-gold)] text-slate-950 font-bold text-sm custom-geometry hover:opacity-90 disabled:opacity-50 flex items-center gap-2 shrink-0 shadow-md transition-all"
+              >
+                {isConsulting ? (
+                  <>
+                    <div className="w-4 h-4 border-2 border-slate-950 border-t-transparent rounded-full animate-spin" />
+                    <span>Analyzing...</span>
+                  </>
+                ) : (
+                  <>
+                    <Send className="w-4 h-4" />
+                    <span>Consult Advisor</span>
+                  </>
+                )}
+              </button>
+            </form>
+          </div>
+
+          {/* Past Consultations Switcher Pill Bar (if history exists) */}
+          {(activeCase.advisorConsultationHistory && activeCase.advisorConsultationHistory.length > 1) && (
+            <div className="flex items-center gap-2 overflow-x-auto pb-1 text-xs">
+              <span className="text-[10px] font-mono uppercase text-[var(--text-muted)] shrink-0">
+                Recent Consultations:
+              </span>
+              {activeCase.advisorConsultationHistory.map((hist, idx) => (
+                <button
+                  key={hist.id}
+                  onClick={() => {
+                    sound.playClick();
+                    setActiveConsultation(hist);
+                  }}
+                  className={`px-3 py-1 custom-geometry font-mono text-xs shrink-0 border transition-all ${
+                    activeConsultation.id === hist.id
+                      ? 'bg-[var(--accent-gold)] text-slate-950 font-bold border-[var(--accent-gold)]'
+                      : 'bg-[var(--bg-card)] text-[var(--text-muted)] border-[var(--border-color)] hover:text-[var(--text-main)]'
+                  }`}
+                >
+                  #{idx + 1}: {hist.topic.length > 25 ? hist.topic.slice(0, 25) + '...' : hist.topic}
+                </button>
+              ))}
+            </div>
+          )}
+
+          {/* Pro Se Legal Advisory Memorandum (Official Document Rendering) */}
+          <div className="bg-[var(--bg-card)] border-2 border-[var(--border-color)] custom-geometry shadow-2xl p-6 md:p-8 space-y-6">
+            {/* Memo Document Header */}
+            <div className="border-b-2 border-double border-[var(--border-color)] pb-5 space-y-3">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div className="flex items-center gap-2">
+                  <AluLogo size="sm" showLabel={true} />
+                  <span className="text-xs font-mono font-bold text-[var(--accent-gold)] uppercase tracking-wider">
+                    PRO SE LITIGATION ADVISORY MEMORANDUM
+                  </span>
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={handleCopyConsultMemo}
+                    className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold bg-[var(--bg-secondary)] border border-[var(--border-color)] text-[var(--text-main)] hover:bg-[var(--bg-hover)] custom-geometry transition-all"
+                  >
+                    {copiedConsultMemo ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5 text-[var(--accent-gold)]" />}
+                    <span>{copiedConsultMemo ? 'Copied Memo!' : 'Copy Advice Memo'}</span>
+                  </button>
+
+                  <button
+                    onClick={handlePrintMemo}
+                    className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold bg-[var(--accent-gold)] text-slate-950 custom-geometry hover:opacity-90 shadow-sm transition-all"
+                  >
+                    <Printer className="w-3.5 h-3.5" />
+                    <span>Print Brief</span>
+                  </button>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 pt-2 text-xs font-mono bg-[var(--bg-secondary)] p-3 custom-geometry border border-[var(--border-color)]">
+                <div>
+                  <span className="text-[var(--text-muted)]">MATTER:</span>
+                  <div className="font-bold text-[var(--text-main)] truncate">{activeCase.title}</div>
+                </div>
+                <div>
+                  <span className="text-[var(--text-muted)]">JURISDICTION:</span>
+                  <div className="font-bold text-[var(--text-main)]">{countryInfo.flag} {activeCase.state} Court</div>
+                </div>
+                <div>
+                  <span className="text-[var(--text-muted)]">INQUIRY SUBJECT:</span>
+                  <div className="font-bold text-[var(--accent-gold)] truncate">{activeConsultation.topic}</div>
+                </div>
+                <div>
+                  <span className="text-[var(--text-muted)]">DATE GENERATED:</span>
+                  <div className="font-bold text-[var(--text-main)]">{new Date(activeConsultation.timestamp).toLocaleDateString()}</div>
+                </div>
+              </div>
+            </div>
+
+            {/* Section 1: Executive Viability Summary */}
+            <div className="bg-[var(--badge-bg)] border-l-4 border-[var(--accent-gold)] p-5 custom-geometry space-y-2">
+              <div className="flex items-center gap-2 text-xs font-mono font-bold uppercase text-[var(--accent-gold)] tracking-wider">
+                <Lightbulb className="w-4 h-4" />
+                <span>1. Executive Legal Summary &amp; Viability Verdict</span>
+              </div>
+              <p className="text-sm md:text-base text-[var(--text-main)] leading-relaxed font-sans font-medium">
+                {activeConsultation.summary}
+              </p>
+            </div>
+
+            {/* Section 2: Applicable Statutes & Governing Authorities */}
+            <div className="space-y-3">
+              <div className="flex items-center gap-2 border-b border-[var(--border-color)] pb-2 text-xs font-mono font-bold uppercase text-[var(--text-muted)]">
+                <BookOpen className="w-4 h-4 text-[var(--accent-gold)]" />
+                <span>2. Governing Statutes &amp; Legal Authorities ({activeConsultation.statutesAndAuthorities.length})</span>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                {activeConsultation.statutesAndAuthorities.map((statute, idx) => (
+                  <div 
+                    key={idx}
+                    className="p-3.5 bg-[var(--bg-secondary)] border border-[var(--border-color)] custom-geometry flex items-start justify-between gap-3 hover:border-[var(--accent-gold)] transition-all"
+                  >
+                    <div className="space-y-1 flex-1">
+                      <div className="text-[10px] font-mono text-[var(--accent-gold)] uppercase font-bold">
+                        Authority #{idx + 1}
+                      </div>
+                      <p className="text-xs text-[var(--text-main)] font-medium leading-relaxed">
+                        {statute}
+                      </p>
+                    </div>
+
+                    <button
+                      onClick={() => handleCopyCitation(statute)}
+                      className="p-1.5 bg-[var(--bg-card)] border border-[var(--border-color)] rounded hover:border-[var(--accent-gold)] text-[var(--text-muted)] hover:text-[var(--text-main)] shrink-0"
+                      title="Copy citation"
+                    >
+                      {copiedCitation === statute ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5 text-[var(--accent-gold)]" />}
+                    </button>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Section 3: Factual Case & Evidentiary Analysis */}
+            <div className="space-y-3">
+              <div className="flex items-center gap-2 border-b border-[var(--border-color)] pb-2 text-xs font-mono font-bold uppercase text-[var(--text-muted)]">
+                <FileText className="w-4 h-4 text-[var(--accent-gold)]" />
+                <span>3. Factual Case &amp; Evidentiary Application</span>
+              </div>
+              <div className="p-4 bg-[var(--bg-secondary)] border border-[var(--border-color)] custom-geometry text-sm text-[var(--text-main)] leading-relaxed">
+                {activeConsultation.factualCaseAnalysis}
+              </div>
+            </div>
+
+            {/* Section 4: In-Court Hearing Tactics & Rebuttal Verbatim Script */}
+            <div className="space-y-3">
+              <div className="flex items-center gap-2 border-b border-[var(--border-color)] pb-2 text-xs font-mono font-bold uppercase text-[var(--text-muted)]">
+                <Gavel className="w-4 h-4 text-[var(--accent-gold)]" />
+                <span>4. In-Court Hearing Tactics &amp; Verbatim Rebuttal Script</span>
+              </div>
+              <div className="p-4 bg-amber-500/10 border-l-4 border-amber-500 custom-geometry space-y-2">
+                <div className="text-[10px] font-mono uppercase font-bold text-[var(--accent-gold)]">
+                  Verbatim Statement to Deliver to Judge:
+                </div>
+                <blockquote className="text-sm text-[var(--text-main)] italic font-serif leading-relaxed">
+                  "{activeConsultation.hearingTacticsAndRebuttal}"
+                </blockquote>
+              </div>
+            </div>
+
+            {/* Section 5: Defense Traps & Critical Pitfalls to Avoid */}
+            <div className="space-y-3">
+              <div className="flex items-center gap-2 border-b border-[var(--border-color)] pb-2 text-xs font-mono font-bold uppercase text-[var(--text-muted)]">
+                <AlertTriangle className="w-4 h-4 text-rose-400" />
+                <span>5. Defense Traps &amp; Pitfalls to Avoid</span>
+              </div>
+              <div className="p-4 bg-rose-950/20 border border-rose-800/40 custom-geometry text-xs sm:text-sm text-rose-200 leading-relaxed space-y-1">
+                <div className="text-[10px] font-mono uppercase font-bold text-rose-400">
+                  Critical Procedural Warning:
+                </div>
+                <p>{activeConsultation.pitfallsToAvoid}</p>
+              </div>
+            </div>
+
+            {/* Section 6: Step-by-Step Action Items */}
+            <div className="space-y-3">
+              <div className="flex items-center gap-2 border-b border-[var(--border-color)] pb-2 text-xs font-mono font-bold uppercase text-[var(--text-muted)]">
+                <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+                <span>6. Immediate Action Items Checklist</span>
+              </div>
+              <div className="space-y-2">
+                {activeConsultation.actionItems.map((item, idx) => (
+                  <div key={idx} className="flex items-start gap-3 p-3 bg-[var(--bg-secondary)] border border-[var(--border-color)] custom-geometry text-xs sm:text-sm text-[var(--text-main)]">
+                    <span className="w-5 h-5 rounded bg-[var(--accent-gold)] text-slate-950 font-mono font-bold flex items-center justify-center text-xs shrink-0 mt-0.5">
+                      {idx + 1}
+                    </span>
+                    <span>{item}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Tab 1: Strengths & Overview */}
       {activeTab === 'overview' && (

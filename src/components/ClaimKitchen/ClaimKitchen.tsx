@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useSueChef } from '../../context/SueChefContext';
 import { 
   Flame, 
@@ -18,7 +18,9 @@ import {
   RefreshCw,
   Edit3,
   Check,
-  X
+  X,
+  Users,
+  ShieldCheck
 } from 'lucide-react';
 import { DisputeCategory, DamageItem, ClaimElement } from '../../types';
 import { STATE_JURISDICTIONS, getJurisdiction } from '../../services/jurisdictions';
@@ -27,7 +29,15 @@ import { getCountryInfo } from '../../services/countries';
 import { sound } from '../../services/soundEngine';
 
 export const ClaimKitchen: React.FC = () => {
-  const { activeCase, updateActiveCase, recalculateMeritScore, totalDamages, setActiveWorkstation, country } = useSueChef();
+  const { 
+    activeCase, 
+    updateActiveCase, 
+    recalculateMeritScore, 
+    totalDamages, 
+    setActiveWorkstation, 
+    setIsPartiesModalOpen,
+    country 
+  } = useSueChef();
   const countryInfo = getCountryInfo(country);
   const [newDamageDesc, setNewDamageDesc] = useState('');
   const [newDamageAmount, setNewDamageAmount] = useState('');
@@ -49,6 +59,13 @@ export const ClaimKitchen: React.FC = () => {
   const [calcPrincipal, setCalcPrincipal] = useState<number>(initialPrincipal);
   const [calcDaysElapsed, setCalcDaysElapsed] = useState<number>(60);
   const [calcMultiplier, setCalcMultiplier] = useState<number>(currJurisdiction.securityDepositBadFaithPenaltyMultiplier || 2);
+
+  useEffect(() => {
+    const directActual = activeCase.claimEvaluation.damages.find(d => d.category === 'direct_actual')?.amount;
+    const fallbackTotal = activeCase.claimEvaluation.damages.reduce((sum, d) => sum + (d.amount || 0), 0);
+    const updated = directActual || fallbackTotal || 2500;
+    setCalcPrincipal(updated);
+  }, [activeCase.id]);
 
   const categories: { id: DisputeCategory; label: string; desc: string }[] = [
     { id: 'security_deposit', label: 'Security Deposit Bad Faith', desc: 'Failure to return or itemize deductions within statutory window' },
@@ -185,6 +202,8 @@ export const ClaimKitchen: React.FC = () => {
   };
 
   const isOverSmallClaims = totalDamages > currJurisdiction.smallClaimsLimitIndividual;
+  const plaintiff = activeCase.parties.find(p => p.role === 'plaintiff');
+  const defendant = activeCase.parties.find(p => p.role === 'defendant');
 
   return (
     <div className="space-y-6 max-w-7xl mx-auto p-4 md:p-6 animate-fadeIn">
@@ -246,6 +265,50 @@ export const ClaimKitchen: React.FC = () => {
             </span>
           </div>
         </div>
+      </div>
+
+      {/* Interactive Case Parties Banner */}
+      <div 
+        onClick={() => {
+          sound.playClick();
+          setIsPartiesModalOpen(true);
+        }}
+        className="card-geom bg-[var(--bg-card)] border-2 border-[var(--accent-gold)]/60 hover:border-[var(--accent-gold)] p-4 shadow-md flex flex-col sm:flex-row sm:items-center justify-between gap-3 cursor-pointer transition-all hover:bg-[var(--bg-secondary)] group"
+        title="Click anywhere to edit your names and addresses"
+      >
+        <div className="flex items-center gap-3 min-w-0">
+          <div className="p-2.5 rounded-xl bg-amber-500/10 text-[var(--accent-gold)] shrink-0 group-hover:scale-105 transition-transform">
+            <Users className="w-5 h-5" />
+          </div>
+          <div className="min-w-0">
+            <div className="flex items-center gap-2">
+              <span className="text-[10px] font-mono uppercase text-[var(--accent-gold)] font-bold">
+                PARTIES IN THIS DISPUTE
+              </span>
+              <span className="text-[10px] font-mono px-1.5 py-0.2 bg-emerald-950/60 text-emerald-400 border border-emerald-500/30 rounded">
+                Click to Edit Names
+              </span>
+            </div>
+            <div className="font-serif font-bold text-sm sm:text-base text-[var(--text-main)] truncate mt-0.5">
+              <span className="text-emerald-400 font-semibold">{plaintiff?.name || '[Your Name]'}</span>
+              <span className="text-[var(--text-muted)] mx-1.5 font-sans font-normal">vs.</span>
+              <span className="text-amber-400 font-semibold">{defendant?.name || '[Opponent Name]'}</span>
+            </div>
+          </div>
+        </div>
+
+        <button
+          type="button"
+          onClick={(e) => {
+            e.stopPropagation();
+            sound.playClick();
+            setIsPartiesModalOpen(true);
+          }}
+          className="btn-geom px-3.5 py-2 bg-[var(--accent-gold)] text-slate-950 font-extrabold text-xs flex items-center justify-center gap-1.5 shadow-sm hover:opacity-90 shrink-0"
+        >
+          <Edit3 className="w-3.5 h-3.5" />
+          <span>Edit Names &amp; Addresses</span>
+        </button>
       </div>
 
       {/* Grid: Left (Intake & Elements), Right (Damages & Jurisdiction) */}
@@ -417,10 +480,33 @@ export const ClaimKitchen: React.FC = () => {
                             </div>
                           </div>
                         ) : (
-                          <div className="text-[11px] font-mono text-slate-300 bg-black/30 p-2 card-geom border border-white/5 mt-2 flex justify-between items-start">
-                            <div>
-                              <span className="text-emerald-400 font-semibold">Corroborating Evidence: </span>
-                              {elem.userEvidenceNotes || 'No notes attached yet.'}
+                          <div 
+                            onClick={() => {
+                              sound.playClick();
+                              setEditingElemId(elem.id);
+                              setEditingNotesText(elem.userEvidenceNotes || '');
+                            }}
+                            className="text-[11px] font-mono text-slate-300 bg-black/40 hover:bg-black/60 p-2.5 card-geom border border-amber-500/25 hover:border-[var(--accent-gold)] mt-2 flex justify-between items-start cursor-pointer transition-all group/edit"
+                            title="Click to edit corroborating evidence notes"
+                          >
+                            <div className="space-y-1">
+                              <div className="flex items-center gap-2 flex-wrap">
+                                <span className="text-emerald-400 font-bold flex items-center gap-1">
+                                  <ShieldCheck className="w-3.5 h-3.5" /> Corroborating Evidence:
+                                </span>
+                                {(elem.userEvidenceNotes?.includes('[e.g.') || !elem.userEvidenceNotes) && (
+                                  <span className="text-[9px] bg-amber-500/15 text-[var(--accent-gold)] px-1.5 py-0.2 rounded font-mono font-bold border border-amber-500/30">
+                                    Example Placeholder
+                                  </span>
+                                )}
+                              </div>
+                              <p className="text-slate-200 leading-relaxed text-xs">
+                                {elem.userEvidenceNotes || 'No facts or evidence notes recorded yet.'}
+                              </p>
+                            </div>
+                            <div className="flex items-center gap-1 text-[var(--accent-gold)] shrink-0 ml-2 pt-0.5 opacity-80 group-hover/edit:opacity-100">
+                              <Edit3 className="w-3.5 h-3.5" />
+                              <span className="text-[10px] font-sans font-bold">Tap to Edit</span>
                             </div>
                           </div>
                         )}

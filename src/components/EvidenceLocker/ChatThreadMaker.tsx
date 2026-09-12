@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useSueChef } from '../../context/SueChefContext';
 import { ChatThread, ChatMessage } from '../../types';
 import { sound } from '../../services/soundEngine';
+import { cleanPartyName } from '../../services/caseUtils';
 import { 
   MessageSquare, 
   Smartphone, 
@@ -21,8 +22,11 @@ export const ChatThreadMaker: React.FC = () => {
   const [activeThreadIdx, setActiveThreadIdx] = useState(0);
   const [copiedExhibit, setCopiedExhibit] = useState(false);
 
+  const plaintiff = activeCase.parties.find(p => p.role === 'plaintiff');
+  const defaultPlaintiffName = plaintiff ? cleanPartyName(plaintiff.name) : 'Plaintiff';
+
   // New message state
-  const [senderName, setSenderName] = useState('Jordan Smith');
+  const [senderName, setSenderName] = useState(defaultPlaintiffName);
   const [isMe, setIsMe] = useState(true);
   const [timestamp, setTimestamp] = useState('August 25, 2025 • 11:30 AM');
   const [content, setContent] = useState('');

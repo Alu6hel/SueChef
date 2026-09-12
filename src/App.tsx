@@ -16,6 +16,8 @@ import { SecurityVault } from './components/SecurityVault/SecurityVault';
 import { SecondOpinionConsultant } from './components/SecondOpinion/SecondOpinionConsultant';
 import { LegalServicesHub } from './components/LegalServices/LegalServicesHub';
 import { CaseManagerModal } from './components/CaseManager/CaseManagerModal';
+import { CasePartiesModal } from './components/CaseManager/CasePartiesModal';
+import { BottomNavBar } from './components/Navigation/BottomNavBar';
 import { QuickSearchModal } from './components/QuickSearch/QuickSearchModal';
 import { WalkthroughTour } from './components/WalkthroughTour/WalkthroughTour';
 import { SettingsModal } from './components/Settings/SettingsModal';
@@ -54,7 +56,7 @@ const WorkstationRouter: React.FC = () => {
     <div className="min-h-screen flex flex-col bg-[var(--bg-primary)] text-[var(--text-main)] transition-colors">
       <Header />
       
-      <main className="flex-1 pb-24 p-3 sm:p-4 md:p-6 max-w-7xl w-full mx-auto space-y-5">
+      <main className="flex-1 pb-32 sm:pb-36 p-3 sm:p-4 md:p-6 max-w-7xl w-full mx-auto space-y-5">
         {/* Interactive Live Theme Animation Banner */}
         {showLiveTheme && (
           <div className="animate-in fade-in duration-300">
@@ -87,21 +89,22 @@ const WorkstationRouter: React.FC = () => {
 
       {/* Global Modals & Overlay Services */}
       <CaseManagerModal />
+      <CasePartiesModal />
       <QuickSearchModal />
       <WalkthroughTour />
       <SettingsModal />
       <LocationOnboardingModal />
 
-      {/* Fixed Bottom Status Bar */}
-      <footer className="fixed bottom-0 left-0 right-0 z-30 bg-[var(--bg-secondary)] border-t-2 border-[var(--border-color)] px-4 py-2 text-xs md:text-sm shadow-xl">
+      {/* Status Bar (Clean Desktop bar above navigation) */}
+      <footer className="hidden lg:block fixed bottom-14 left-0 right-0 z-30 bg-[var(--bg-secondary)] border-t border-[var(--border-color)] px-4 py-1.5 text-xs shadow-xl">
         <div className="max-w-7xl mx-auto flex items-center justify-between gap-4 font-mono">
           <div className="flex items-center gap-3">
             <span className="flex items-center gap-1.5 text-emerald-400 font-bold">
               <ShieldCheck className="w-4 h-4" />
               <span>100% Client-Side Privacy</span>
             </span>
-            <span className="text-[var(--text-muted)] hidden md:inline">•</span>
-            <span className="text-[var(--text-muted)] hidden md:inline truncate max-w-xs">
+            <span className="text-[var(--text-muted)]">•</span>
+            <span className="text-[var(--text-muted)] truncate max-w-xs">
               {countryInfo.flag} {activeCase.state} Jurisdiction
             </span>
           </div>
@@ -113,7 +116,7 @@ const WorkstationRouter: React.FC = () => {
               title="Toggle Live Animated Stage"
             >
               {showLiveTheme ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
-              <span className="hidden sm:inline">{showLiveTheme ? 'Hide Live Stage' : 'Show Live Stage'}</span>
+              <span>{showLiveTheme ? 'Hide Stage' : 'Show Stage'}</span>
             </button>
 
             <button
@@ -122,7 +125,7 @@ const WorkstationRouter: React.FC = () => {
               title="Change country & location"
             >
               <Settings className="w-3.5 h-3.5 text-[var(--accent-gold)]" />
-              <span className="hidden md:inline">Country: {countryInfo.name}</span>
+              <span>Country: {countryInfo.name}</span>
             </button>
 
             <div className="flex items-center gap-1">
@@ -132,13 +135,16 @@ const WorkstationRouter: React.FC = () => {
               </span>
             </div>
 
-            <div className="hidden sm:flex items-center gap-1">
+            <div className="flex items-center gap-1">
               <span className="text-[var(--text-muted)]">Legal Savings:</span>
               <span className="font-bold text-[var(--accent-gold)]">{countryInfo.currencySymbol}{estimatedParalegalSavings.toLocaleString()}</span>
             </div>
           </div>
         </div>
       </footer>
+
+      {/* Audiomack-Inspired Bottom Navigation Bar */}
+      <BottomNavBar />
     </div>
   );
 };

@@ -113,6 +113,19 @@ export interface SecondOpinionReport {
   localHelpResources: LegalServiceDirectory[];
 }
 
+export interface AdvisorConsultationResult {
+  id: string;
+  timestamp: string;
+  query: string;
+  topic: string;
+  summary: string;
+  statutesAndAuthorities: string[];
+  factualCaseAnalysis: string;
+  hearingTacticsAndRebuttal: string;
+  pitfallsToAvoid: string;
+  actionItems: string[];
+}
+
 export interface Party {
   id: string;
   name: string;
@@ -125,6 +138,7 @@ export interface Party {
   phone?: string;
   email?: string;
   registeredAgent?: string;
+  isPlaceholder?: boolean;
 }
 
 export interface ClaimElement {
@@ -415,6 +429,7 @@ export interface CaseFile {
   secondOpinionDefenses?: PredictedDefense[];
   resolvedVulnerabilityIds?: string[];
   opposingCounsel?: OpposingCounselInfo;
+  advisorConsultationHistory?: AdvisorConsultationResult[];
   dossierPrintSections?: DossierPrintOptions;
   securityAuditLogs?: SecurityAuditEntry[];
 }

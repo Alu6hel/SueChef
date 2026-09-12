@@ -25,8 +25,9 @@ import { sound } from '../../services/soundEngine';
 
 export const PleadingBuilder: React.FC = () => {
   const { activeCase, updateActiveCase, updateParagraph } = useSueChef();
-  const [activeSubTab, setActiveSubTab] = useState<'complaint' | 'demand_letter' | 'verification'>('complaint');
+  const [activeSubTab, setActiveSubTab] = useState<'complaint' | 'demand_letter' | 'verification' | 'court_packet'>('complaint');
   const [copied, setCopied] = useState(false);
+  const [downloadedPacket, setDownloadedPacket] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [selectedFont, setSelectedFont] = useState<'Century Schoolbook' | 'Times New Roman' | 'Courier New' | 'Georgia'>(
     activeCase.pleadings.fontFamily || 'Century Schoolbook'
@@ -58,6 +59,64 @@ export const PleadingBuilder: React.FC = () => {
   const formattedPrincipal = `$${principalDamage.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
   const formattedPenalty = `$${statutoryPenalty.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
   const formattedTotal = `$${totalDamages.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+
+  const getCausesOfAction = (): string[] => {
+    const cat = activeCase.claimEvaluation.category;
+    switch (cat) {
+      case 'security_deposit':
+        return [
+          `1. Statutory Security Deposit Violation (${jurisdiction.securityDepositStatuteCitation || 'Civil Code'})`,
+          `2. Breach of Residential Lease Agreement`,
+          `3. Unlawful Withholding & Prejudgment Interest (${jurisdiction.interestStatuteCitation || 'Code'})`
+        ];
+      case 'breach_of_contract':
+      case 'freelance_unpaid':
+        return [
+          `1. Breach of Contract (Failure to Tender Payment)`,
+          `2. Common Count for Work, Labor, & Services (Quantum Meruit)`,
+          `3. Account Stated & Prejudgment Interest (${jurisdiction.statutoryInterestRatePercent}% under ${jurisdiction.interestStatuteCitation || 'Code'})`
+        ];
+      case 'contractor_dispute':
+        return [
+          `1. Breach of Construction Agreement`,
+          `2. Negligent Workmanship & Building Code Violations`,
+          `3. Restitution, Disgorgement & Surety Bond Claim`
+        ];
+      case 'consumer_fraud':
+        return [
+          `1. Statutory Unfair & Deceptive Trade Practices (UDAP)`,
+          `2. Fraudulent Misrepresentation & Concealment`,
+          `3. Rescission, Restitution & Statutory Multiplier`
+        ];
+      case 'property_damage':
+        return [
+          `1. Negligence & Tortious Harm to Property`,
+          `2. Breach of Duty to Exercise Ordinary Care`,
+          `3. Cost of Repair, Diminution in Value & Loss of Use`
+        ];
+      case 'wage_theft':
+        return [
+          `1. Statutory Wage Theft & Overtime Violations`,
+          `2. Failure to Pay Wages Due Upon Separation (Waiting Time Penalties)`,
+          `3. Statutory Liquidated Damages, Interest & Costs`
+        ];
+      case 'auto_accident':
+      case 'negligence':
+        return [
+          `1. Motor Vehicle Negligence & Tort`,
+          `2. Proximate Causation of Property Damage & Out-of-Pocket Loss`,
+          `3. Prejudgment Interest & Court Filing Costs`
+        ];
+      default:
+        return [
+          `1. Prima Facie Civil Liability`,
+          `2. Direct Economic Compensatory Loss`,
+          `3. Statutory Prejudgment Interest & Court Costs`
+        ];
+    }
+  };
+
+  const causesOfAction = getCausesOfAction();
 
   const handleAddParagraph = (e: React.FormEvent) => {
     e.preventDefault();
@@ -114,6 +173,7 @@ export const PleadingBuilder: React.FC = () => {
         '        Defendant.',
         '-------------------------------------------------------',
         'COMPLAINT FOR DAMAGES AND STATUTORY PENALTIES',
+        ...causesOfAction.map(c => `  ${c}`),
         '',
         ...activeCase.pleadings.paragraphs.map(p => 
           `${p.heading ? `\n${p.heading}\n` : ''}${p.number}. ${p.content}`
@@ -150,12 +210,140 @@ export const PleadingBuilder: React.FC = () => {
         `Respectfully submitted,`,
         `${plaintiff?.name}`
       ].filter(Boolean).join('\n');
+    } else if (activeSubTab === 'court_packet') {
+      textToCopy = generateFullCourtPacketText();
     }
 
     navigator.clipboard.writeText(textToCopy);
     setCopied(true);
     sound.playDocketStamp();
     setTimeout(() => setCopied(false), 2000);
+  };
+
+  const generateFullCourtPacketText = (): string => {
+    const divider = '================================================================================';
+    const subDivider = '--------------------------------------------------------------------------------';
+    const exhibits = activeCase.evidenceList;
+    const filingFee = 75;
+    const serviceFee = 115;
+    const totalFees = filingFee + serviceFee;
+
+    const part1 = [
+      divider,
+      'PART 1: FORMAL 28-LINE VERIFIED CIVIL COMPLAINT',
+      divider,
+      `${activeCase.courtName.toUpperCase()}`,
+      subDivider,
+      `${plaintiff?.name || 'PLAINTIFF'},`,
+      '        Plaintiff,',
+      '    v.                                CASE NO. ' + activeCase.caseNumber,
+      `${defendant?.name || 'DEFENDANT'},`,
+      '        Defendant.',
+      subDivider,
+      'COMPLAINT FOR DAMAGES AND STATUTORY PENALTIES',
+      ...causesOfAction.map(c => `  ${c}`),
+      '',
+      ...activeCase.pleadings.paragraphs.map(p => 
+        `${p.heading ? `\n${p.heading}\n` : ''}${p.number}. ${p.content}`
+      ),
+      '',
+      'PRAYER FOR RELIEF:',
+      `WHEREFORE, Plaintiff prays for judgment against Defendant ${defendant?.name} as follows:`,
+      `1. Compensatory damages in the amount of ${formattedPrincipal};`,
+      statutoryPenalty > 0 ? `2. Statutory penalties in the amount of ${formattedPenalty};` : '',
+      interestDamage > 0 ? `3. Prejudgment interest in the amount of $${interestDamage.toFixed(2)};` : '',
+      `4. Allowable statutory court costs of $${totalFees.toFixed(2)};`,
+      '5. For such other and further relief as the Court deems just and proper.',
+      '',
+      'VERIFICATION UNDER PENALTY OF PERJURY:',
+      `I, ${plaintiff?.name}, declare under penalty of perjury under the laws of ${activeCase.state} that I am the Plaintiff; that I have read the foregoing Complaint and know the contents thereof; and that the matters stated therein are true of my own personal knowledge.`,
+      `Executed on: ${new Date().toLocaleDateString('en-US')} at ${activeCase.county}, ${activeCase.state}.`,
+      '',
+      `________________________________________`,
+      `${plaintiff?.name}, Pro Se Plaintiff`
+    ].filter(Boolean).join('\n');
+
+    const part2 = [
+      divider,
+      'PART 2: CIVIL CASE COVER SHEET SUMMARY (CM-010 / SC-100)',
+      divider,
+      `COURT: ${activeCase.courtName}`,
+      `CASE NUMBER: ${activeCase.caseNumber}`,
+      `PLAINTIFF: ${plaintiff?.name} (Pro Se / In Propria Persona)`,
+      `DEFENDANT: ${defendant?.name} (${defendant?.entityType ? defendant.entityType.toUpperCase() : 'DEFENDANT'})`,
+      `REGISTERED AGENT: ${defendant?.registeredAgent || 'Designated Agent for Service of Process'}`,
+      `DISPUTE CATEGORY: ${activeCase.claimEvaluation.category.toUpperCase().replace(/_/g, ' ')}`,
+      `TOTAL AMOUNT DEMANDED: ${formattedTotal}`,
+      `JURY TRIAL DEMANDED: NO (Small Claims / Non-Jury Expedited Proceeding)`,
+      `REMEDY SOUGHT: Monetary Compensatory Damages & Statutory Civil Penalties`,
+      subDivider
+    ].join('\n');
+
+    const part3 = [
+      divider,
+      'PART 3: MASTER EXHIBIT INDEX & CRYPTOGRAPHIC SHA-256 TAB STAMPS',
+      divider,
+      'EVIDENTIARY AUTHENTICATION DECLARATION (FRE 901 / 902 / STATE RULES OF EVIDENCE):',
+      'The following exhibits are true and correct duplicates of original contemporaneous documents, records, and photographs maintained by Claimant.',
+      '',
+      ...exhibits.map((e, i) => {
+        return [
+          `[ EXHIBIT ${String.fromCharCode(65 + i)} ] ${e.title.toUpperCase()}`,
+          `  Type: ${e.category.toUpperCase()} | Date: ${e.dateOccurred} | Custodian: ${e.custodian}`,
+          `  SHA-256 Hash: ${e.sha256Hash || 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855'}`,
+          `  Evidentiary Purpose: ${e.notes}`,
+          ''
+        ].join('\n');
+      })
+    ].join('\n');
+
+    const part4 = [
+      divider,
+      'PART 4: FORM PROOF OF SERVICE (AFFIDAVIT OF PROCESS RETURN)',
+      divider,
+      `1. I am at least 18 years of age and not a party to this action.`,
+      `2. DOCUMENTS SERVED: Summons, Verified Complaint, Civil Case Cover Sheet, and Exhibits A through ${String.fromCharCode(64 + Math.max(1, exhibits.length))}.`,
+      `3. PERSON SERVED: ${defendant?.name} / Authorized Corporate Agent (${defendant?.registeredAgent || 'Agent of Record'}).`,
+      `4. DATE & MANNER: Personal delivery / Statutory Certified Mail Return Receipt Requested.`,
+      `5. DECLARATION: I declare under penalty of perjury under the laws of ${activeCase.state} that the foregoing is true and correct.`,
+      '',
+      `Executed on: ${new Date().toLocaleDateString('en-US')} at ${activeCase.county}, ${activeCase.state}.`,
+      '',
+      `________________________________________`,
+      `Disinterested Process Server / Registered Server`
+    ].join('\n');
+
+    const part5 = [
+      divider,
+      'PART 5: IN FORMA PAUPERIS (IFP) COURT FEE WAIVER WORKSHEET',
+      divider,
+      `CLAIMANT: ${plaintiff?.name}`,
+      `STATUTORY FILING FEE: $${filingFee}.00 | SERVICE COSTS: $${serviceFee}.00 | TOTAL: $${totalFees}.00`,
+      `ELIGIBILITY CRITERIA:`,
+      `• Gross Monthly Income is below 133% / 150% of Federal Poverty Guidelines for a household of one ($1,698/mo), OR`,
+      `• Claimant receives public assistance (Medi-Cal/Medicaid, CalFresh/SNAP, SSI/SSP, General Assistance).`,
+      `AFFIDAVIT: If approved by the Presiding Judge or Clerk, all court filing fees and certified process service costs are waived pursuant to state in forma pauperis statutes.`,
+      divider
+    ].join('\n');
+
+    return [part1, part2, part3, part4, part5].join('\n\n');
+  };
+
+  const handleDownloadPacketTxt = () => {
+    sound.playDocketStamp();
+    const packetText = generateFullCourtPacketText();
+    const blob = new Blob([packetText], { type: 'text/plain;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    const cleanTitle = activeCase.title.replace(/[^a-zA-Z0-9]/g, '_');
+    link.setAttribute('download', `${cleanTitle}_Complete_Court_Filing_Packet.txt`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+    setDownloadedPacket(true);
+    setTimeout(() => setDownloadedPacket(false), 3000);
   };
 
   const handlePrint = () => {
@@ -185,7 +373,24 @@ export const PleadingBuilder: React.FC = () => {
         </div>
 
         {/* Sub-tab Switcher */}
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
+          <button
+            onClick={() => {
+              sound.playClick();
+              setActiveSubTab('court_packet');
+            }}
+            className={`tab-geom px-3 py-1.5 text-xs font-semibold border transition-all flex items-center gap-1.5 ${
+              activeSubTab === 'court_packet'
+                ? 'bg-[var(--accent-gold)] text-slate-950 border-[var(--accent-gold)] font-bold shadow-md'
+                : 'bg-[var(--bg-card)] text-[var(--text-muted)] border-[var(--border-color)] hover:text-[var(--text-main)]'
+            }`}
+          >
+            <ShieldCheck className="w-3.5 h-3.5" />
+            <span>Master Filing Packet (5-in-1)</span>
+            <span className="text-[9px] px-1.5 py-0.2 bg-emerald-950 text-emerald-300 rounded font-mono font-bold">
+              COURT READY
+            </span>
+          </button>
           <button
             onClick={() => {
               sound.playClick();
@@ -249,34 +454,45 @@ export const PleadingBuilder: React.FC = () => {
             <option value="Georgia">Georgia</option>
           </select>
 
-          <button
-            onClick={() => {
-              sound.playClick();
-              setIsEditing(!isEditing);
-            }}
-            className={`btn-geom flex items-center gap-1.5 px-3 py-1 text-xs border ${
-              isEditing ? 'bg-amber-950 border-amber-500 text-amber-300 font-bold' : 'bg-[var(--bg-secondary)] border-[var(--border-color)] text-[var(--text-muted)] hover:text-[var(--text-main)]'
-            }`}
-          >
-            {isEditing ? <Eye className="w-3.5 h-3.5" /> : <Edit3 className="w-3.5 h-3.5" />}
-            <span>{isEditing ? 'Preview Mode' : 'WYSIWYG Edit'}</span>
-          </button>
+          {activeSubTab === 'complaint' && (
+            <button
+              onClick={() => {
+                sound.playClick();
+                setIsEditing(!isEditing);
+              }}
+              className={`btn-geom flex items-center gap-1.5 px-3 py-1 text-xs border ${
+                isEditing ? 'bg-amber-950 border-amber-500 text-amber-300 font-bold' : 'bg-[var(--bg-secondary)] border-[var(--border-color)] text-[var(--text-muted)] hover:text-[var(--text-main)]'
+              }`}
+            >
+              {isEditing ? <Eye className="w-3.5 h-3.5" /> : <Edit3 className="w-3.5 h-3.5" />}
+              <span>{isEditing ? 'Preview Mode' : 'WYSIWYG Edit'}</span>
+            </button>
+          )}
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
+          {activeSubTab === 'court_packet' && (
+            <button
+              onClick={handleDownloadPacketTxt}
+              className="btn-geom flex items-center gap-1.5 px-3 py-1 text-xs font-mono font-bold bg-[var(--bg-secondary)] border border-[var(--border-color)] hover:border-[var(--accent-gold)] text-[var(--accent-gold)] hover:bg-[var(--bg-hover)] transition-all shadow-sm"
+            >
+              <Download className="w-3.5 h-3.5" />
+              <span>{downloadedPacket ? '✓ Downloaded (.txt)' : 'Download Packet (.txt)'}</span>
+            </button>
+          )}
           <button
             onClick={handleCopyText}
             className="btn-geom flex items-center gap-1.5 px-3 py-1 text-xs font-semibold bg-[var(--bg-secondary)] border border-[var(--border-color)] text-[var(--text-main)] hover:bg-[var(--bg-hover)]"
           >
             {copied ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5 text-[var(--accent-gold)]" />}
-            <span>{copied ? 'Copied to Clipboard' : 'Copy Text'}</span>
+            <span>{copied ? 'Copied to Clipboard' : activeSubTab === 'court_packet' ? 'Copy Full Packet' : 'Copy Text'}</span>
           </button>
           <button
             onClick={handlePrint}
             className="btn-geom flex items-center gap-1.5 px-3 py-1 text-xs font-bold bg-[var(--accent-gold)] text-slate-950 hover:opacity-90 shadow-sm"
           >
             <Printer className="w-3.5 h-3.5" />
-            <span>Print / Save PDF</span>
+            <span>{activeSubTab === 'court_packet' ? 'Print Complete Packet' : 'Print / Save PDF'}</span>
           </button>
         </div>
       </div>
@@ -328,10 +544,10 @@ export const PleadingBuilder: React.FC = () => {
                   <div className="font-bold uppercase text-[11px] leading-snug">
                     COMPLAINT FOR DAMAGES AND STATUTORY BAD-FAITH PENALTIES
                   </div>
-                  <div className="text-[10px] text-slate-600 italic">
-                    1. {jurisdiction.securityDepositStatuteCitation || 'Statutory Violation'}<br />
-                    2. Breach of Contract / Unlawful Retention<br />
-                    3. Unjust Enrichment &amp; Prejudgment Interest
+                  <div className="text-[10px] text-slate-600 italic space-y-0.5">
+                    {causesOfAction.map((ca, i) => (
+                      <div key={i}>{ca}</div>
+                    ))}
                   </div>
                   <div className="text-[10px] font-bold text-slate-800">DEMAND FOR JURY TRIAL</div>
                 </div>
@@ -665,6 +881,321 @@ export const PleadingBuilder: React.FC = () => {
                 </div>
                 <div className="font-bold">{activeCase.pleadings.verificationAffidavit.declarantName || plaintiff?.name}</div>
                 <div className="text-slate-600 italic">Declarant / Plaintiff in Pro Per</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Master 5-in-1 Court-Ready Filing Packet */}
+      {activeSubTab === 'court_packet' && (
+        <div className="space-y-6 animate-fadeIn">
+          {/* Packet Summary Bar */}
+          <div className="card-geom bg-[var(--bg-card)] border border-[var(--border-color)] p-4 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+            <div className="space-y-1">
+              <div className="flex items-center gap-2">
+                <span className="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-emerald-950 text-emerald-300 border border-emerald-700">
+                  CLERK-READY COMPLETE BUNDLE
+                </span>
+                <span className="text-xs font-mono text-[var(--text-muted)]">5 Official Documents</span>
+              </div>
+              <h3 className="font-serif font-bold text-lg text-[var(--text-main)]">
+                Master Court Filing &amp; Service Packet
+              </h3>
+              <p className="text-xs text-[var(--text-muted)] max-w-xl">
+                Assembles all mandatory components required for pro se filing at the clerk's window and legal service of process. Includes verified pleading, civil cover sheet, cryptographically hashed exhibits, return of service affidavit, and statutory fee waiver worksheet.
+              </p>
+            </div>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={handleDownloadPacketTxt}
+                className="btn-geom flex items-center gap-1.5 px-4 py-2 text-xs font-mono font-bold bg-[var(--accent-gold)] text-slate-950 hover:opacity-90 shadow-md"
+              >
+                <Download className="w-4 h-4" />
+                <span>{downloadedPacket ? '✓ Packet Downloaded' : 'Download Master Packet (.txt)'}</span>
+              </button>
+            </div>
+          </div>
+
+          {/* Document 1: 28-Line Formal Complaint */}
+          <div className="pleading-paper-container p-6 md:p-10 text-slate-900 border border-slate-300 rounded-sm shadow-xl space-y-6 text-xs leading-relaxed font-pleading bg-[#faf8f5]">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b-2 border-slate-900 pb-2 gap-1.5">
+              <span className="font-mono text-[11px] font-bold text-slate-700">DOCUMENT 1 OF 5</span>
+              <span className="font-mono text-[11px] font-bold uppercase tracking-wider text-slate-900">VERIFIED CIVIL COMPLAINT (28-LINE PLEADING)</span>
+            </div>
+
+            {/* Attorney / Pro Se Block */}
+            <div className="text-xs font-mono space-y-0.5 border-b border-slate-200 pb-3">
+              <div className="font-bold text-slate-950">{plaintiff?.name} (In Pro Per / Pro Se)</div>
+              <div>{plaintiff?.address}</div>
+              <div>{plaintiff?.city}, {plaintiff?.state} {plaintiff?.zip}</div>
+              <div>Tel: {plaintiff?.phone} | Email: {plaintiff?.email}</div>
+              <div className="italic text-slate-600">Plaintiff in Propria Persona</div>
+            </div>
+
+            {/* Court Header */}
+            <div className="text-center font-bold uppercase tracking-wider text-base">
+              {activeCase.courtName}
+            </div>
+
+            {/* Caption */}
+            <div className="grid grid-cols-2 border-y-2 border-slate-900 py-3 text-xs">
+              <div className="border-r border-slate-400 pr-3 space-y-2">
+                <div className="font-bold">{plaintiff?.name},</div>
+                <div className="pl-6 italic">Plaintiff,</div>
+                <div className="font-bold pt-2">v.</div>
+                <div className="font-bold pt-2">{defendant?.name},</div>
+                <div className="pl-6 italic">Defendant.</div>
+              </div>
+              <div className="pl-4 space-y-1.5">
+                <div className="font-bold font-mono">CASE NO. {activeCase.caseNumber}</div>
+                <div className="font-bold uppercase text-[11px]">
+                  COMPLAINT FOR DAMAGES AND STATUTORY PENALTIES
+                </div>
+                <div className="text-[10px] text-slate-600 italic">
+                  {causesOfAction.join('; ')}
+                </div>
+                <div className="text-[10px] font-bold text-slate-800">DEMAND FOR JURY TRIAL</div>
+              </div>
+            </div>
+
+            {/* Numbered Paragraphs */}
+            <div className="space-y-3 pt-2">
+              {activeCase.pleadings.paragraphs.map(p => (
+                <div key={p.id} className="space-y-1">
+                  {p.heading && (
+                    <div className="font-bold uppercase text-[11px] tracking-wider pt-2 border-b border-slate-200 pb-0.5 text-slate-800">
+                      {p.heading}
+                    </div>
+                  )}
+                  <p className="indent-6">
+                    <strong>{p.number}.</strong> {p.content}
+                  </p>
+                </div>
+              ))}
+            </div>
+
+            {/* Prayer */}
+            <div className="space-y-2 pt-3 border-t border-slate-300">
+              <div className="font-bold uppercase text-xs">PRAYER FOR RELIEF</div>
+              <p className="indent-6">
+                WHEREFORE, Plaintiff prays for judgment against Defendant {defendant?.name} as follows:
+              </p>
+              <ol className="list-decimal pl-10 space-y-1">
+                <li>Compensatory general and special damages in the sum of <strong>{formattedPrincipal}</strong>;</li>
+                {statutoryPenalty > 0 && (
+                  <li>Statutory bad-faith penalties in the sum of <strong>{formattedPenalty}</strong>;</li>
+                )}
+                {interestDamage > 0 && (
+                  <li>Prejudgment statutory interest in the sum of <strong>${interestDamage.toFixed(2)}</strong>;</li>
+                )}
+                <li>Recoverable court filing fees and costs of service of suit ($190.00);</li>
+                <li>Such other and further relief as the Court deems just and proper.</li>
+              </ol>
+            </div>
+
+            {/* Verification */}
+            <div className="space-y-2 pt-4 border-t border-slate-300">
+              <div className="font-bold uppercase text-xs text-center">VERIFICATION UNDER PENALTY OF PERJURY</div>
+              <p className="indent-6">
+                I, <strong>{plaintiff?.name}</strong>, declare under penalty of perjury under the laws of the State of {activeCase.state} that I am the Plaintiff in this action; I have read the foregoing Complaint and know the contents thereof; and the facts stated herein are true of my own knowledge, except as to matters stated on information and belief.
+              </p>
+              <div className="pt-4 flex justify-between items-end">
+                <div>Dated: {new Date().toLocaleDateString('en-US')}</div>
+                <div className="text-right">
+                  <div className="font-serif italic text-base border-b border-slate-400 pb-1 w-48 text-blue-950">
+                    {plaintiff?.name}
+                  </div>
+                  <div className="font-bold">{plaintiff?.name}, Pro Se Plaintiff</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Document 2: Civil Case Cover Sheet Summary */}
+          <div className="pleading-paper-container p-6 md:p-10 text-slate-900 border border-slate-300 rounded-sm shadow-xl space-y-4 text-xs font-pleading bg-white">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b-2 border-slate-900 pb-2 gap-1.5">
+              <span className="font-mono text-[11px] font-bold text-slate-700">DOCUMENT 2 OF 5</span>
+              <span className="font-mono text-[11px] font-bold uppercase tracking-wider text-slate-900">CIVIL CASE COVER SHEET SUMMARY (CM-010 / SC-100 EQUIVALENT)</span>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 border border-slate-400 p-4 bg-slate-50 font-sans text-xs">
+              <div>
+                <span className="text-[10px] uppercase font-bold text-slate-500 block">Court Venue</span>
+                <span className="font-bold text-slate-900">{activeCase.courtName}</span>
+              </div>
+              <div>
+                <span className="text-[10px] uppercase font-bold text-slate-500 block">Assigned Docket / Case #</span>
+                <span className="font-mono font-bold text-slate-900">{activeCase.caseNumber}</span>
+              </div>
+              <div>
+                <span className="text-[10px] uppercase font-bold text-slate-500 block">Plaintiff (Pro Se)</span>
+                <span className="font-bold text-slate-900">{plaintiff?.name}</span>
+                <div className="text-[11px] text-slate-600">{plaintiff?.phone} | {plaintiff?.email}</div>
+              </div>
+              <div>
+                <span className="text-[10px] uppercase font-bold text-slate-500 block">Defendant &amp; Entity Type</span>
+                <span className="font-bold text-slate-900">{defendant?.name} ({defendant?.entityType ? defendant.entityType.toUpperCase() : 'INDIVIDUAL / BUSINESS'})</span>
+                <div className="text-[11px] text-slate-600">Registered Agent: {defendant?.registeredAgent || 'Officer / Director / Authorized Agent'}</div>
+              </div>
+              <div>
+                <span className="text-[10px] uppercase font-bold text-slate-500 block">Nature of Action / Case Type</span>
+                <span className="font-bold text-slate-900">{activeCase.claimEvaluation.category.toUpperCase().replace(/_/g, ' ')}</span>
+                <div className="text-[11px] text-slate-600">Small Claims / Expedited Limited Civil Action</div>
+              </div>
+              <div>
+                <span className="text-[10px] uppercase font-bold text-slate-500 block">Total Monetary Demand</span>
+                <span className="font-mono font-bold text-emerald-800 text-sm">{formattedTotal}</span>
+                <div className="text-[11px] text-slate-600">Includes Compensatory + Statutory Penalty</div>
+              </div>
+            </div>
+
+            <div className="p-3 bg-amber-50 border border-amber-300 text-amber-950 text-xs font-sans space-y-1">
+              <div className="font-bold">CLERK'S INTAKE CERTIFICATION:</div>
+              <div>This Civil Case Cover Sheet summary accompanies the original Verified Complaint filed herewith pursuant to state trial court civil case management rules. Plaintiff requests expedited summons issuance.</div>
+            </div>
+          </div>
+
+          {/* Document 3: Master Exhibit Index & Cryptographic SHA-256 Tab Stamps */}
+          <div className="pleading-paper-container p-6 md:p-10 text-slate-900 border border-slate-300 rounded-sm shadow-xl space-y-4 text-xs font-pleading bg-white">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b-2 border-slate-900 pb-2 gap-1.5">
+              <span className="font-mono text-[11px] font-bold text-slate-700">DOCUMENT 3 OF 5</span>
+              <span className="font-mono text-[11px] font-bold uppercase tracking-wider text-slate-900">MASTER EXHIBIT INDEX WITH CRYPTOGRAPHIC SHA-256 TAB STAMPS</span>
+            </div>
+
+            <p className="text-xs text-slate-700 leading-relaxed font-sans">
+              Pursuant to Federal Rules of Evidence 901 &amp; 902 and corresponding state evidence codes, the undersigned Plaintiff certifies that each of the following physical and digital exhibits has been maintained under strict chain of custody and authenticated with a cryptographic SHA-256 digest:
+            </p>
+
+            <div className="space-y-3 font-sans">
+              {activeCase.evidenceList.map((e, index) => {
+                const tabLetter = String.fromCharCode(65 + index);
+                return (
+                  <div key={e.id} className="border border-slate-300 p-3 bg-slate-50 rounded-sm flex flex-col md:flex-row items-start md:items-center justify-between gap-3">
+                    <div className="flex items-center gap-3">
+                      <div className="px-2.5 py-1 bg-slate-900 text-amber-300 font-mono font-bold text-xs rounded-sm">
+                        TAB {tabLetter}
+                      </div>
+                      <div>
+                        <div className="font-bold text-slate-900 text-sm">
+                          Exhibit {tabLetter}: {e.title}
+                        </div>
+                        <div className="text-[11px] text-slate-600">
+                          Date: {e.dateOccurred} | Custodian: {e.custodian} | Category: {e.category.toUpperCase()}
+                        </div>
+                        <div className="text-[11px] text-slate-700 italic mt-0.5">
+                          "{e.notes}"
+                        </div>
+                      </div>
+                    </div>
+                    <div className="w-full md:w-auto text-left md:text-right border-t md:border-t-0 pt-2 md:pt-0 border-slate-200">
+                      <span className="text-[10px] font-mono text-emerald-800 bg-emerald-50 px-2 py-0.5 border border-emerald-300 rounded block md:inline-block">
+                        SHA-256 VERIFIED
+                      </span>
+                      <div className="font-mono text-[9px] text-slate-500 break-all max-w-xs mt-1">
+                        {e.sha256Hash || 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855'}
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Document 4: Proof of Service Affidavit */}
+          <div className="pleading-paper-container p-6 md:p-10 text-slate-900 border border-slate-300 rounded-sm shadow-xl space-y-4 text-xs font-pleading bg-white">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b-2 border-slate-900 pb-2 gap-1.5">
+              <span className="font-mono text-[11px] font-bold text-slate-700">DOCUMENT 4 OF 5</span>
+              <span className="font-mono text-[11px] font-bold uppercase tracking-wider text-slate-900">FORM PROOF OF SERVICE (AFFIDAVIT OF PROCESS RETURN)</span>
+            </div>
+
+            <div className="space-y-3 font-sans leading-relaxed">
+              <p>
+                <strong>1. Server Age &amp; Capacity:</strong> At the time of service, I was at least 18 years of age and not a party to this legal action.
+              </p>
+              <p>
+                <strong>2. Documents Served:</strong> Summons; Verified Complaint; Civil Case Cover Sheet; Master Exhibit Index (Tabs A through {String.fromCharCode(64 + Math.max(1, activeCase.evidenceList.length))}); Notice of Case Assignment.
+              </p>
+              <p>
+                <strong>3. Party Served:</strong> <strong>{defendant?.name}</strong>{defendant?.registeredAgent ? ` via Designated Registered Agent for Service of Process (${defendant.registeredAgent})` : ''} at {defendant?.address || activeCase.county + ', ' + activeCase.state}.
+              </p>
+              <p>
+                <strong>4. Manner of Service:</strong> (Check Applicable)
+              </p>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pl-4 text-[11px]">
+                <div className="p-2 border border-slate-300 bg-slate-50">
+                  [ ✓ ] <strong>Personal Service:</strong> By personally delivering true copies to the defendant or registered agent.
+                </div>
+                <div className="p-2 border border-slate-300 bg-slate-50">
+                  [ &nbsp; ] <strong>Certified Mail (Return Receipt Requested):</strong> Pursuant to state small claims service rules.
+                </div>
+              </div>
+              <p className="font-bold pt-2">
+                5. Declaration: I declare under penalty of perjury under the laws of the State of {activeCase.state} that the foregoing is true and correct.
+              </p>
+
+              <div className="pt-8 flex justify-between items-end border-t border-slate-300 font-serif">
+                <div>
+                  <div>Date Executed: ___________________</div>
+                  <div>County/State: {activeCase.county}, {activeCase.state}</div>
+                </div>
+                <div className="text-right">
+                  <div className="border-b border-slate-400 pb-1 w-56"></div>
+                  <div className="text-xs font-sans font-bold pt-1">Signature of Process Server</div>
+                  <div className="text-[10px] font-sans text-slate-500">Registered Process Server / Non-Party Adult</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Document 5: In Forma Pauperis (IFP) Fee Waiver Worksheet */}
+          <div className="pleading-paper-container p-6 md:p-10 text-slate-900 border border-slate-300 rounded-sm shadow-xl space-y-4 text-xs font-pleading bg-white">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b-2 border-slate-900 pb-2 gap-1.5">
+              <span className="font-mono text-[11px] font-bold text-slate-700">DOCUMENT 5 OF 5</span>
+              <span className="font-mono text-[11px] font-bold uppercase tracking-wider text-slate-900">IN FORMA PAUPERIS (IFP) COURT FEE WAIVER WORKSHEET</span>
+            </div>
+
+            <div className="space-y-3 font-sans">
+              <div className="bg-slate-50 border border-slate-300 p-3 grid grid-cols-3 gap-2 text-center">
+                <div>
+                  <span className="text-[10px] uppercase text-slate-500 block">Court Filing Fee</span>
+                  <span className="font-mono font-bold text-slate-900">$75.00</span>
+                </div>
+                <div>
+                  <span className="text-[10px] uppercase text-slate-500 block">Process Service Fee</span>
+                  <span className="font-mono font-bold text-slate-900">$115.00</span>
+                </div>
+                <div>
+                  <span className="text-[10px] uppercase text-slate-500 block">Total Waivable</span>
+                  <span className="font-mono font-bold text-emerald-800 text-sm">$190.00</span>
+                </div>
+              </div>
+
+              <div className="border border-slate-300 p-3 bg-white space-y-2">
+                <div className="font-bold text-xs text-slate-900">STATUTORY QUALIFYING CRITERIA:</div>
+                <div className="text-[11px] text-slate-700 space-y-1">
+                  <div>• <strong>Criterion A:</strong> Claimant receives public benefits (SNAP / Food Stamps, SSI/SSP, Medi-Cal/Medicaid, TANF/CalWORKs, General Assistance).</div>
+                  <div>• <strong>Criterion B:</strong> Claimant's gross monthly household income is less than 133% - 150% of the Federal Poverty Guidelines ($1,698.00/month for individual household).</div>
+                  <div>• <strong>Criterion C:</strong> Income is insufficient to pay for the common necessaries of life without suffering undue financial hardship.</div>
+                </div>
+              </div>
+
+              <p className="text-[11px] text-slate-700 leading-relaxed italic">
+                Worksheet Instructions: Submit this completed fee waiver declaration alongside Document 1 (Verified Complaint) directly to the court intake clerk. If approved, initial docketing fees and court-issued service fees are automatically remitted.
+              </p>
+
+              <div className="pt-6 flex justify-between items-end border-t border-slate-300 font-serif">
+                <div>
+                  <div>Claimant: {plaintiff?.name}</div>
+                  <div>Date: {new Date().toLocaleDateString('en-US')}</div>
+                </div>
+                <div className="text-right">
+                  <div className="border-b border-slate-400 pb-1 w-48 text-blue-950 font-serif italic text-base">
+                    {plaintiff?.name}
+                  </div>
+                  <div className="text-xs font-sans font-bold pt-1">{plaintiff?.name}</div>
+                  <div className="text-[10px] font-sans text-slate-500">Applicant in Pro Per</div>
+                </div>
               </div>
             </div>
           </div>

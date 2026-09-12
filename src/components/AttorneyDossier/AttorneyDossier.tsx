@@ -99,34 +99,41 @@ export const AttorneyDossier: React.FC = () => {
   };
 
   return (
-    <div className="space-y-6 max-w-7xl mx-auto p-4 md:p-6 animate-fadeIn">
+    <div className="space-y-6 max-w-7xl mx-auto p-4 md:p-6 pb-32 animate-fadeIn">
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-[var(--border-color)] pb-5">
-        <div className="flex items-center gap-2.5">
-          <div className="p-2 card-geom bg-amber-500/10 border border-amber-500/30 text-amber-400">
+        <div className="flex items-start sm:items-center gap-3">
+          <div className="p-2.5 card-geom bg-amber-500/10 border border-amber-500/30 text-amber-400 shrink-0">
             <Briefcase className="w-6 h-6" />
           </div>
           <div>
-            <h1 className="font-serif font-bold text-2xl text-[var(--text-main)]">
-              The Attorney Hand-Off Dossier
+            <div className="flex items-center gap-2">
+              <span className="text-[10px] font-mono font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 border border-amber-500/30">
+                Station 12 • Ready-To-Hand-Over Legal Dossier
+              </span>
+            </div>
+            <h1 className="font-serif font-bold text-xl md:text-2xl text-[var(--text-main)] mt-1">
+              Take-To-A-Lawyer Package & Printable Legal Binder
             </h1>
-            <p className="text-xs text-[var(--text-muted)] font-mono">
-              Professional Paralegal-Grade Case Binder, Opposing Counsel Profiler & Billable Hour Savings Calculator
+            <p className="text-xs text-[var(--text-muted)] font-sans mt-0.5">
+              Hand an organized binder directly to an attorney, paralegal, legal aid clinic, mediator, or small claims judge.
             </p>
           </div>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 w-full sm:w-auto">
           <button
             onClick={handleDownloadBundle}
-            className="btn-geom flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold bg-[var(--bg-card)] border border-[var(--border-color)] text-[var(--text-main)] hover:bg-[var(--bg-hover)]"
+            className="btn-geom flex items-center justify-center gap-1.5 px-3.5 py-2 text-xs font-semibold bg-[var(--bg-card)] border border-[var(--border-color)] text-[var(--text-main)] hover:bg-[var(--bg-hover)] transition-all"
+            title="Download full case JSON backup"
           >
             <Download className="w-3.5 h-3.5 text-[var(--accent-gold)]" />
             <span>Export .suechef Archive</span>
           </button>
           <button
             onClick={handlePrintDossier}
-            className="btn-geom flex items-center gap-1.5 px-4 py-1.5 text-xs font-bold bg-[var(--accent-gold)] text-slate-950 hover:opacity-90 shadow-sm"
+            className="btn-geom flex items-center justify-center gap-1.5 px-4 py-2 text-xs font-bold bg-[var(--accent-gold)] text-slate-950 hover:opacity-90 shadow-sm transition-all"
+            title="Print or save as PDF"
           >
             <Printer className="w-3.5 h-3.5" />
             <span>Print Master Binder</span>
@@ -141,14 +148,14 @@ export const AttorneyDossier: React.FC = () => {
             sound.playClick();
             setActiveTab('binder');
           }}
-          className={`flex items-center gap-2 px-4 py-2 text-xs md:text-sm font-semibold custom-geometry border transition-all ${
+          className={`flex items-center gap-2 px-3.5 py-2 text-xs md:text-sm font-semibold custom-geometry border transition-all ${
             activeTab === 'binder'
               ? 'bg-[var(--accent-gold)] text-slate-950 border-[var(--accent-gold)] font-bold shadow-md'
               : 'bg-[var(--bg-secondary)] text-[var(--text-muted)] border-[var(--border-color)] hover:text-[var(--text-main)]'
           }`}
         >
           <FileText className="w-4 h-4" />
-          <span>Master Dossier Binder View</span>
+          <span>📁 Complete Binder (Print Ready)</span>
         </button>
 
         <button
@@ -156,14 +163,14 @@ export const AttorneyDossier: React.FC = () => {
             sound.playClick();
             setActiveTab('opposing_counsel');
           }}
-          className={`flex items-center gap-2 px-4 py-2 text-xs md:text-sm font-semibold custom-geometry border transition-all ${
+          className={`flex items-center gap-2 px-3.5 py-2 text-xs md:text-sm font-semibold custom-geometry border transition-all ${
             activeTab === 'opposing_counsel'
               ? 'bg-[var(--accent-gold)] text-slate-950 border-[var(--accent-gold)] font-bold shadow-md'
               : 'bg-[var(--bg-secondary)] text-[var(--text-muted)] border-[var(--border-color)] hover:text-[var(--text-main)]'
           }`}
         >
           <UserCheck className="w-4 h-4" />
-          <span>Opposing Counsel Profiler</span>
+          <span>👤 The Other Side's Lawyer / Contact</span>
         </button>
 
         <button
@@ -171,36 +178,36 @@ export const AttorneyDossier: React.FC = () => {
             sound.playClick();
             setActiveTab('hours_breakdown');
           }}
-          className={`flex items-center gap-2 px-4 py-2 text-xs md:text-sm font-semibold custom-geometry border transition-all ${
+          className={`flex items-center gap-2 px-3.5 py-2 text-xs md:text-sm font-semibold custom-geometry border transition-all ${
             activeTab === 'hours_breakdown'
               ? 'bg-[var(--accent-gold)] text-slate-950 border-[var(--accent-gold)] font-bold shadow-md'
               : 'bg-[var(--bg-secondary)] text-[var(--text-muted)] border-[var(--border-color)] hover:text-[var(--text-main)]'
           }`}
         >
           <Clock className="w-4 h-4" />
-          <span>Billable Hours Savings ({totalHoursSaved}h / {countryInfo.currencySymbol}{totalMoneySaved.toLocaleString()})</span>
+          <span>💰 Money Saved: {countryInfo.currencySymbol}{totalMoneySaved.toLocaleString()} ({totalHoursSaved}h)</span>
         </button>
       </div>
 
       {/* Financial Savings Highlight Banner */}
-      <div className="card-geom bg-gradient-to-r from-amber-950/40 via-[var(--bg-card)] to-emerald-950/40 border border-[var(--accent-gold)] p-6 shadow-xl">
-        <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-center">
+      <div className="card-geom bg-gradient-to-r from-amber-950/40 via-[var(--bg-card)] to-emerald-950/40 border border-[var(--accent-gold)] p-5 md:p-6 shadow-xl">
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-5 items-center">
           <div className="md:col-span-7 space-y-2">
             <div className="flex items-center gap-2 text-xs font-mono uppercase text-[var(--accent-gold)] font-bold">
               <Sparkles className="w-4 h-4" />
-              Direct Financial Value Created
+              Direct Value For Your Case
             </div>
-            <h2 className="font-serif font-bold text-xl text-[var(--text-main)]">
-              Estimated Legal Fee Savings: {countryInfo.currencySymbol}{totalMoneySaved.toLocaleString()} ({totalHoursSaved} Hours Saved)
+            <h2 className="font-serif font-bold text-lg md:text-xl text-[var(--text-main)]">
+              Estimated Legal Fee Savings: {countryInfo.currencySymbol}{totalMoneySaved.toLocaleString()} ({totalHoursSaved} Hours of Work Done)
             </h2>
-            <p className="text-xs text-[var(--text-muted)] leading-relaxed">
-              Attorneys and paralegals bill between {countryInfo.currencySymbol}150 and {countryInfo.currencySymbol}650 per hour simply sorting through unorganized evidence, drafting basic complaints, and researching cause-of-action elements. Handing over this structured SueChef binder bypasses raw intake billing entirely.
+            <p className="text-xs text-[var(--text-muted)] leading-relaxed font-sans">
+              <strong>Why this matters:</strong> Lawyers charge {countryInfo.currencySymbol}150 to {countryInfo.currencySymbol}650 per hour just to read through disorganized screenshots, write down basic facts, and research what claims apply. Because SueChef has already organized your timeline, receipts, and legal citations into this binder, an attorney can review everything in 15 minutes instead of billing you for days of prep work.
             </p>
           </div>
 
           <div className="md:col-span-5 card-geom bg-black/40 border border-white/10 p-4 space-y-3">
             <div className="flex justify-between items-center text-xs">
-              <span className="text-[var(--text-muted)]">Litigation Hourly Billing Rate:</span>
+              <span className="text-[var(--text-muted)]">Average Lawyer Billing Rate in Your Area:</span>
               <span className="font-mono font-bold text-[var(--accent-gold)]">{countryInfo.currencySymbol}{hourlyRate}/hr</span>
             </div>
             <input
@@ -213,9 +220,9 @@ export const AttorneyDossier: React.FC = () => {
               className="w-full accent-[var(--accent-gold)] cursor-pointer"
             />
             <div className="flex justify-between text-[10px] font-mono text-[var(--text-muted)]">
-              <span>{countryInfo.currencySymbol}150/hr (Paralegal)</span>
-              <span>{countryInfo.currencySymbol}350/hr (Senior Associate)</span>
-              <span>{countryInfo.currencySymbol}650/hr (Partner)</span>
+              <span>{countryInfo.currencySymbol}150/hr (Paralegal / Aid)</span>
+              <span>{countryInfo.currencySymbol}350/hr (Litigator)</span>
+              <span>{countryInfo.currencySymbol}650/hr (Senior Partner)</span>
             </div>
           </div>
         </div>
@@ -485,21 +492,21 @@ export const AttorneyDossier: React.FC = () => {
             {printSections.summary && (
               <div className="space-y-3">
                 <div className="font-bold text-sm uppercase tracking-wider text-slate-950 border-b border-slate-300 pb-1">
-                  SECTION 1: EXECUTIVE LITIGATION SUMMARY
+                  SECTION 1: CASE OVERVIEW (WHO IS INVOLVED)
                 </div>
-                <div className="grid grid-cols-2 gap-4 text-[11px]">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-[11px]">
                   <div className="p-3 bg-slate-100 border border-slate-200 space-y-1">
-                    <span className="font-bold text-slate-800">PLAINTIFF (PRO SE):</span>
+                    <span className="font-bold text-slate-800">YOU / YOUR PARTY:</span>
                     <div>{plaintiff?.name || 'Self-Represented Litigant'}</div>
                     <div>{plaintiff?.address}, {plaintiff?.city}, {plaintiff?.state} {plaintiff?.zip}</div>
                     <div>Tel: {plaintiff?.phone} • Email: {plaintiff?.email}</div>
                   </div>
 
                   <div className="p-3 bg-slate-100 border border-slate-200 space-y-1">
-                    <span className="font-bold text-slate-800">DEFENDANT:</span>
+                    <span className="font-bold text-slate-800">THE OTHER PARTY:</span>
                     <div>{defendant?.name || 'Named Defendant Entity'}</div>
                     <div>{defendant?.address}, {defendant?.city}, {defendant?.state} {defendant?.zip}</div>
-                    <div>Registered Agent: {defendant?.registeredAgent || 'Direct Service'}</div>
+                    <div>Registered Agent / Contact: {defendant?.registeredAgent || 'Direct Service'}</div>
                   </div>
                 </div>
               </div>
@@ -509,7 +516,7 @@ export const AttorneyDossier: React.FC = () => {
             {printSections.opposingCounsel && opposingCounsel.name && (
               <div className="space-y-3">
                 <div className="font-bold text-sm uppercase tracking-wider text-slate-950 border-b border-slate-300 pb-1">
-                  SECTION 2: OPPOSING COUNSEL RECORD & POSTURE
+                  SECTION 2: THE OTHER PARTY'S LAWYER OR CONTACT INFO
                 </div>
                 <div className="p-3 bg-slate-50 border border-slate-200 space-y-1.5 text-[11px]">
                   <div><strong>Attorney:</strong> {opposingCounsel.name} ({opposingCounsel.firm || 'Solo Practice'})</div>
@@ -526,7 +533,7 @@ export const AttorneyDossier: React.FC = () => {
             {printSections.elements && (
               <div className="space-y-3">
                 <div className="font-bold text-sm uppercase tracking-wider text-slate-950 border-b border-slate-300 pb-1">
-                  SECTION 3: LEGAL ELEMENTS & PRIMA FACIE PROOF
+                  SECTION 3: WHAT YOU HAVE TO PROVE (LEGAL CLAIM ELEMENTS)
                 </div>
                 <div className="space-y-2 text-[11px]">
                   {activeCase.claimEvaluation.elements.map((elem, idx) => (
@@ -549,33 +556,35 @@ export const AttorneyDossier: React.FC = () => {
             {printSections.damages && (
               <div className="space-y-3">
                 <div className="font-bold text-sm uppercase tracking-wider text-slate-950 border-b border-slate-300 pb-1 flex justify-between">
-                  <span>SECTION 4: ITEMIZED TABLE OF DAMAGES</span>
+                  <span>SECTION 4: MONEY OWED (ITEMIZED DAMAGES TABLE)</span>
                   <span>TOTAL: {countryInfo.currencySymbol}{totalDamages.toLocaleString()}</span>
                 </div>
-                <table className="w-full border-collapse text-[11px]">
-                  <thead>
-                    <tr className="bg-slate-200 border border-slate-300 text-slate-800 text-left">
-                      <th className="p-2">Description</th>
-                      <th className="p-2">Category</th>
-                      <th className="p-2">Statutory Basis</th>
-                      <th className="p-2 text-right">Amount</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {activeCase.claimEvaluation.damages.map(dmg => (
-                      <tr key={dmg.id} className="border-b border-slate-200">
-                        <td className="p-2 font-semibold">{dmg.description}</td>
-                        <td className="p-2 uppercase text-[10px] text-slate-600">{dmg.category.replace('_', ' ')}</td>
-                        <td className="p-2 text-slate-600 font-mono text-[10px]">{dmg.statutoryBasis || 'General Law'}</td>
-                        <td className="p-2 text-right font-mono font-bold">{countryInfo.currencySymbol}{dmg.amount.toLocaleString()}</td>
+                <div className="overflow-x-auto w-full -mx-1 px-1">
+                  <table className="w-full min-w-[520px] border-collapse text-[11px]">
+                    <thead>
+                      <tr className="bg-slate-200 border border-slate-300 text-slate-800 text-left">
+                        <th className="p-2">Description</th>
+                        <th className="p-2">Category</th>
+                        <th className="p-2">Statutory Basis</th>
+                        <th className="p-2 text-right">Amount</th>
                       </tr>
-                    ))}
-                    <tr className="bg-slate-100 font-bold border-t-2 border-slate-800">
-                      <td colSpan={3} className="p-2 text-right">TOTAL QUANTIFIED CLAIM:</td>
-                      <td className="p-2 text-right font-mono text-emerald-800">{countryInfo.currencySymbol}{totalDamages.toLocaleString()}</td>
-                    </tr>
-                  </tbody>
-                </table>
+                    </thead>
+                    <tbody>
+                      {activeCase.claimEvaluation.damages.map(dmg => (
+                        <tr key={dmg.id} className="border-b border-slate-200">
+                          <td className="p-2 font-semibold">{dmg.description}</td>
+                          <td className="p-2 uppercase text-[10px] text-slate-600">{dmg.category.replace('_', ' ')}</td>
+                          <td className="p-2 text-slate-600 font-mono text-[10px]">{dmg.statutoryBasis || 'General Law'}</td>
+                          <td className="p-2 text-right font-mono font-bold">{countryInfo.currencySymbol}{dmg.amount.toLocaleString()}</td>
+                        </tr>
+                      ))}
+                      <tr className="bg-slate-100 font-bold border-t-2 border-slate-800">
+                        <td colSpan={3} className="p-2 text-right">TOTAL QUANTIFIED CLAIM:</td>
+                        <td className="p-2 text-right font-mono text-emerald-800">{countryInfo.currencySymbol}{totalDamages.toLocaleString()}</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
               </div>
             )}
 
@@ -583,28 +592,30 @@ export const AttorneyDossier: React.FC = () => {
             {printSections.evidence && (
               <div className="space-y-3">
                 <div className="font-bold text-sm uppercase tracking-wider text-slate-950 border-b border-slate-300 pb-1">
-                  SECTION 5: MASTER EXHIBIT INDEX & CRYPTOGRAPHIC SHA-256 DIGITAL INTEGRITY
+                  SECTION 5: EVIDENCE & RECEIPTS (WITH DIGITAL FRAUD PROTECTION)
                 </div>
-                <table className="w-full border-collapse text-[10px] font-mono">
-                  <thead>
-                    <tr className="bg-slate-200 border border-slate-300 text-slate-800 text-left">
-                      <th className="p-1.5">Exhibit</th>
-                      <th className="p-1.5">Document Title</th>
-                      <th className="p-1.5">Original File</th>
-                      <th className="p-1.5">SHA-256 Digital Fingerprint</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {activeCase.evidenceList.map(ev => (
-                      <tr key={ev.id} className="border-b border-slate-200">
-                        <td className="p-1.5 font-bold text-slate-900">{ev.exhibitTag}</td>
-                        <td className="p-1.5">{ev.title}</td>
-                        <td className="p-1.5 text-slate-600">{ev.originalFileName}</td>
-                        <td className="p-1.5 text-slate-500 break-all">{ev.sha256Hash}</td>
+                <div className="overflow-x-auto w-full -mx-1 px-1">
+                  <table className="w-full min-w-[550px] border-collapse text-[10px] font-mono">
+                    <thead>
+                      <tr className="bg-slate-200 border border-slate-300 text-slate-800 text-left">
+                        <th className="p-1.5">Exhibit</th>
+                        <th className="p-1.5">Document Title</th>
+                        <th className="p-1.5">Original File</th>
+                        <th className="p-1.5">SHA-256 Digital Fingerprint</th>
                       </tr>
-                    ))}
-                  </tbody>
-                </table>
+                    </thead>
+                    <tbody>
+                      {activeCase.evidenceList.map(ev => (
+                        <tr key={ev.id} className="border-b border-slate-200">
+                          <td className="p-1.5 font-bold text-slate-900">{ev.exhibitTag}</td>
+                          <td className="p-1.5">{ev.title}</td>
+                          <td className="p-1.5 text-slate-600">{ev.originalFileName}</td>
+                          <td className="p-1.5 text-slate-500 break-all">{ev.sha256Hash}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
               </div>
             )}
 
@@ -612,7 +623,7 @@ export const AttorneyDossier: React.FC = () => {
             {printSections.discovery && activeCase.discovery.interrogatories.length > 0 && (
               <div className="space-y-3">
                 <div className="font-bold text-sm uppercase tracking-wider text-slate-950 border-b border-slate-300 pb-1">
-                  SECTION 6: PROPOUNDED DISCOVERY & INTERROGATORIES
+                  SECTION 6: FORMAL QUESTIONS TO ASK THE OTHER PARTY (DISCOVERY)
                 </div>
                 <div className="space-y-2 text-[11px]">
                   {activeCase.discovery.interrogatories.slice(0, 5).map(item => (

@@ -62,10 +62,19 @@ export const SettlementMatrix: React.FC = () => {
     settlement.expertWitnessFees + 
     settlement.estimatedTimeValueLoss;
 
+  const caseTotalDamages = activeCase.claimEvaluation.damages.reduce((sum, d) => sum + (d.amount || 0), 0);
+
   // Expected Value formula: (Damages * WinProb) - LitigationCosts
   const expectedValueTrial = Math.max(0, Math.round(
     (settlement.claimDamages * (settlement.winProbabilityPercent / 100)) - totalLitigationCost
   ));
+
+  const handleSyncCaseDamages = () => {
+    if (caseTotalDamages > 0) {
+      sound.playSuccessChime();
+      handleUpdate({ claimDamages: caseTotalDamages });
+    }
+  };
 
   const handleUpdate = (patch: Partial<SettlementCalculation>) => {
     sound.playClick();
@@ -276,14 +285,26 @@ Tel: ${pl?.phone || 'N/A'} | Email: ${pl?.email || 'N/A'}
 
             {/* Claim Damages */}
             <div className="space-y-1.5">
-              <div className="flex justify-between text-xs">
+              <div className="flex flex-wrap items-center justify-between gap-1 text-xs">
                 <span className="text-[var(--text-main)] font-semibold">Total Claimed Damages &amp; Statutory Penalties</span>
-                <span className="font-mono font-bold text-primary">{countryInfo.currencySymbol}{settlement.claimDamages.toLocaleString()}</span>
+                <div className="flex items-center gap-2">
+                  {caseTotalDamages > 0 && caseTotalDamages !== settlement.claimDamages && (
+                    <button
+                      onClick={handleSyncCaseDamages}
+                      className="text-[10px] font-mono px-2 py-0.5 bg-amber-500/15 border border-amber-500/40 text-amber-300 hover:bg-amber-500/25 rounded-sm transition-all flex items-center gap-1 shadow-sm"
+                      title="Sync total damages calculated from Claim Kitchen &amp; Ledger"
+                    >
+                      <Sparkles className="w-3 h-3 text-amber-400 animate-pulse" />
+                      Sync Case ({countryInfo.currencySymbol}{caseTotalDamages.toLocaleString()})
+                    </button>
+                  )}
+                  <span className="font-mono font-bold text-primary">{countryInfo.currencySymbol}{settlement.claimDamages.toLocaleString()}</span>
+                </div>
               </div>
               <input
                 type="range"
                 min="500"
-                max="50000"
+                max={Math.max(50000, settlement.claimDamages, caseTotalDamages)}
                 step="250"
                 value={settlement.claimDamages}
                 onChange={(e) => handleUpdate({ claimDamages: parseInt(e.target.value) || 500 })}

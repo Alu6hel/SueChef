@@ -8,13 +8,15 @@ import {
   CaseFile, 
   EvidenceItem, 
   PleadingParagraph,
-  DamageItem
+  DamageItem,
+  Party
 } from '../types';
 import { createDefaultCase } from '../services/defaultCase';
 import { DISPUTE_BLUEPRINTS, createCustomDispute, CustomDisputeInput, generateElementsForCategory } from '../services/disputeTemplates';
 import { getJurisdiction } from '../services/jurisdictions';
 import { CryptoDbService } from '../services/cryptoDb';
 import { sound } from '../services/soundEngine';
+import { syncCaseWithParties, deriveCaseTitle, cleanPartyName } from '../services/caseUtils';
 
 interface SueChefContextType {
   theme: ThemeId;
@@ -29,6 +31,13 @@ interface SueChefContextType {
   setActiveWorkstation: (id: WorkstationId) => void;
   activeCase: CaseFile;
   updateActiveCase: (updater: (prev: CaseFile) => CaseFile) => void;
+  updateParty: (partyId: string, partial: Partial<Party>) => void;
+  updatePartiesAndTitle: (
+    plaintiffData: Partial<Party> & { name: string },
+    defendantData: Partial<Party> & { name: string },
+    customTitle?: string
+  ) => void;
+  updateCaseTitle: (title: string) => void;
   loadBlueprint: (blueprintId: string) => void;
   createNewCase: (title: string, state: string, category: string) => void;
   createCustomCase: (input: CustomDisputeInput) => void;
@@ -44,6 +53,8 @@ interface SueChefContextType {
   updateParagraph: (id: string, newContent: string) => void;
   isCaseManagerOpen: boolean;
   setIsCaseManagerOpen: (open: boolean) => void;
+  isPartiesModalOpen: boolean;
+  setIsPartiesModalOpen: (open: boolean) => void;
   isQuickSearchOpen: boolean;
   setIsQuickSearchOpen: (open: boolean) => void;
   isTourOpen: boolean;
@@ -72,14 +83,36 @@ export const SueChefProvider: React.FC<{ children: ReactNode }> = ({ children })
   });
 
   const [activeWorkstation, setActiveWorkstationState] = useState<WorkstationId>('home');
-  const [activeCase, setActiveCase] = useState<CaseFile>(() => createDefaultCase());
+  const [activeCase, setActiveCase] = useState<CaseFile>(() => {
+    try {
+      const saved = localStorage.getItem('suechef_active_case_data');
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (parsed && parsed.id && parsed.parties && parsed.claimEvaluation) {
+          return parsed;
+        }
+      }
+    } catch (e) {
+      console.warn('Failed to parse cached case data:', e);
+    }
+    return createDefaultCase();
+  });
   const [soundEnabled, setSoundEnabled] = useState<boolean>(true);
   
   // Modals
   const [isCaseManagerOpen, setIsCaseManagerOpen] = useState<boolean>(false);
+  const [isPartiesModalOpen, setIsPartiesModalOpen] = useState<boolean>(false);
   const [isQuickSearchOpen, setIsQuickSearchOpen] = useState<boolean>(false);
   const [isTourOpen, setIsTourOpen] = useState<boolean>(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState<boolean>(false);
+
+  // Auto-sync country with active case to prevent jurisdiction/currency clash
+  useEffect(() => {
+    if (activeCase.country && activeCase.country !== country) {
+      setCountryState(activeCase.country);
+      localStorage.setItem('suechef_country', activeCase.country);
+    }
+  }, [activeCase.id, activeCase.country]);
 
   // Apply theme classes to document root
   useEffect(() => {
@@ -175,8 +208,75 @@ export const SueChefProvider: React.FC<{ children: ReactNode }> = ({ children })
     setActiveCase(prev => {
       const updated = updater(prev);
       updated.updatedAt = new Date().toISOString().split('T')[0];
+      try {
+        localStorage.setItem('suechef_active_case_data', JSON.stringify(updated));
+        localStorage.setItem('suechef_last_active_case', updated.id);
+      } catch (e) {
+        console.warn('LocalStorage save failed:', e);
+      }
       return updated;
     });
+  };
+
+  const updateParty = (partyId: string, partial: Partial<Party>) => {
+    sound.playClick();
+    updateActiveCase(prev => {
+      const updatedParties = prev.parties.map(p => 
+        p.id === partyId ? { ...p, ...partial, isPlaceholder: false } : p
+      );
+      const plaintiff = updatedParties.find(p => p.role === 'plaintiff');
+      const defendant = updatedParties.find(p => p.role === 'defendant');
+
+      if (partial.name && plaintiff && defendant) {
+        return syncCaseWithParties(
+          { ...prev, parties: updatedParties },
+          plaintiff.name,
+          defendant.name
+        );
+      }
+
+      return {
+        ...prev,
+        parties: updatedParties
+      };
+    });
+  };
+
+  const updatePartiesAndTitle = (
+    plaintiffData: Partial<Party> & { name: string },
+    defendantData: Partial<Party> & { name: string },
+    customTitle?: string
+  ) => {
+    sound.playGavelStrike();
+    updateActiveCase(prev => {
+      const pId = prev.parties.find(p => p.role === 'plaintiff')?.id || 'p_1';
+      const dId = prev.parties.find(p => p.role === 'defendant')?.id || 'd_1';
+
+      const mergedParties = prev.parties.map(p => {
+        if (p.id === pId || p.role === 'plaintiff') {
+          return { ...p, ...plaintiffData, role: 'plaintiff' as const, isPlaceholder: false };
+        }
+        if (p.id === dId || p.role === 'defendant') {
+          return { ...p, ...defendantData, role: 'defendant' as const, isPlaceholder: false };
+        }
+        return p;
+      });
+
+      return syncCaseWithParties(
+        { ...prev, parties: mergedParties },
+        plaintiffData.name,
+        defendantData.name,
+        customTitle
+      );
+    });
+  };
+
+  const updateCaseTitle = (title: string) => {
+    sound.playClick();
+    updateActiveCase(prev => ({
+      ...prev,
+      title: title.trim() || prev.title
+    }));
   };
 
   const loadBlueprint = (blueprintId: string) => {
@@ -314,6 +414,9 @@ export const SueChefProvider: React.FC<{ children: ReactNode }> = ({ children })
         setActiveWorkstation,
         activeCase,
         updateActiveCase,
+        updateParty,
+        updatePartiesAndTitle,
+        updateCaseTitle,
         loadBlueprint,
         createNewCase,
         createCustomCase,
@@ -329,6 +432,8 @@ export const SueChefProvider: React.FC<{ children: ReactNode }> = ({ children })
         updateParagraph,
         isCaseManagerOpen,
         setIsCaseManagerOpen,
+        isPartiesModalOpen,
+        setIsPartiesModalOpen,
         isQuickSearchOpen,
         setIsQuickSearchOpen,
         isTourOpen,

@@ -24,7 +24,18 @@ import {
   HelpCircle,
   Settings,
   ChevronRight,
-  Zap
+  Zap,
+  Users,
+  Edit3,
+  User,
+  Building2,
+  CheckCircle2,
+  Car,
+  Briefcase,
+  Package,
+  Home as HomeIcon,
+  AlertCircle,
+  Wrench
 } from 'lucide-react';
 
 export const HomeDashboard: React.FC = () => {
@@ -35,6 +46,7 @@ export const HomeDashboard: React.FC = () => {
     country, 
     setActiveWorkstation, 
     setIsCaseManagerOpen,
+    setIsPartiesModalOpen,
     setIsTourOpen,
     setIsSettingsOpen,
     loadBlueprint
@@ -48,6 +60,9 @@ export const HomeDashboard: React.FC = () => {
   const totalElements = activeCase.claimEvaluation.elements.length;
   const provenElements = activeCase.claimEvaluation.elements.filter(e => e.isSatisfied).length;
   const meritPercent = totalElements > 0 ? Math.round((provenElements / totalElements) * 100) : 85;
+
+  const plaintiff = activeCase.parties.find(p => p.role === 'plaintiff');
+  const defendant = activeCase.parties.find(p => p.role === 'defendant');
 
   return (
     <div className="space-y-8 animate-in fade-in duration-300">
@@ -105,6 +120,18 @@ export const HomeDashboard: React.FC = () => {
               <button
                 onClick={() => {
                   sound.playClick();
+                  setIsPartiesModalOpen(true);
+                }}
+                className="btn-geom px-4 py-3 bg-[var(--bg-card)] border border-[var(--border-color)] text-[var(--text-main)] hover:border-[var(--accent-gold)] font-semibold text-sm flex items-center gap-2 transition-all"
+                title="Edit real names and addresses for you and opponent"
+              >
+                <Users className="w-4 h-4 text-[var(--accent-gold)]" />
+                <span>Edit Your Names</span>
+              </button>
+
+              <button
+                onClick={() => {
+                  sound.playClick();
                   setIsTourOpen(true);
                 }}
                 className="btn-geom px-4 py-3 bg-[var(--bg-card)] border border-[var(--border-color)] text-[var(--text-muted)] hover:text-[var(--text-main)] hover:border-[var(--accent-gold)] font-semibold text-sm flex items-center gap-2 transition-all"
@@ -116,28 +143,48 @@ export const HomeDashboard: React.FC = () => {
           </div>
 
           {/* Active Case Health & Impact Box */}
-          <div className="bg-[var(--bg-card)] border border-[var(--border-color)] p-5 custom-geometry lg:w-80 shrink-0 space-y-4 shadow-md">
-            <div className="flex items-center justify-between border-b border-[var(--border-color)] pb-3">
+          <div className="bg-[var(--bg-card)] border border-[var(--border-color)] p-5 custom-geometry lg:w-80 shrink-0 space-y-3.5 shadow-md">
+            <div className="flex items-center justify-between border-b border-[var(--border-color)] pb-2.5">
               <div className="text-xs font-mono uppercase text-[var(--text-muted)]">Active Dispute Snapshot</div>
               <span className="text-[10px] font-mono px-2 py-0.5 bg-emerald-950/60 text-emerald-400 border border-emerald-500/30 font-bold custom-geometry">
                 ENCRYPTED &amp; LOCAL
               </span>
             </div>
 
-            <div className="space-y-2">
-              <div className="text-xs text-[var(--text-muted)] font-mono">Dispute Matter:</div>
+            <div className="space-y-1">
+              <div className="text-[11px] text-[var(--text-muted)] font-mono">Dispute Matter:</div>
               <div className="text-sm font-bold font-serif text-[var(--text-main)] line-clamp-1">{activeCase.title}</div>
             </div>
 
-            <div className="grid grid-cols-2 gap-3 pt-1">
-              <div className="p-2.5 bg-[var(--bg-secondary)] border border-[var(--border-color)] custom-geometry">
+            {/* Parties quick display & direct edit */}
+            <div className="p-2.5 bg-[var(--bg-secondary)] border border-[var(--border-color)] rounded-lg space-y-1.5 text-xs">
+              <div className="flex items-center justify-between">
+                <span className="text-[10px] font-mono uppercase text-[var(--text-muted)]">Parties Involved:</span>
+                <button
+                  type="button"
+                  onClick={() => { sound.playClick(); setIsPartiesModalOpen(true); }}
+                  className="text-[11px] font-bold text-[var(--accent-gold)] hover:underline flex items-center gap-1"
+                >
+                  <Edit3 className="w-3 h-3" /> Edit Names
+                </button>
+              </div>
+              <div className="font-medium text-[var(--text-main)] truncate text-[11px]">
+                <span className="text-emerald-400 font-bold">You:</span> {plaintiff?.name || '[Your Name]'}
+              </div>
+              <div className="font-medium text-[var(--text-muted)] truncate text-[11px]">
+                <span className="text-amber-400 font-bold">Vs:</span> {defendant?.name || '[Opponent]'}
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-2.5 pt-0.5">
+              <div className="p-2 bg-[var(--bg-secondary)] border border-[var(--border-color)] custom-geometry">
                 <div className="text-[10px] font-mono uppercase text-[var(--text-muted)]">Damages Claimed</div>
                 <div className="text-base font-bold font-mono text-[var(--accent-gold)] pt-0.5">
                   {countryInfo.currencySymbol}{totalDamages.toLocaleString()}
                 </div>
               </div>
 
-              <div className="p-2.5 bg-[var(--bg-secondary)] border border-[var(--border-color)] custom-geometry">
+              <div className="p-2 bg-[var(--bg-secondary)] border border-[var(--border-color)] custom-geometry">
                 <div className="text-[10px] font-mono uppercase text-[var(--text-muted)]">Merit Score</div>
                 <div className="text-base font-bold font-mono text-emerald-400 pt-0.5">
                   {meritPercent}% (A+)
@@ -156,6 +203,260 @@ export const HomeDashboard: React.FC = () => {
       {/* Guided 30-Second Dispute Intake Assistant (Direct Real-World Help) */}
       <section>
         <DisputeIntakeWizard />
+      </section>
+
+      {/* 3-Step Plain-English Action Roadmap */}
+      <section className="p-5 sm:p-6 bg-gradient-to-r from-[var(--bg-card)] via-[var(--bg-secondary)] to-[var(--bg-card)] border-2 border-[var(--accent-gold)]/40 custom-geometry space-y-4 shadow-lg">
+        <div className="flex items-center gap-2">
+          <Sparkles className="w-5 h-5 text-[var(--accent-gold)] shrink-0" />
+          <div>
+            <h2 className="text-base sm:text-lg font-serif font-bold text-[var(--text-main)]">
+              How SueChef Wins Your Dispute (3 Simple Steps)
+            </h2>
+            <p className="text-xs text-[var(--text-muted)]">
+              Designed for everyday people — no complicated legal jargon or expensive lawyer retainers needed.
+            </p>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-3.5">
+          <div className="p-4 bg-[var(--bg-card)] border border-[var(--border-color)] custom-geometry space-y-2">
+            <div className="w-7 h-7 rounded-full bg-[var(--accent-gold)] text-slate-950 font-mono font-bold flex items-center justify-center text-xs">
+              1
+            </div>
+            <h3 className="text-sm font-bold text-[var(--text-main)]">Fill in Names &amp; Losses</h3>
+            <p className="text-xs text-[var(--text-muted)] leading-relaxed">
+              Use clear <span className="font-mono text-[10px] bg-black/40 px-1 py-0.5 rounded text-[var(--accent-gold)]">[e.g., example]</span> placeholders to enter your real story, deposit amount, or unpaid invoice.
+            </p>
+          </div>
+
+          <div className="p-4 bg-[var(--bg-card)] border border-[var(--border-color)] custom-geometry space-y-2">
+            <div className="w-7 h-7 rounded-full bg-[var(--accent-gold)] text-slate-950 font-mono font-bold flex items-center justify-center text-xs">
+              2
+            </div>
+            <h3 className="text-sm font-bold text-[var(--text-main)]">Generate Formal Demand &amp; Papers</h3>
+            <p className="text-xs text-[var(--text-muted)] leading-relaxed">
+              Produce 14-day pre-lawsuit demand letters citing real state laws and California / NY 28-line numbered court pleadings.
+            </p>
+          </div>
+
+          <div className="p-4 bg-[var(--bg-card)] border border-[var(--border-color)] custom-geometry space-y-2">
+            <div className="w-7 h-7 rounded-full bg-[var(--accent-gold)] text-slate-950 font-mono font-bold flex items-center justify-center text-xs">
+              3
+            </div>
+            <h3 className="text-sm font-bold text-[var(--text-main)]">Audit Win Odds &amp; Settle Confidently</h3>
+            <p className="text-xs text-[var(--text-muted)] leading-relaxed">
+              Get an objective win percentage grade, spot opponent defense traps, and reach verified free legal aid clinics.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* Everyday Layman Dispute Quick Starters */}
+      <section className="space-y-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+          <div>
+            <div className="flex items-center gap-2">
+              <span className="text-xs font-mono uppercase px-2.5 py-0.5 bg-amber-500/10 text-[var(--accent-gold)] border border-amber-500/30 custom-geometry font-bold">
+                POPULAR EVERYDAY DISPUTES
+              </span>
+            </div>
+            <h2 className="text-xl font-bold font-serif text-[var(--text-main)] flex items-center gap-2 mt-1">
+              <span>Choose Your Dispute (Pre-Loaded Legal Elements &amp; Math)</span>
+            </h2>
+            <p className="text-xs sm:text-sm text-[var(--text-muted)]">
+              Select a situation to automatically load verified state statutes, statutory penalty formulas, and editable facts.
+            </p>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5">
+          {/* Card 1: Security Deposit */}
+          <div 
+            onClick={() => {
+              sound.playGavelStrike();
+              loadBlueprint('template_deposit_ca');
+              setActiveWorkstation('claim-kitchen');
+            }}
+            className="p-4 bg-[var(--bg-card)] border-2 border-[var(--border-color)] hover:border-[var(--accent-gold)] custom-geometry transition-all cursor-pointer shadow-sm hover:shadow-md flex flex-col justify-between space-y-3 group"
+          >
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <div className="p-2 bg-amber-500/10 text-[var(--accent-gold)] rounded-lg">
+                  <HomeIcon className="w-5 h-5" />
+                </div>
+                <span className="text-[10px] font-mono px-2 py-0.5 bg-emerald-950/60 text-emerald-400 border border-emerald-500/30 font-bold custom-geometry">
+                  Up to 2x Penalty
+                </span>
+              </div>
+              <h3 className="text-sm font-bold font-serif text-[var(--text-main)] group-hover:text-[var(--accent-gold)] transition-colors">
+                Unreturned Security Deposit
+              </h3>
+              <p className="text-xs text-[var(--text-muted)] leading-relaxed line-clamp-2">
+                Landlord failed to return your deposit or sent bogus repair deductions past the 21-day statutory deadline.
+              </p>
+            </div>
+            <div className="pt-2 border-t border-[var(--border-color)] flex items-center justify-between text-xs font-bold text-[var(--accent-gold)]">
+              <span>Start Deposit Claim</span>
+              <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+            </div>
+          </div>
+
+          {/* Card 2: Auto Mechanic / Car Damage */}
+          <div 
+            onClick={() => {
+              sound.playGavelStrike();
+              loadBlueprint('template_auto_tx');
+              setActiveWorkstation('claim-kitchen');
+            }}
+            className="p-4 bg-[var(--bg-card)] border-2 border-[var(--border-color)] hover:border-[var(--accent-gold)] custom-geometry transition-all cursor-pointer shadow-sm hover:shadow-md flex flex-col justify-between space-y-3 group"
+          >
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <div className="p-2 bg-amber-500/10 text-[var(--accent-gold)] rounded-lg">
+                  <Car className="w-5 h-5" />
+                </div>
+                <span className="text-[10px] font-mono px-2 py-0.5 bg-[var(--bg-secondary)] border border-[var(--border-color)] text-[var(--text-muted)] font-bold custom-geometry">
+                  Accident / Auto Shop
+                </span>
+              </div>
+              <h3 className="text-sm font-bold font-serif text-[var(--text-main)] group-hover:text-[var(--accent-gold)] transition-colors">
+                Auto Damage &amp; Mechanic Overcharge
+              </h3>
+              <p className="text-xs text-[var(--text-muted)] leading-relaxed line-clamp-2">
+                Collision repair damage, unauthorized repair shop charges, or low-ball insurance company refusal.
+              </p>
+            </div>
+            <div className="pt-2 border-t border-[var(--border-color)] flex items-center justify-between text-xs font-bold text-[var(--accent-gold)]">
+              <span>Start Vehicle Claim</span>
+              <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+            </div>
+          </div>
+
+          {/* Card 3: Unpaid Freelancer / Contractor Invoice */}
+          <div 
+            onClick={() => {
+              sound.playGavelStrike();
+              loadBlueprint('template_freelance_ny');
+              setActiveWorkstation('claim-kitchen');
+            }}
+            className="p-4 bg-[var(--bg-card)] border-2 border-[var(--border-color)] hover:border-[var(--accent-gold)] custom-geometry transition-all cursor-pointer shadow-sm hover:shadow-md flex flex-col justify-between space-y-3 group"
+          >
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <div className="p-2 bg-amber-500/10 text-[var(--accent-gold)] rounded-lg">
+                  <Briefcase className="w-5 h-5" />
+                </div>
+                <span className="text-[10px] font-mono px-2 py-0.5 bg-emerald-950/60 text-emerald-400 border border-emerald-500/30 font-bold custom-geometry">
+                  FIFA Double Damages
+                </span>
+              </div>
+              <h3 className="text-sm font-bold font-serif text-[var(--text-main)] group-hover:text-[var(--accent-gold)] transition-colors">
+                Unpaid Freelance &amp; Client Invoices
+              </h3>
+              <p className="text-xs text-[var(--text-muted)] leading-relaxed line-clamp-2">
+                Client received deliverables or creative work and refused to tender payment past 30 days.
+              </p>
+            </div>
+            <div className="pt-2 border-t border-[var(--border-color)] flex items-center justify-between text-xs font-bold text-[var(--accent-gold)]">
+              <span>Start Invoice Claim</span>
+              <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+            </div>
+          </div>
+
+          {/* Card 4: Home Contractor Remodel */}
+          <div 
+            onClick={() => {
+              sound.playGavelStrike();
+              loadBlueprint('template_contractor_ca');
+              setActiveWorkstation('claim-kitchen');
+            }}
+            className="p-4 bg-[var(--bg-card)] border-2 border-[var(--border-color)] hover:border-[var(--accent-gold)] custom-geometry transition-all cursor-pointer shadow-sm hover:shadow-md flex flex-col justify-between space-y-3 group"
+          >
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <div className="p-2 bg-amber-500/10 text-[var(--accent-gold)] rounded-lg">
+                  <Wrench className="w-5 h-5" />
+                </div>
+                <span className="text-[10px] font-mono px-2 py-0.5 bg-[var(--bg-secondary)] border border-[var(--border-color)] text-[var(--text-muted)] font-bold custom-geometry">
+                  CSLB Surety Bond
+                </span>
+              </div>
+              <h3 className="text-sm font-bold font-serif text-[var(--text-main)] group-hover:text-[var(--accent-gold)] transition-colors">
+                Home Contractor &amp; Remodel Defect
+              </h3>
+              <p className="text-xs text-[var(--text-muted)] leading-relaxed line-clamp-2">
+                Contractor walked off job after receiving milestone payments, or performed defective plumbing/tile work.
+              </p>
+            </div>
+            <div className="pt-2 border-t border-[var(--border-color)] flex items-center justify-between text-xs font-bold text-[var(--accent-gold)]">
+              <span>Start Contractor Claim</span>
+              <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+            </div>
+          </div>
+
+          {/* Card 5: Consumer Fraud & Deceptive Sales */}
+          <div 
+            onClick={() => {
+              sound.playGavelStrike();
+              loadBlueprint('template_consumer_fl');
+              setActiveWorkstation('claim-kitchen');
+            }}
+            className="p-4 bg-[var(--bg-card)] border-2 border-[var(--border-color)] hover:border-[var(--accent-gold)] custom-geometry transition-all cursor-pointer shadow-sm hover:shadow-md flex flex-col justify-between space-y-3 group"
+          >
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <div className="p-2 bg-amber-500/10 text-[var(--accent-gold)] rounded-lg">
+                  <AlertCircle className="w-5 h-5" />
+                </div>
+                <span className="text-[10px] font-mono px-2 py-0.5 bg-rose-950/60 text-rose-300 border border-rose-500/30 font-bold custom-geometry">
+                  FDUTPA / UDAP
+                </span>
+              </div>
+              <h3 className="text-sm font-bold font-serif text-[var(--text-main)] group-hover:text-[var(--accent-gold)] transition-colors">
+                Consumer Fraud &amp; Deceptive Sales
+              </h3>
+              <p className="text-xs text-[var(--text-muted)] leading-relaxed line-clamp-2">
+                Merchant or dealership concealed salvage vehicle title, made false promises, or refused refund.
+              </p>
+            </div>
+            <div className="pt-2 border-t border-[var(--border-color)] flex items-center justify-between text-xs font-bold text-[var(--accent-gold)]">
+              <span>Start Consumer Claim</span>
+              <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+            </div>
+          </div>
+
+          {/* Card 6: Damaged Moving & Courier */}
+          <div 
+            onClick={() => {
+              sound.playGavelStrike();
+              loadBlueprint('template_deposit_ca');
+              setActiveWorkstation('claim-kitchen');
+            }}
+            className="p-4 bg-[var(--bg-card)] border-2 border-[var(--border-color)] hover:border-[var(--accent-gold)] custom-geometry transition-all cursor-pointer shadow-sm hover:shadow-md flex flex-col justify-between space-y-3 group"
+          >
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <div className="p-2 bg-amber-500/10 text-[var(--accent-gold)] rounded-lg">
+                  <Package className="w-5 h-5" />
+                </div>
+                <span className="text-[10px] font-mono px-2 py-0.5 bg-[var(--bg-secondary)] border border-[var(--border-color)] text-[var(--text-muted)] font-bold custom-geometry">
+                  Carrier Claim
+                </span>
+              </div>
+              <h3 className="text-sm font-bold font-serif text-[var(--text-main)] group-hover:text-[var(--accent-gold)] transition-colors">
+                Damaged Moving &amp; Freight Delivery
+              </h3>
+              <p className="text-xs text-[var(--text-muted)] leading-relaxed line-clamp-2">
+                Moving company broke furniture, lost shipment cartons, or denied declared value liability claim.
+              </p>
+            </div>
+            <div className="pt-2 border-t border-[var(--border-color)] flex items-center justify-between text-xs font-bold text-[var(--accent-gold)]">
+              <span>Start Cargo Claim</span>
+              <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+            </div>
+          </div>
+        </div>
       </section>
 
       {/* Step-by-Step Litigation Workstations (The Core Value Engine) */}
