@@ -53,7 +53,7 @@ export const HomeDashboard: React.FC = () => {
   } = useSueChef();
 
   const countryInfo = getCountryInfo(country);
-  const stateJurisdiction = STATE_JURISDICTIONS[activeCase.state];
+  const stateJurisdiction = (country === 'US' || !country) ? STATE_JURISDICTIONS[activeCase.state] : null;
   const claimCeiling = stateJurisdiction ? stateJurisdiction.smallClaimsLimitIndividual : countryInfo.defaultLimit;
 
   // Calculate high-level merit summary

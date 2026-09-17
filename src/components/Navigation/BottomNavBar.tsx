@@ -40,7 +40,7 @@ export const BottomNavBar: React.FC = () => {
     { id: 'claim-kitchen', label: 'Build Case', icon: Scale },
     { id: 'evidence-locker', label: 'Evidence', icon: ShieldCheck },
     { id: 'pleading-builder', label: 'Papers', icon: FileText },
-    { id: 'second-opinion', label: 'AI Advisor', icon: Lightbulb },
+    { id: 'second-opinion', label: 'Strategy', icon: Lightbulb },
   ];
 
   // Secondary tools in the drawer

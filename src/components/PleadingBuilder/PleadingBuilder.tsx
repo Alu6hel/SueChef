@@ -21,10 +21,12 @@ import {
 } from 'lucide-react';
 import { PleadingParagraph } from '../../types';
 import { getJurisdiction } from '../../services/jurisdictions';
+import { getCountryInfo } from '../../services/countries';
 import { sound } from '../../services/soundEngine';
 
 export const PleadingBuilder: React.FC = () => {
-  const { activeCase, updateActiveCase, updateParagraph } = useSueChef();
+  const { activeCase, updateActiveCase, updateParagraph, country } = useSueChef();
+  const countryInfo = getCountryInfo(country);
   const [activeSubTab, setActiveSubTab] = useState<'complaint' | 'demand_letter' | 'verification' | 'court_packet'>('complaint');
   const [copied, setCopied] = useState(false);
   const [downloadedPacket, setDownloadedPacket] = useState(false);
@@ -56,9 +58,9 @@ export const PleadingBuilder: React.FC = () => {
     day: 'numeric'
   });
 
-  const formattedPrincipal = `$${principalDamage.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
-  const formattedPenalty = `$${statutoryPenalty.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
-  const formattedTotal = `$${totalDamages.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+  const formattedPrincipal = `${countryInfo.currencySymbol}${principalDamage.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+  const formattedPenalty = `${countryInfo.currencySymbol}${statutoryPenalty.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+  const formattedTotal = `${countryInfo.currencySymbol}${totalDamages.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 
   const getCausesOfAction = (): string[] => {
     const cat = activeCase.claimEvaluation.category;

@@ -17,6 +17,7 @@ import { getJurisdiction } from '../services/jurisdictions';
 import { CryptoDbService } from '../services/cryptoDb';
 import { sound } from '../services/soundEngine';
 import { syncCaseWithParties, deriveCaseTitle, cleanPartyName } from '../services/caseUtils';
+import { getCountryInfo } from '../services/countries';
 
 interface SueChefContextType {
   theme: ThemeId;
@@ -184,6 +185,25 @@ export const SueChefProvider: React.FC<{ children: ReactNode }> = ({ children })
     sound.playClick();
     setCountryState(newCountry);
     localStorage.setItem('suechef_country', newCountry);
+    const countryInfo = getCountryInfo(newCountry);
+    updateActiveCase(prev => {
+      const nextState = newCountry === 'US' ? (prev.state || 'CA') :
+        newCountry === 'GB' ? 'England & Wales' :
+        newCountry === 'CA' ? 'Ontario' :
+        newCountry === 'NG' ? 'Lagos' :
+        newCountry === 'AU' ? 'NSW' :
+        newCountry === 'DE' ? 'Berlin' : 'Global';
+      return {
+        ...prev,
+        country: newCountry,
+        state: nextState,
+        courtName: countryInfo.smallClaimsName,
+        claimEvaluation: {
+          ...prev.claimEvaluation,
+          smallClaimsLimit: countryInfo.defaultLimit
+        }
+      };
+    });
   };
 
   const setFontSizeScale = (newScale: FontSizeScale) => {

@@ -49,7 +49,7 @@ export const Header: React.FC = () => {
     { id: 'evidence-locker', stepNum: '2', label: 'Evidence & Proof', icon: <ShieldCheck className="w-4 h-4" />, badge: 'SHA256' },
     { id: 'pleading-builder', stepNum: '3', label: 'Court Papers', icon: <FileText className="w-4 h-4" /> },
     { id: 'settlement-matrix', stepNum: '4', label: 'Demand & Settle', icon: <Calculator className="w-4 h-4" /> },
-    { id: 'second-opinion', stepNum: '5', label: 'Second Opinion', icon: <Lightbulb className="w-4 h-4" />, badge: 'AI' },
+    { id: 'second-opinion', stepNum: '5', label: 'Case Strategy', icon: <Lightbulb className="w-4 h-4" />, badge: 'Strategy' },
     { id: 'legal-services', stepNum: '6', label: 'Legal Aid & Courts', icon: <Building className="w-4 h-4" />, badge: 'Verified' },
     { id: 'discovery-studio', stepNum: '7', label: 'Request Evidence', icon: <FolderSearch className="w-4 h-4" /> },
     { id: 'trial-prep', stepNum: '8', label: 'Trial Prep', icon: <Gavel className="w-4 h-4" /> },
@@ -101,7 +101,7 @@ export const Header: React.FC = () => {
                   <span className="text-xs shrink-0">{currCountry.flag}</span>
                 </div>
                 <span className="text-[9px] sm:text-[10px] font-mono text-[var(--accent-gold)] truncate">
-                  {activeCase.state} • {activeCase.claimEvaluation.category.replace(/_/g, ' ').toUpperCase()}
+                  {(country === 'US' || !country) ? activeCase.state : currCountry.name} • {activeCase.claimEvaluation.category.replace(/_/g, ' ').toUpperCase()}
                 </span>
               </div>
             </button>

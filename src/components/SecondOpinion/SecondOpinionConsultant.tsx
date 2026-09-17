@@ -89,22 +89,20 @@ export const SecondOpinionConsultant: React.FC = () => {
     sound.playGavelStrike();
     setIsConsulting(true);
 
-    setTimeout(() => {
-      const result = SecondOpinionEngine.consultAdvisor(activeCase, q);
-      setActiveConsultation(result);
-      setIsConsulting(false);
-      setQueryInput('');
-      sound.playSuccessChime();
+    const result = SecondOpinionEngine.consultAdvisor(activeCase, q);
+    setActiveConsultation(result);
+    setIsConsulting(false);
+    setQueryInput('');
+    sound.playSuccessChime();
 
-      updateActiveCase(prev => {
-        const existing = prev.advisorConsultationHistory || [];
-        const filtered = existing.filter(c => c.query.toLowerCase() !== q.toLowerCase());
-        return {
-          ...prev,
-          advisorConsultationHistory: [result, ...filtered]
-        };
-      });
-    }, 150);
+    updateActiveCase(prev => {
+      const existing = prev.advisorConsultationHistory || [];
+      const filtered = existing.filter(c => c.query.toLowerCase() !== q.toLowerCase());
+      return {
+        ...prev,
+        advisorConsultationHistory: [result, ...filtered]
+      };
+    });
   };
 
   const handleCopyCitation = (citation: string) => {
