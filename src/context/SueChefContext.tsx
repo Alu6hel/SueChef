@@ -18,6 +18,7 @@ import { CryptoDbService } from '../services/cryptoDb';
 import { sound } from '../services/soundEngine';
 import { syncCaseWithParties, deriveCaseTitle, cleanPartyName } from '../services/caseUtils';
 import { getCountryInfo } from '../services/countries';
+import { EnforcementEngine } from '../services/enforcementEngine';
 
 interface SueChefContextType {
   theme: ThemeId;
@@ -42,6 +43,12 @@ interface SueChefContextType {
   loadBlueprint: (blueprintId: string) => void;
   createNewCase: (title: string, state: string, category: string) => void;
   createCustomCase: (input: CustomDisputeInput) => void;
+  isMuted: boolean;
+  toggleMute: () => boolean;
+  setMuted: (muted: boolean) => void;
+  updateEnforcementPlan: (partial: Partial<import('../types').EnforcementPlan>) => void;
+  updateBatesConfig: (config: Partial<import('../types').BatesStampConfig>) => void;
+  setPipelineStage: (stage: import('../types').CaseFile['pipelineStage']) => void;
   soundEnabled: boolean;
   toggleSound: () => void;
   panicWipe: () => Promise<void>;
@@ -215,6 +222,57 @@ export const SueChefProvider: React.FC<{ children: ReactNode }> = ({ children })
   const setActiveWorkstation = (id: WorkstationId) => {
     sound.playClick();
     setActiveWorkstationState(id);
+  };
+
+  const [isMuted, setIsMutedState] = useState<boolean>(() => sound.isMuted);
+
+  const toggleMute = () => {
+    const nextMuted = sound.toggleMute();
+    setIsMutedState(nextMuted);
+    if (!nextMuted) sound.playSuccessChime();
+    return nextMuted;
+  };
+
+  const setMuted = (muted: boolean) => {
+    sound.setMuted(muted);
+    setIsMutedState(muted);
+  };
+
+  const updateEnforcementPlan = (partial: Partial<import('../types').EnforcementPlan>) => {
+    updateActiveCase(prev => {
+      const currentPlan = prev.enforcement || EnforcementEngine.createDefaultPlan(prev);
+      return {
+        ...prev,
+        enforcement: {
+          ...currentPlan,
+          ...partial
+        }
+      };
+    });
+  };
+
+  const updateBatesConfig = (config: Partial<import('../types').BatesStampConfig>) => {
+    updateActiveCase(prev => ({
+      ...prev,
+      batesStampConfig: {
+        ...(prev.batesStampConfig || {
+          prefix: 'PLTF-',
+          startingNumber: 1,
+          digits: 4,
+          position: 'bottom_right',
+          fontSize: 12,
+          includeDate: true
+        }),
+        ...config
+      }
+    }));
+  };
+
+  const setPipelineStage = (stage: import('../types').CaseFile['pipelineStage']) => {
+    updateActiveCase(prev => ({
+      ...prev,
+      pipelineStage: stage
+    }));
   };
 
   const toggleSound = () => {
@@ -440,6 +498,12 @@ export const SueChefProvider: React.FC<{ children: ReactNode }> = ({ children })
         loadBlueprint,
         createNewCase,
         createCustomCase,
+        isMuted,
+        toggleMute,
+        setMuted,
+        updateEnforcementPlan,
+        updateBatesConfig,
+        setPipelineStage,
         soundEnabled,
         toggleSound,
         panicWipe,

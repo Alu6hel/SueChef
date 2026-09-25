@@ -17,12 +17,14 @@ import {
   Plus,
   Trash2,
   Calendar,
-  Mail
+  Mail,
+  Landmark
 } from 'lucide-react';
 import { PleadingParagraph } from '../../types';
 import { getJurisdiction } from '../../services/jurisdictions';
 import { getCountryInfo } from '../../services/countries';
 import { sound } from '../../services/soundEngine';
+import { OfficialFormsModal } from './OfficialFormsModal';
 
 export const PleadingBuilder: React.FC = () => {
   const { activeCase, updateActiveCase, updateParagraph, country } = useSueChef();
@@ -31,6 +33,7 @@ export const PleadingBuilder: React.FC = () => {
   const [copied, setCopied] = useState(false);
   const [downloadedPacket, setDownloadedPacket] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
+  const [showOfficialFormsModal, setShowOfficialFormsModal] = useState(false);
   const [selectedFont, setSelectedFont] = useState<'Century Schoolbook' | 'Times New Roman' | 'Courier New' | 'Georgia'>(
     activeCase.pleadings.fontFamily || 'Century Schoolbook'
   );
@@ -431,6 +434,17 @@ export const PleadingBuilder: React.FC = () => {
             }`}
           >
             Verification Affidavit
+          </button>
+
+          <button
+            onClick={() => {
+              sound.playClick();
+              setShowOfficialFormsModal(true);
+            }}
+            className="tab-geom px-3 py-1.5 text-xs font-semibold border border-amber-500/50 bg-amber-500/10 text-amber-300 hover:bg-amber-500/20 transition-all flex items-center gap-1.5 shadow-sm"
+          >
+            <Landmark className="w-3.5 h-3.5 text-amber-300" />
+            <span>Official Court Forms (SC-100 / N1)</span>
           </button>
         </div>
       </div>
@@ -1288,6 +1302,12 @@ export const PleadingBuilder: React.FC = () => {
           </div>
         </div>
       )}
+
+      {/* Official Court Forms Modal (SC-100, UK N1, NYC CIV-GP-58, Nigeria Form 1/2) */}
+      <OfficialFormsModal
+        isOpen={showOfficialFormsModal}
+        onClose={() => setShowOfficialFormsModal(false)}
+      />
     </div>
   );
 };

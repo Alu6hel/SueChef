@@ -17,11 +17,13 @@ import {
   Copy,
   Check,
   Scale,
-  Calendar
+  Calendar,
+  Mail
 } from 'lucide-react';
 import { ServiceRecord, ServiceAttempt } from '../../types';
 import { sound } from '../../services/soundEngine';
 import { RegisteredAgentModal } from './RegisteredAgentModal';
+import { UspsSkipTraceModal } from './UspsSkipTraceModal';
 import { RegisteredAgentService } from '../../services/registeredAgents';
 import { CalendarSyncService } from '../../services/calendarSync';
 
@@ -30,6 +32,7 @@ export const ServiceTracker: React.FC = () => {
   const [showAddAttemptModal, setShowAddAttemptModal] = useState(false);
   const [showAffidavitPreview, setShowAffidavitPreview] = useState(false);
   const [showAgentModal, setShowAgentModal] = useState(false);
+  const [showUspsModal, setShowUspsModal] = useState(false);
   const [calendarExported, setCalendarExported] = useState(false);
   const [selectedRecordIndex, setSelectedRecordIndex] = useState(0);
   const [copiedAffidavit, setCopiedAffidavit] = useState(false);
@@ -259,6 +262,17 @@ ${currentRecord.serverLicenseNumber ? `Registered Process Server #${currentRecor
           >
             <Building className="w-3.5 h-3.5" />
             <span>🏢 Secretary of State Directory</span>
+          </button>
+
+          <button
+            onClick={() => {
+              sound.playClick();
+              setShowUspsModal(true);
+            }}
+            className="btn-geom flex items-center gap-1.5 px-3 py-2 text-xs font-mono font-bold bg-[var(--bg-secondary)] border border-[var(--border-color)] hover:border-sky-400 text-sky-400 hover:bg-[var(--bg-hover)] transition-all shadow-sm"
+          >
+            <Mail className="w-3.5 h-3.5" />
+            <span>📮 USPS PO Box Skip-Trace (39 CFR)</span>
           </button>
 
           <button
@@ -749,6 +763,12 @@ ${currentRecord.serverLicenseNumber ? `Registered Process Server #${currentRecor
       <RegisteredAgentModal
         isOpen={showAgentModal}
         onClose={() => setShowAgentModal(false)}
+      />
+
+      {/* USPS PO Box Physical Address Disclosure Modal (39 CFR § 265.6) */}
+      <UspsSkipTraceModal
+        isOpen={showUspsModal}
+        onClose={() => setShowUspsModal(false)}
       />
     </div>
   );

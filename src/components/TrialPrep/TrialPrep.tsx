@@ -13,21 +13,39 @@ import {
   CheckCircle2, 
   XCircle, 
   Award, 
-  Sparkles,
-  Search,
-  Plus,
-  Trash2,
-  Maximize2,
-  FileText,
-  Tag,
-  Wand2,
-  Scale,
-  MessageSquare,
-  AlertTriangle,
-  ShieldAlert,
-  ArrowRight
+  Sparkles, 
+  Search, 
+  Plus, 
+  Trash2, 
+  Maximize2, 
+  FileText, 
+  Tag, 
+  Wand2, 
+  Scale, 
+  MessageSquare, 
+  AlertTriangle, 
+  ShieldAlert, 
+  ArrowRight,
+  Volume2,
+  VolumeX,
+  Mic,
+  MicOff,
+  Printer,
+  MapPin,
+  Zap,
+  Check
 } from 'lucide-react';
-import { MockHearingEngine, MockJudgeQuestion, HearingEvaluationResult } from '../../services/mockHearingEngine';
+import { 
+  MockHearingEngine, 
+  MockJudgeQuestion, 
+  HearingEvaluationResult, 
+  JUDICIAL_PERSONAS, 
+  JudicialPersona 
+} from '../../services/mockHearingEngine';
+import { HostileCrossGauntlet } from './HostileCrossGauntlet';
+import { CourtroomMap } from './CourtroomMap';
+import { SpeechAnalyticsCoach } from './SpeechAnalyticsCoach';
+import { CourtroomCheatSheetModal } from './CourtroomCheatSheetModal';
 
 const SAMPLE_SCENARIOS: ObjectionScenario[] = [
   {
@@ -189,7 +207,7 @@ const FRE_RULES = [
 
 export const TrialPrep: React.FC = () => {
   const { activeCase, updateActiveCase, totalDamages } = useSueChef();
-  const [activeTab, setActiveTab] = useState<'mock_hearing' | 'simulator' | 'fre' | 'witnesses' | 'speech'>('mock_hearing');
+  const [activeTab, setActiveTab] = useState<'mock_hearing' | 'cross_exam' | 'courtroom_map' | 'simulator' | 'fre' | 'witnesses' | 'speech'>('mock_hearing');
 
   // Mock Hearing State
   const [mockQuestions, setMockQuestions] = useState<MockJudgeQuestion[]>(() => 
@@ -199,6 +217,50 @@ export const TrialPrep: React.FC = () => {
   const [userHearingAnswer, setUserHearingAnswer] = useState('');
   const [hearingEvaluation, setHearingEvaluation] = useState<HearingEvaluationResult | null>(null);
   const [isEvaluatingHearing, setIsEvaluatingHearing] = useState(false);
+  const [selectedPersonaId, setSelectedPersonaId] = useState<JudicialPersona['id']>('stickler');
+  const [isSpeakingJudge, setIsSpeakingJudge] = useState(false);
+  const [isDictating, setIsDictating] = useState(false);
+  const [showCheatSheet, setShowCheatSheet] = useState(false);
+
+  const handleSpeakJudge = (questionText: string) => {
+    sound.playClick();
+    if (isSpeakingJudge) {
+      MockHearingEngine.stopSpeaking();
+      setIsSpeakingJudge(false);
+    } else {
+      setIsSpeakingJudge(true);
+      MockHearingEngine.speakQuestion(questionText, selectedPersonaId);
+      const estDurationMs = Math.max(3000, (questionText.split(/\s+/).length / 2.2) * 1000);
+      setTimeout(() => setIsSpeakingJudge(false), estDurationMs);
+    }
+  };
+
+  const handleStartDictation = () => {
+    sound.playClick();
+    const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+    if (!SpeechRecognition) {
+      alert('Speech recognition is not supported in this browser. Please type your response directly.');
+      return;
+    }
+    try {
+      const recognition = new SpeechRecognition();
+      recognition.continuous = false;
+      recognition.interimResults = false;
+      recognition.lang = 'en-US';
+      recognition.onstart = () => setIsDictating(true);
+      recognition.onresult = (e: any) => {
+        const transcript = e.results[0][0].transcript;
+        setUserHearingAnswer(prev => prev ? `${prev} ${transcript}` : transcript);
+        setIsDictating(false);
+      };
+      recognition.onerror = () => setIsDictating(false);
+      recognition.onend = () => setIsDictating(false);
+      recognition.start();
+    } catch (e) {
+      console.warn('Speech recognition error:', e);
+      setIsDictating(false);
+    }
+  };
 
   // Simulator Quiz State
   const [currentScenarioIdx, setCurrentScenarioIdx] = useState(0);
@@ -393,13 +455,27 @@ Respectfully submitted, Plaintiff rests.`;
           </div>
         </div>
 
-        <div className="flex items-center gap-3 bg-[var(--bg-secondary)] px-4 py-2 border border-[var(--border-color)] custom-geometry shadow-inner">
-          <Award className="w-4 h-4 text-[var(--accent-gold)]" />
-          <div className="text-xs">
-            <span className="text-[var(--text-muted)]">Evidentiary Score: </span>
-            <span className="font-bold text-[var(--accent-gold)] font-mono">
-              {totalAttempted > 0 ? Math.round((quizScore / totalAttempted) * 100) : 100}% ({quizScore}/{totalAttempted})
-            </span>
+        <div className="flex flex-wrap items-center gap-2.5">
+          <button
+            type="button"
+            onClick={() => {
+              sound.playClick();
+              setShowCheatSheet(true);
+            }}
+            className="btn-geom flex items-center gap-1.5 px-3 py-2 text-xs font-mono font-bold bg-[var(--bg-secondary)] border border-[var(--border-color)] hover:border-[var(--accent-gold)] text-[var(--accent-gold)] hover:bg-[var(--bg-hover)] transition-all shadow-sm"
+          >
+            <Printer className="w-3.5 h-3.5" />
+            <span>🖨️ Courtroom Cheat Sheet</span>
+          </button>
+
+          <div className="flex items-center gap-3 bg-[var(--bg-secondary)] px-4 py-2 border border-[var(--border-color)] custom-geometry shadow-inner">
+            <Award className="w-4 h-4 text-[var(--accent-gold)]" />
+            <div className="text-xs">
+              <span className="text-[var(--text-muted)]">Evidentiary Score: </span>
+              <span className="font-bold text-[var(--accent-gold)] font-mono">
+                {totalAttempted > 0 ? Math.round((quizScore / totalAttempted) * 100) : 100}% ({quizScore}/{totalAttempted})
+              </span>
+            </div>
           </div>
         </div>
       </div>
@@ -419,6 +495,33 @@ Respectfully submitted, Plaintiff rests.`;
           <span className="px-1.5 py-0.5 rounded text-[10px] bg-emerald-950 text-emerald-300 border border-emerald-500/40 uppercase font-bold">
             Interactive
           </span>
+        </button>
+
+        <button
+          onClick={() => { sound.playClick(); setActiveTab('cross_exam'); }}
+          className={`flex items-center gap-2 px-4 py-2 text-xs md:text-sm font-semibold custom-geometry border transition-all ${
+            activeTab === 'cross_exam'
+              ? 'bg-[var(--accent-gold)] text-slate-950 border-[var(--accent-gold)] font-bold shadow-md'
+              : 'bg-[var(--bg-card)] text-[var(--text-muted)] border-[var(--border-color)] hover:text-[var(--text-main)]'
+          }`}
+        >
+          <Zap className="w-4 h-4 text-rose-400" />
+          <span>Hostile Cross Gauntlet</span>
+          <span className="px-1.5 py-0.5 rounded text-[10px] bg-rose-950 text-rose-300 border border-rose-500/40 uppercase font-bold">
+            Pressure Drill
+          </span>
+        </button>
+
+        <button
+          onClick={() => { sound.playClick(); setActiveTab('courtroom_map'); }}
+          className={`flex items-center gap-2 px-4 py-2 text-xs md:text-sm font-semibold custom-geometry border transition-all ${
+            activeTab === 'courtroom_map'
+              ? 'bg-[var(--accent-gold)] text-slate-950 border-[var(--accent-gold)] font-bold shadow-md'
+              : 'bg-[var(--bg-card)] text-[var(--text-muted)] border-[var(--border-color)] hover:text-[var(--text-main)]'
+          }`}
+        >
+          <MapPin className="w-4 h-4 text-sky-400" />
+          <span>2D Courtroom Spatial Map</span>
         </button>
 
         <button
@@ -535,11 +638,58 @@ Respectfully submitted, Plaintiff rests.`;
                 </div>
               </div>
 
+              {/* 4 Judicial Personas Bar */}
+              <div className="space-y-1.5 border-b border-[var(--border-color)] pb-3">
+                <div className="text-[10px] font-mono uppercase text-[var(--accent-gold)] font-bold">
+                  Select Presiding Magistrate Persona:
+                </div>
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                  {JUDICIAL_PERSONAS.map(p => {
+                    const isSelected = selectedPersonaId === p.id;
+                    return (
+                      <button
+                        key={p.id}
+                        type="button"
+                        onClick={() => {
+                          sound.playClick();
+                          setSelectedPersonaId(p.id);
+                        }}
+                        className={`p-2 card-geom border text-left transition-all ${
+                          isSelected
+                            ? 'border-[var(--accent-gold)] bg-amber-950/40 text-white shadow-md'
+                            : 'border-[var(--border-color)] bg-[var(--bg-secondary)] hover:border-slate-500 text-[var(--text-muted)]'
+                        }`}
+                      >
+                        <div className="flex items-center gap-1.5">
+                          <span className="text-base">{p.avatarEmoji}</span>
+                          <span className="font-bold text-xs truncate">{p.name.replace('Hon. ', '')}</span>
+                        </div>
+                        <div className="text-[9px] font-mono text-[var(--accent-gold)] truncate mt-0.5">
+                          {p.badge}
+                        </div>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
               {/* The Question */}
               <div className="p-4 bg-[var(--bg-primary)] border border-[var(--border-color)] rounded custom-geometry space-y-2">
-                <div className="text-xs font-mono uppercase text-amber-400 font-bold flex items-center gap-2">
-                  <span>Question From The Bench:</span>
+                <div className="flex flex-wrap items-center justify-between gap-2">
+                  <div className="text-xs font-mono uppercase text-amber-400 font-bold flex items-center gap-2">
+                    <span>Question From The Bench:</span>
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={() => handleSpeakJudge(currQ.question)}
+                    className="flex items-center gap-1.5 px-3 py-1 text-xs font-mono font-bold bg-amber-500/10 border border-amber-500/40 hover:bg-amber-500/20 text-amber-300 rounded transition-all"
+                  >
+                    {isSpeakingJudge ? <VolumeX className="w-3.5 h-3.5 animate-pulse text-rose-400" /> : <Volume2 className="w-3.5 h-3.5" />}
+                    <span>{isSpeakingJudge ? 'Stop Speech' : '🔊 Listen (Judge Voice)'}</span>
+                  </button>
                 </div>
+
                 <blockquote className="font-serif italic text-base text-slate-100 leading-relaxed">
                   "{currQ.question}"
                 </blockquote>
@@ -563,11 +713,24 @@ Respectfully submitted, Plaintiff rests.`;
 
               {/* Answer Input Area */}
               <div className="space-y-3 pt-2">
-                <div className="flex items-center justify-between">
+                <div className="flex flex-wrap items-center justify-between gap-2">
                   <label className="text-xs font-mono uppercase text-[var(--text-muted)] font-bold">
                     Your In-Court Response To The Judge:
                   </label>
-                  <div className="flex items-center gap-2 text-xs">
+                  <div className="flex flex-wrap items-center gap-2 text-xs">
+                    <button
+                      type="button"
+                      onClick={handleStartDictation}
+                      className={`flex items-center gap-1 px-2.5 py-1 rounded text-xs font-mono font-bold border transition-all ${
+                        isDictating
+                          ? 'bg-rose-950 text-rose-300 border-rose-500 animate-pulse'
+                          : 'bg-indigo-950/40 text-indigo-300 border-indigo-500/40 hover:bg-indigo-900/50'
+                      }`}
+                    >
+                      {isDictating ? <MicOff className="w-3.5 h-3.5" /> : <Mic className="w-3.5 h-3.5" />}
+                      <span>{isDictating ? 'Listening...' : '🎙️ Dictate In-Court Answer'}</span>
+                    </button>
+                    <span className="text-[var(--text-muted)]">&bull;</span>
                     <button
                       type="button"
                       onClick={() => {
@@ -694,10 +857,21 @@ Respectfully submitted, Plaintiff rests.`;
                   </div>
                 </div>
               )}
+
+              {/* Speech Analytics Coach Panel */}
+              <div className="pt-2">
+                <SpeechAnalyticsCoach speechText={userHearingAnswer} />
+              </div>
             </div>
           </div>
         );
       })()}
+
+      {/* Tab: Hostile Cross-Examination Gauntlet */}
+      {activeTab === 'cross_exam' && <HostileCrossGauntlet />}
+
+      {/* Tab: 2D Courtroom Spatial Map & Protocols */}
+      {activeTab === 'courtroom_map' && <CourtroomMap />}
 
       {/* Tab 1: Objection Simulator */}
       {activeTab === 'simulator' && (
@@ -1105,8 +1279,19 @@ Respectfully submitted, Plaintiff rests.`;
               className="w-full bg-[var(--bg-secondary)] border border-[var(--border-color)] p-3 text-xs font-serif leading-relaxed text-[var(--text-main)] focus:outline-none focus:border-[var(--accent-gold)] custom-geometry"
             />
           </div>
+
+          {/* Delivery & Cadence Coach for Prompter */}
+          <div className="pt-2">
+            <SpeechAnalyticsCoach speechText={activeSpeechText} />
+          </div>
         </div>
       )}
+
+      {/* 1-Page Printable Courtroom Quick-Reference Cheat Sheet Modal */}
+      <CourtroomCheatSheetModal
+        isOpen={showCheatSheet}
+        onClose={() => setShowCheatSheet(false)}
+      />
     </div>
   );
 };

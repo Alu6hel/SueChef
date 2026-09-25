@@ -19,7 +19,8 @@ import {
   Settings, 
   Sparkles, 
   X,
-  Users
+  Users,
+  Landmark
 } from 'lucide-react';
 
 export const BottomNavBar: React.FC = () => {
@@ -45,6 +46,7 @@ export const BottomNavBar: React.FC = () => {
 
   // Secondary tools in the drawer
   const moreTools: { id: WorkstationId; label: string; desc: string; icon: React.ComponentType<{ className?: string }>; badge?: string }[] = [
+    { id: 'enforcement', label: 'Judgment & Collections', desc: 'Writs, bank levies, wage garnishments & liens', icon: Landmark, badge: 'Crucial' },
     { id: 'settlement-matrix', label: 'Demand & Settle', desc: 'Rule 408 negotiation brackets & offers', icon: Calculator },
     { id: 'legal-services', label: 'Free Legal Aid & Courts', desc: '131+ pro bono clinics & self-help portals', icon: Building, badge: 'Verified' },
     { id: 'discovery-studio', label: 'Request Evidence', desc: 'Formal discovery interrogatories & document demands', icon: FolderSearch },

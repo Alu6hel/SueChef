@@ -639,6 +639,132 @@ export const DISPUTE_BLUEPRINTS: DisputeBlueprint[] = [
     estimatedTotal: 11800,
     description: 'Auto dealership deceptively sold salvaged frame-damaged vehicle as "clean title accident-free" in violation of Florida FDUTPA.',
     caseData: createConsumerFraudCase()
+  },
+  {
+    id: 'template_airline_us_eu',
+    title: 'Airline Flight Cancellation & Lost Luggage Compensation',
+    category: 'airline_compensation',
+    state: 'NY',
+    damagesSummary: '$650 Statutory Cancellation + $1,220 Hotel/Luggage Out-of-Pocket',
+    estimatedTotal: 1870,
+    description: 'Carrier cancelled transatlantic flight without statutory notice and refused mandatory meal/hotel care and EU261/DOT delay compensation.',
+    caseData: createCustomDispute({
+      category: 'airline_compensation',
+      opponentName: 'TransAtlantic Airlines Corp.',
+      opponentType: 'corporation',
+      opponentAddress: 'Terminal 4, JFK International Airport, Jamaica, NY 11430',
+      plaintiffName: 'Jordan Vance',
+      plaintiffEmail: 'jordan.vance@example.com',
+      amount: 1870,
+      incidentDate: '2026-03-14',
+      state: 'NY',
+      description: 'Flight cancelled at boarding gate without mechanical emergency. Carrier refused hotel voucher and ignored statutory 14 CFR Part 259 demand.'
+    })
+  },
+  {
+    id: 'template_zombie_sub',
+    title: 'Zombie Subscription Recurring Billing Post-Cancellation',
+    category: 'zombie_subscription',
+    state: 'CA',
+    damagesSummary: '$640 Unauthorized Debits + $1,500 Statutory ARL Penalty',
+    estimatedTotal: 2140,
+    description: 'Software platform continued charging $79.99/mo for 8 months after user cancelled account, violating FTC Click-to-Cancel & California ARL.',
+    caseData: createCustomDispute({
+      category: 'zombie_subscription',
+      opponentName: 'Omnifit Cloud Services LLC',
+      opponentType: 'llc',
+      opponentAddress: '500 Howard St, Suite 400, San Francisco, CA 94105',
+      plaintiffName: 'Maya Reynolds',
+      plaintiffEmail: 'maya.reynolds@example.com',
+      amount: 2140,
+      incidentDate: '2025-08-10',
+      state: 'CA',
+      description: 'Cancelled subscription on web portal with screenshot confirmation. Defendant unlawfully debited credit card 8 consecutive months.'
+    })
+  },
+  {
+    id: 'template_ecommerce_misdelivery',
+    title: 'E-Commerce Package Misdelivery & Porch Theft Non-Refund',
+    category: 'ecommerce_fraud',
+    state: 'TX',
+    damagesSummary: '$1,450 Lost Electronics + $1,450 DTPA Statutory Treble/Penalty',
+    estimatedTotal: 2900,
+    description: 'Merchant shipped expensive computer workstation without required signature; carrier dropped at wrong street address; merchant refused refund.',
+    caseData: createCustomDispute({
+      category: 'ecommerce_fraud',
+      opponentName: 'GadgetHub Direct LLC',
+      opponentType: 'llc',
+      opponentAddress: '8200 Interstate 35, Austin, TX 78753',
+      plaintiffName: 'Marcus Chen',
+      plaintiffEmail: 'marcus.chen@example.com',
+      amount: 2900,
+      incidentDate: '2026-01-22',
+      state: 'TX',
+      description: 'Paid $1,450 for workstation hardware. Tracking photo shows parcel left at completely different apartment complex. Merchant denied dispute.'
+    })
+  },
+  {
+    id: 'template_vacation_rental',
+    title: 'Vacation Rental Habitability & Undisclosed Security Camera',
+    category: 'vacation_rental',
+    state: 'FL',
+    damagesSummary: '$3,400 Booking Refund + $1,850 Emergency Relocation Lodging',
+    estimatedTotal: 5250,
+    description: 'Vacation home had non-functioning air conditioning in mid-summer and undisclosed indoor surveillance device in private living quarters.',
+    caseData: createCustomDispute({
+      category: 'vacation_rental',
+      opponentName: 'Coastal Vista Stays LLC',
+      opponentType: 'llc',
+      opponentAddress: '1400 Ocean Drive, Miami Beach, FL 33139',
+      plaintiffName: 'Liam O’Connor',
+      plaintiffEmail: 'liam.oconnor@example.com',
+      amount: 5250,
+      incidentDate: '2026-06-18',
+      state: 'FL',
+      description: 'Arrived at vacation rental with interior temperature exceeding 92°F and discovered active lens camera disguised as smoke detector in dining hall.'
+    })
+  },
+  {
+    id: 'template_predatory_towing',
+    title: 'Predatory Towing & Extortionate Impound Gate Fee Challenge',
+    category: 'predatory_towing',
+    state: 'CA',
+    damagesSummary: '$485 Tow/Storage Fee Paid Under Protest + $1,940 4x Statutory Penalty',
+    estimatedTotal: 2425,
+    description: 'Tow truck operator hooked parked vehicle without property owner authorization and refused statutory half-rate drop-fee under Cal. Veh. Code § 22658.',
+    caseData: createCustomDispute({
+      category: 'predatory_towing',
+      opponentName: 'QuickHook Recovery & Impound Services Inc.',
+      opponentType: 'corporation',
+      opponentAddress: '3100 E Olympic Blvd, Los Angeles, CA 90023',
+      plaintiffName: 'Tunde Adeyemi',
+      plaintiffEmail: 'tunde.adeyemi@example.com',
+      amount: 2425,
+      incidentDate: '2026-04-05',
+      state: 'CA',
+      description: 'Vehicle hooked while driver was standing 10 feet away. Driver offered statutory drop-fee on site; operator refused and extorted $485 cash at gate.'
+    })
+  },
+  {
+    id: 'template_fifa_double_damages',
+    title: 'Freelance Isn’t Free Act (FIFA) Mandatory 100% Double Damages',
+    category: 'freelance_fifa',
+    state: 'NY',
+    damagesSummary: '$4,500 Unpaid Web App Deliverable + $4,500 Mandatory Double Damages',
+    estimatedTotal: 9000,
+    description: 'Hiring agency accepted finished design sprint and deployment code, then ceased communications for >60 days violating NY Gen. Bus. Law § 1410.',
+    caseData: createCustomDispute({
+      category: 'freelance_fifa',
+      opponentName: 'BrightScale Growth Ventures LLC',
+      opponentType: 'llc',
+      opponentAddress: '350 5th Ave, 59th Floor, New York, NY 10118',
+      plaintiffName: 'Sarah Goldman',
+      plaintiffEmail: 'sarah.goldman@example.com',
+      amount: 9000,
+      incidentDate: '2026-02-15',
+      state: 'NY',
+      description: 'Delivered client web application with signed acceptance test. Agency defaulted on $4,500 final invoice beyond statutory 30-day window.'
+    })
   }
 ];
 
@@ -939,6 +1065,192 @@ export function generateElementsForCategory(category: DisputeCategory, jurisdict
           description: 'Direct repair costs, landscape restoration, or improperly collected fine funds.',
           isSatisfied: true,
           userEvidenceNotes: '[e.g., Bank debit records and licensed contractor repair bids. Tap to edit with your facts.]',
+          linkedEvidenceIds: []
+        }
+      ];
+
+    case 'airline_compensation':
+      return [
+        {
+          id: `elem_${Date.now()}_1`,
+          title: 'Confirmed Ticket & Passenger Boarding Pass',
+          legalStandard: '14 CFR Part 259 / EU Regulation 261/2004',
+          description: `Plaintiff held a confirmed reservation and presented for check-in on airline ${dName}.`,
+          isSatisfied: true,
+          userEvidenceNotes: '[e.g., Electronic ticket receipt, booking reference, and boarding passes. Tap to edit with your facts.]',
+          linkedEvidenceIds: []
+        },
+        {
+          id: `elem_${Date.now()}_2`,
+          title: 'Qualifying Flight Delay, Cancellation, or Lost Baggage',
+          legalStandard: 'Statutory Carrier Liability Threshold',
+          description: 'Flight cancelled or delayed >3 hours without extraordinary circumstances, or baggage delayed >21 days.',
+          isSatisfied: true,
+          userEvidenceNotes: '[e.g., Flight status notification, gate change logs, PIR baggage report. Tap to edit with your facts.]',
+          linkedEvidenceIds: []
+        },
+        {
+          id: `elem_${Date.now()}_3`,
+          title: 'Statutory Cash Compensation & Out-of-Pocket Duty of Care',
+          legalStandard: 'Montreal Convention / DOT Passenger Bill of Rights',
+          description: 'Fixed statutory compensation plus unreimbursed hotel, food, and ground transport expenses.',
+          isSatisfied: true,
+          userEvidenceNotes: '[e.g., Itemized hotel/meal receipts during stranding and carrier claim denial. Tap to edit with your facts.]',
+          linkedEvidenceIds: []
+        }
+      ];
+
+    case 'zombie_subscription':
+      return [
+        {
+          id: `elem_${Date.now()}_1`,
+          title: 'Timely and Unambiguous Cancellation Request',
+          legalStandard: 'FTC "Click-to-Cancel" Rule / Cal. Bus. & Prof. Code § 17602',
+          description: 'Plaintiff followed cancellation procedure or submitted clear written revocation of recurring charge consent.',
+          isSatisfied: true,
+          userEvidenceNotes: '[e.g., Screenshot of cancellation confirmation page or timestamped email. Tap to edit with your facts.]',
+          linkedEvidenceIds: []
+        },
+        {
+          id: `elem_${Date.now()}_2`,
+          title: 'Subsequent Unauthorized Post-Cancellation Debits',
+          legalStandard: 'Restore Online Shoppers Confidence Act (ROSCA) / EFTA',
+          description: `Defendant ${dName} repeatedly debited Plaintiff’s credit card or bank account after cancellation notice.`,
+          isSatisfied: true,
+          userEvidenceNotes: '[e.g., Bank and credit card statements showing recurring post-cancellation debits. Tap to edit with your facts.]',
+          linkedEvidenceIds: []
+        },
+        {
+          id: `elem_${Date.now()}_3`,
+          title: 'Refusal of Refund & Restitution of Unlawful Billing',
+          legalStandard: 'Unjust Enrichment / Statutory Restitution',
+          description: 'Defendant retained funds without consumer authorization and refused prompt restitution.',
+          isSatisfied: true,
+          userEvidenceNotes: '[e.g., Customer support ticket transcript and refund denial notice. Tap to edit with your facts.]',
+          linkedEvidenceIds: []
+        }
+      ];
+
+    case 'ecommerce_fraud':
+      return [
+        {
+          id: `elem_${Date.now()}_1`,
+          title: 'Payment Tendered for Merchant Order',
+          legalStandard: 'UCC § 2-206 / Consumer Sales Agreement',
+          description: `Plaintiff ordered and paid for specified merchandise from merchant ${dName}.`,
+          isSatisfied: true,
+          userEvidenceNotes: '[e.g., Order receipt, merchant confirmation number, and credit card debit. Tap to edit with your facts.]',
+          linkedEvidenceIds: []
+        },
+        {
+          id: `elem_${Date.now()}_2`,
+          title: 'Non-Delivery, Counterfeit Deliverable, or Misdelivery',
+          legalStandard: 'UCC § 2-601 Perfect Tender Rule',
+          description: 'Goods never delivered, delivered damaged/counterfeit, or left at incorrect address without buyer signature.',
+          isSatisfied: true,
+          userEvidenceNotes: '[e.g., Carrier tracking anomaly, porch security camera footage, unboxing video. Tap to edit with your facts.]',
+          linkedEvidenceIds: []
+        },
+        {
+          id: `elem_${Date.now()}_3`,
+          title: 'Exhaustion of Merchant Dispute Resolution & Direct Loss',
+          legalStandard: 'Actual Economic Damages / Breach of Implied Warranty',
+          description: 'Merchant refused replacement or refund despite proof of non-receipt or defective tender.',
+          isSatisfied: true,
+          userEvidenceNotes: '[e.g., Support chat logs, merchant ticket closure, and chargeback rebuttal record. Tap to edit with your facts.]',
+          linkedEvidenceIds: []
+        }
+      ];
+
+    case 'vacation_rental':
+      return [
+        {
+          id: `elem_${Date.now()}_1`,
+          title: 'Confirmed Vacation Rental Booking & Payment',
+          legalStandard: 'Transient Occupancy Agreement / Hospitality Duty of Care',
+          description: `Plaintiff booked and fully paid for residential vacation rental hosted/operated by ${dName}.`,
+          isSatisfied: true,
+          userEvidenceNotes: '[e.g., Platform booking itinerary, receipt of payment, and check-in instructions. Tap to edit with your facts.]',
+          linkedEvidenceIds: []
+        },
+        {
+          id: `elem_${Date.now()}_2`,
+          title: 'Habitability Breach, Material Discrepancy, or Undisclosed Camera',
+          legalStandard: 'Implied Covenant of Habitability / Invasion of Privacy',
+          description: 'Severe unsanitary conditions, lack of hot water/AC, or undisclosed recording devices in private areas.',
+          isSatisfied: true,
+          userEvidenceNotes: '[e.g., High-resolution photos/videos of premises condition or hidden device location. Tap to edit with your facts.]',
+          linkedEvidenceIds: []
+        },
+        {
+          id: `elem_${Date.now()}_3`,
+          title: 'Notice Given & Constructive Eviction / Alternate Housing Cost',
+          legalStandard: 'Consequential Out-of-Pocket Mitigation Damages',
+          description: 'Host failed to cure within reasonable time; guest forced to secure emergency alternate lodging.',
+          isSatisfied: true,
+          userEvidenceNotes: '[e.g., Emergency hotel booking receipts, timestamped host messages, and platform dispute. Tap to edit with your facts.]',
+          linkedEvidenceIds: []
+        }
+      ];
+
+    case 'predatory_towing':
+      return [
+        {
+          id: `elem_${Date.now()}_1`,
+          title: 'Lawful Vehicle Ownership & Non-Consensual Tow',
+          legalStandard: 'State Towing Bill of Rights / Vehicle Code Non-Consent Standard',
+          description: `Plaintiff owned vehicle unlawfully removed and impounded without owner consent by ${dName}.`,
+          isSatisfied: true,
+          userEvidenceNotes: '[e.g., Vehicle registration, parking permit, or valid guest stall authorization. Tap to edit with your facts.]',
+          linkedEvidenceIds: []
+        },
+        {
+          id: `elem_${Date.now()}_2`,
+          title: 'Lack of Statutory Signage, Authorization, or Drop-Fee Violation',
+          legalStandard: 'Mandatory Signage & Drop-Fee Statutory Pre-requisite',
+          description: 'Signage missing/illegible, tow operator refused to unhook vehicle for statutory drop-fee, or no private property owner authorization.',
+          isSatisfied: true,
+          userEvidenceNotes: '[e.g., Photos of parking lot entrance with missing signage and tow truck dashcam notes. Tap to edit with your facts.]',
+          linkedEvidenceIds: []
+        },
+        {
+          id: `elem_${Date.now()}_3`,
+          title: 'Excessive / Extortionate Impound Gate Fees Paid Under Protest',
+          legalStandard: 'Statutory 2x-4x Damages for Unlawful Towing',
+          description: 'Plaintiff was compelled to pay unlawful storage and gate fees to recover vehicle.',
+          isSatisfied: true,
+          userEvidenceNotes: '[e.g., Impound invoice paid with "Paid Under Protest" notation and cash receipt. Tap to edit with your facts.]',
+          linkedEvidenceIds: []
+        }
+      ];
+
+    case 'freelance_fifa':
+      return [
+        {
+          id: `elem_${Date.now()}_1`,
+          title: 'Written Freelance Contract / Proof of Retainer',
+          legalStandard: 'Freelance Isn’t Free Act (FIFA) Mandatory Contract Rule',
+          description: `Contract value equaled or exceeded $800 between Freelance Worker and Hiring Party ${dName}.`,
+          isSatisfied: true,
+          userEvidenceNotes: '[e.g., Signed scope of work, email statement of work, or service agreement. Tap to edit with your facts.]',
+          linkedEvidenceIds: []
+        },
+        {
+          id: `elem_${Date.now()}_2`,
+          title: 'Full Delivery of Contracted Deliverables / Milestones',
+          legalStandard: 'Substantial Performance Standard',
+          description: 'Freelancer delivered finished work product according to contract specifications.',
+          isSatisfied: true,
+          userEvidenceNotes: '[e.g., Transmittal email, git commit logs, cloud deliverable links, and client acceptance. Tap to edit with your facts.]',
+          linkedEvidenceIds: []
+        },
+        {
+          id: `elem_${Date.now()}_3`,
+          title: 'Failure to Pay Within 30 Days & Statutory Double Damages',
+          legalStandard: 'Statutory 100% Double Damages (NYC Admin Code § 20-927 / NY Gen Bus L § 1410)',
+          description: 'Hiring party failed to pay within 30 days of deliverable, entitling worker to double the contract value.',
+          isSatisfied: true,
+          userEvidenceNotes: '[e.g., Invoice with date, overdue demand letter, and bank statements showing non-receipt. Tap to edit with your facts.]',
           linkedEvidenceIds: []
         }
       ];

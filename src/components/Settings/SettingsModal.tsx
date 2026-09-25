@@ -37,6 +37,8 @@ export const SettingsModal: React.FC = () => {
     setCornerGeometry,
     soundEnabled,
     toggleSound,
+    isMuted,
+    toggleMute,
     activeCase,
     updateActiveCase,
     exportCaseBundle,
@@ -248,37 +250,45 @@ export const SettingsModal: React.FC = () => {
           <div className="space-y-3 pt-2 border-t border-[var(--border-color)]">
             <div className="flex items-center gap-2 text-xs font-mono font-bold uppercase text-[var(--accent-gold)]">
               <Sparkles className="w-4 h-4" />
-              <span>4. Interface & Acoustic Sound</span>
+              <span>4. Interface, Audio & Device Controls</span>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              {/* Primary Master Audio Mute Toggle */}
               <button
                 onClick={() => {
-                  toggleSound();
+                  toggleMute();
                 }}
                 className={`p-3 border custom-geometry flex items-center justify-between text-left transition-all ${
-                  soundEnabled
-                    ? 'bg-[var(--badge-bg)] border-[var(--accent-gold)] ring-1 ring-[var(--accent-gold)]'
-                    : 'bg-[var(--bg-secondary)] border-[var(--border-color)]'
+                  isMuted
+                    ? 'bg-rose-500/10 border-rose-500/60 ring-1 ring-rose-500/40'
+                    : 'bg-[var(--badge-bg)] border-[var(--accent-gold)] ring-1 ring-[var(--accent-gold)]'
                 }`}
+                title="Master toggle to mute all procedural sound synthesis"
               >
                 <div className="flex items-center gap-2.5">
-                  {soundEnabled ? (
-                    <Volume2 className="w-4 h-4 text-[var(--accent-gold)]" />
+                  {isMuted ? (
+                    <div className="w-8 h-8 rounded-lg bg-rose-500/20 border border-rose-500/30 flex items-center justify-center text-rose-400">
+                      <VolumeX className="w-5 h-5" />
+                    </div>
                   ) : (
-                    <VolumeX className="w-4 h-4 text-[var(--text-muted)]" />
+                    <div className="w-8 h-8 rounded-lg bg-[var(--badge-bg)] border border-[var(--badge-border)] flex items-center justify-center text-[var(--accent-gold)]">
+                      <Volume2 className="w-5 h-5" />
+                    </div>
                   )}
                   <div>
                     <div className="text-xs font-bold font-serif text-[var(--text-main)]">
-                      Acoustic Sound Effects
+                      {isMuted ? 'All Sounds Muted' : 'Acoustic Sound Synthesizer'}
                     </div>
                     <div className="text-[10px] text-[var(--text-muted)]">
-                      {soundEnabled ? 'Enabled (Gavel & Chimes)' : 'Muted'}
+                      {isMuted ? 'Muted (Zero Gavels, Stamps or Clicks)' : 'Active (Gavel strike, docket stamp, warning bells)'}
                     </div>
                   </div>
                 </div>
-                <span className="text-[10px] font-mono font-bold text-[var(--accent-gold)]">
-                  {soundEnabled ? 'ON' : 'OFF'}
+                <span className={`text-[10px] font-mono font-bold px-2 py-0.5 custom-geometry ${
+                  isMuted ? 'bg-rose-500/20 text-rose-400 border border-rose-500/30' : 'bg-[var(--accent-gold)]/20 text-[var(--accent-gold)] border border-[var(--accent-gold)]/40'
+                }`}>
+                  {isMuted ? 'MUTED' : 'ACTIVE'}
                 </span>
               </button>
 
@@ -287,7 +297,7 @@ export const SettingsModal: React.FC = () => {
                   <Shapes className="w-4 h-4 text-[var(--accent-gold)]" />
                   <div>
                     <div className="text-xs font-bold font-serif text-[var(--text-main)]">Corner Geometry</div>
-                    <div className="text-[10px] text-[var(--text-muted)] font-mono">{cornerGeometry}</div>
+                    <div className="text-[10px] text-[var(--text-muted)] font-mono">{cornerGeometry} styling</div>
                   </div>
                 </div>
                 <div className="flex items-center gap-1">

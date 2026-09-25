@@ -32,6 +32,12 @@ import { ChatThreadMaker } from './ChatThreadMaker';
 import { RedactionCanvas } from './RedactionCanvas';
 import { cleanPartyName } from '../../services/caseUtils';
 import { ReceiptOcrModal } from './ReceiptOcrModal';
+import { AudioTranscriberModal } from './AudioTranscriberModal';
+import { BatesStampingModal } from './BatesStampingModal';
+import { EmailHeaderParserModal } from './EmailHeaderParserModal';
+import { BankStatementImporterModal } from './BankStatementImporterModal';
+import { DocumentScannerModal } from './DocumentScannerModal';
+import { Mic, FileDigit, Landmark, ScanLine, FileSpreadsheet } from 'lucide-react';
 
 export const EvidenceLocker: React.FC = () => {
   const { activeCase, updateActiveCase, addEvidence } = useSueChef();
@@ -39,6 +45,11 @@ export const EvidenceLocker: React.FC = () => {
   const [selectedEvidence, setSelectedEvidence] = useState<EvidenceItem | null>(activeCase.evidenceList[0] || null);
   const [showAddModal, setShowAddModal] = useState(false);
   const [showOcrModal, setShowOcrModal] = useState(false);
+  const [showAudioModal, setShowAudioModal] = useState(false);
+  const [showBatesModal, setShowBatesModal] = useState(false);
+  const [showEmailModal, setShowEmailModal] = useState(false);
+  const [showBankModal, setShowBankModal] = useState(false);
+  const [showScannerModal, setShowScannerModal] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
 
   const plaintiff = activeCase.parties.find(p => p.role === 'plaintiff');
@@ -205,17 +216,77 @@ export const EvidenceLocker: React.FC = () => {
               </div>
             </div>
 
-            <div className="flex flex-wrap items-center gap-2.5">
+            <div className="flex flex-wrap items-center gap-2">
               <button
                 type="button"
                 onClick={() => {
                   sound.playClick();
                   setShowOcrModal(true);
                 }}
-                className="btn-geom flex items-center gap-1.5 px-3.5 py-2 text-xs font-mono font-bold bg-[var(--bg-secondary)] border border-[var(--border-color)] hover:border-[var(--accent-gold)] text-[var(--accent-gold)] hover:bg-[var(--bg-hover)] transition-all shadow-sm"
+                className="btn-geom flex items-center gap-1.5 px-3 py-1.5 text-xs font-mono font-bold bg-[var(--bg-secondary)] border border-[var(--border-color)] hover:border-[var(--accent-gold)] text-[var(--accent-gold)] hover:bg-[var(--bg-hover)] transition-all shadow-sm"
               >
-                <Camera className="w-4 h-4" />
-                <span>📷 Scan Receipt / Camera OCR</span>
+                <Camera className="w-3.5 h-3.5" />
+                <span>📷 Receipt OCR</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => {
+                  sound.playClick();
+                  setShowScannerModal(true);
+                }}
+                className="btn-geom flex items-center gap-1.5 px-3 py-1.5 text-xs font-mono font-bold bg-[var(--bg-secondary)] border border-[var(--border-color)] hover:border-sky-400 text-sky-400 hover:bg-[var(--bg-hover)] transition-all shadow-sm"
+              >
+                <ScanLine className="w-3.5 h-3.5" />
+                <span>📄 Doc Scanner</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => {
+                  sound.playClick();
+                  setShowAudioModal(true);
+                }}
+                className="btn-geom flex items-center gap-1.5 px-3 py-1.5 text-xs font-mono font-bold bg-[var(--bg-secondary)] border border-[var(--border-color)] hover:border-purple-400 text-purple-400 hover:bg-[var(--bg-hover)] transition-all shadow-sm"
+              >
+                <Mic className="w-3.5 h-3.5" />
+                <span>🎙️ Audio & Wiretap</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => {
+                  sound.playClick();
+                  setShowBatesModal(true);
+                }}
+                className="btn-geom flex items-center gap-1.5 px-3 py-1.5 text-xs font-mono font-bold bg-[var(--bg-secondary)] border border-[var(--border-color)] hover:border-amber-400 text-amber-400 hover:bg-[var(--bg-hover)] transition-all shadow-sm"
+              >
+                <FileDigit className="w-3.5 h-3.5" />
+                <span>🏷️ Bates Stamp</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => {
+                  sound.playClick();
+                  setShowEmailModal(true);
+                }}
+                className="btn-geom flex items-center gap-1.5 px-3 py-1.5 text-xs font-mono font-bold bg-[var(--bg-secondary)] border border-[var(--border-color)] hover:border-emerald-400 text-emerald-400 hover:bg-[var(--bg-hover)] transition-all shadow-sm"
+              >
+                <Mail className="w-3.5 h-3.5" />
+                <span>✉️ Email Headers</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => {
+                  sound.playClick();
+                  setShowBankModal(true);
+                }}
+                className="btn-geom flex items-center gap-1.5 px-3 py-1.5 text-xs font-mono font-bold bg-[var(--bg-secondary)] border border-[var(--border-color)] hover:border-indigo-400 text-indigo-400 hover:bg-[var(--bg-hover)] transition-all shadow-sm"
+              >
+                <Landmark className="w-3.5 h-3.5" />
+                <span>🏦 Bank Ledger</span>
               </button>
 
               <button
@@ -223,10 +294,10 @@ export const EvidenceLocker: React.FC = () => {
                   sound.playClick();
                   setShowAddModal(true);
                 }}
-                className="btn-geom flex items-center gap-1.5 px-4 py-2 text-xs font-bold bg-[var(--accent-gold)] text-slate-950 hover:opacity-90 transition-all shadow-sm"
+                className="btn-geom flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-bold bg-[var(--accent-gold)] text-slate-950 hover:opacity-90 transition-all shadow-sm"
               >
                 <Plus className="w-4 h-4" />
-                <span>Add New Evidence Exhibit</span>
+                <span>Add Exhibit</span>
               </button>
             </div>
           </div>
@@ -609,6 +680,36 @@ export const EvidenceLocker: React.FC = () => {
       <ReceiptOcrModal
         isOpen={showOcrModal}
         onClose={() => setShowOcrModal(false)}
+      />
+
+      {/* Perspective Doc Scanner Modal */}
+      <DocumentScannerModal
+        isOpen={showScannerModal}
+        onClose={() => setShowScannerModal(false)}
+      />
+
+      {/* Audio Transcriber & Wiretap Legal Modal */}
+      <AudioTranscriberModal
+        isOpen={showAudioModal}
+        onClose={() => setShowAudioModal(false)}
+      />
+
+      {/* Bates Stamping & Master Exhibit Indexer Modal */}
+      <BatesStampingModal
+        isOpen={showBatesModal}
+        onClose={() => setShowBatesModal(false)}
+      />
+
+      {/* Email RFC 822 Parser & Certifier Modal */}
+      <EmailHeaderParserModal
+        isOpen={showEmailModal}
+        onClose={() => setShowEmailModal(false)}
+      />
+
+      {/* Bank Statement CSV Importer Modal */}
+      <BankStatementImporterModal
+        isOpen={showBankModal}
+        onClose={() => setShowBankModal(false)}
       />
     </div>
   );

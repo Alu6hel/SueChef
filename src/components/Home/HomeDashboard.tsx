@@ -6,6 +6,7 @@ import { STATE_JURISDICTIONS } from '../../services/jurisdictions';
 import { sound } from '../../services/soundEngine';
 import { AluLogo } from '../Branding/AluLogo';
 import { DisputeIntakeWizard } from './DisputeIntakeWizard';
+import { PipelineKanban } from './PipelineKanban';
 import { 
   Scale, 
   ShieldCheck, 
@@ -198,6 +199,11 @@ export const HomeDashboard: React.FC = () => {
             </div>
           </div>
         </div>
+      </section>
+
+      {/* Litigation Pipeline & Lifecycle Kanban Tracker */}
+      <section>
+        <PipelineKanban />
       </section>
 
       {/* Guided 30-Second Dispute Intake Assistant (Direct Real-World Help) */}

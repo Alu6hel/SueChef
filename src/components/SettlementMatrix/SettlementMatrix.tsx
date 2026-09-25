@@ -23,14 +23,20 @@ import {
   RefreshCw,
   CheckCircle2,
   XCircle,
-  HelpCircle
+  HelpCircle,
+  Handshake,
+  FileSignature
 } from 'lucide-react';
+import { SettlementAgreementModal } from './SettlementAgreementModal';
+import { NegotiationSimulator } from './NegotiationSimulator';
 
 export const SettlementMatrix: React.FC = () => {
   const { activeCase, updateActiveCase, country } = useSueChef();
   const countryInfo = getCountryInfo(country);
   const [copiedLetter, setCopiedLetter] = useState(false);
   const [showAddOfferModal, setShowAddOfferModal] = useState(false);
+  const [showAgreementModal, setShowAgreementModal] = useState(false);
+  const [settlementView, setSettlementView] = useState<'matrix' | 'simulator'>('matrix');
   
   // New offer log form state
   const [offerAmount, setOfferAmount] = useState<number>(3000);
@@ -246,7 +252,18 @@ Tel: ${pl?.phone || 'N/A'} | Email: ${pl?.email || 'N/A'}
           </div>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
+          <button
+            onClick={() => {
+              sound.playClick();
+              setShowAgreementModal(true);
+            }}
+            className="flex items-center gap-1.5 px-3.5 py-2 bg-emerald-600 text-white text-xs font-semibold hover:bg-emerald-500 transition-all custom-geometry shadow-sm"
+          >
+            <FileSignature className="w-4 h-4" />
+            <span>📝 Agreement &amp; Mutual Release</span>
+          </button>
+
           <button
             onClick={handleCopySettlementLetter}
             className="flex items-center gap-2 px-3.5 py-2 bg-primary text-primary-foreground text-xs font-semibold hover:bg-primary/90 transition-all custom-geometry shadow-sm"
@@ -254,6 +271,7 @@ Tel: ${pl?.phone || 'N/A'} | Email: ${pl?.email || 'N/A'}
             {copiedLetter ? <Check className="w-4 h-4 text-emerald-300" /> : <Copy className="w-4 h-4" />}
             <span>{copiedLetter ? 'Copied Rule 408 Offer!' : 'Copy Rule 408 Offer'}</span>
           </button>
+
           <button
             onClick={handlePrintSettlement}
             className="flex items-center gap-1.5 px-3 py-2 bg-[var(--bg-secondary)] border border-[var(--border-color)] text-[var(--text-main)] hover:bg-[var(--bg-hover)] text-xs font-semibold custom-geometry"
@@ -264,8 +282,40 @@ Tel: ${pl?.phone || 'N/A'} | Email: ${pl?.email || 'N/A'}
         </div>
       </div>
 
-      {/* Grid: Risk Algorithm & Brackets */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+      {/* View Switcher: Risk Matrix vs AI Negotiation Sparring */}
+      <div className="flex flex-wrap items-center gap-2 border-b border-[var(--border-color)] pb-3">
+        <button
+          onClick={() => { sound.playClick(); setSettlementView('matrix'); }}
+          className={`flex items-center gap-2 px-4 py-2 text-xs md:text-sm font-semibold custom-geometry border transition-all ${
+            settlementView === 'matrix'
+              ? 'bg-[var(--accent-gold)] text-slate-950 border-[var(--accent-gold)] font-bold shadow-md'
+              : 'bg-[var(--bg-card)] text-[var(--text-muted)] border-[var(--border-color)] hover:text-[var(--text-main)]'
+          }`}
+        >
+          <Calculator className="w-4 h-4" />
+          <span>Expected Value Risk Matrix &amp; Brackets</span>
+        </button>
+
+        <button
+          onClick={() => { sound.playClick(); setSettlementView('simulator'); }}
+          className={`flex items-center gap-2 px-4 py-2 text-xs md:text-sm font-semibold custom-geometry border transition-all ${
+            settlementView === 'simulator'
+              ? 'bg-[var(--accent-gold)] text-slate-950 border-[var(--accent-gold)] font-bold shadow-md'
+              : 'bg-[var(--bg-card)] text-[var(--text-muted)] border-[var(--border-color)] hover:text-[var(--text-main)]'
+          }`}
+        >
+          <Handshake className="w-4 h-4" />
+          <span>AI Negotiation Sparring Partner</span>
+          <span className="px-1.5 py-0.5 rounded text-[10px] bg-indigo-950 text-indigo-300 border border-indigo-500/40 uppercase font-bold">
+            Interactive
+          </span>
+        </button>
+      </div>
+
+      {settlementView === 'simulator' && <NegotiationSimulator />}
+
+      {settlementView === 'matrix' && (
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         {/* Left Column: Sliders & Expected Value (7 Cols) */}
         <div className="lg:col-span-7 space-y-5">
           <div className="p-5 bg-[var(--bg-card)] border border-[var(--border-color)] custom-geometry space-y-4 shadow-sm">
@@ -657,6 +707,7 @@ Tel: ${pl?.phone || 'N/A'} | Email: ${pl?.email || 'N/A'}
           </div>
         </div>
       </div>
+      )}
 
       {/* Modal: Add Offer Log */}
       {showAddOfferModal && (
@@ -755,6 +806,12 @@ Tel: ${pl?.phone || 'N/A'} | Email: ${pl?.email || 'N/A'}
           </div>
         </div>
       )}
+
+      {/* Formal Settlement Agreement & Mutual Release Modal */}
+      <SettlementAgreementModal
+        isOpen={showAgreementModal}
+        onClose={() => setShowAgreementModal(false)}
+      />
     </div>
   );
 };

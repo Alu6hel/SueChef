@@ -1,10 +1,11 @@
 import { CaseFile } from '../types';
+import { EnforcementEngine } from './enforcementEngine';
 
 export function createDefaultCase(): CaseFile {
   const now = new Date();
   const dateStr = now.toISOString().split('T')[0];
 
-  return {
+  const baseCase: CaseFile = {
     id: 'case_2026_0901',
     title: 'Smith v. Vanguard Property Management LLC',
     caseNumber: '26SC-004891',
@@ -551,6 +552,18 @@ Furthermore, their complete disregard of my certified demand letter demonstrates
           }
         ]
       }
-    ]
+    ],
+    batesStampConfig: {
+      prefix: 'PLTF-',
+      startingNumber: 1,
+      digits: 4,
+      position: 'bottom_right',
+      fontSize: 12,
+      includeDate: true
+    },
+    pipelineStage: 'intake'
   };
+
+  baseCase.enforcement = EnforcementEngine.createDefaultPlan(baseCase);
+  return baseCase;
 }

@@ -13,6 +13,7 @@ import { LegaleseDecoder } from './components/LegaleseDecoder/LegaleseDecoder';
 import { ServiceTracker } from './components/ServiceTracker/ServiceTracker';
 import { AttorneyDossier } from './components/AttorneyDossier/AttorneyDossier';
 import { SecurityVault } from './components/SecurityVault/SecurityVault';
+import { EnforcementSuite } from './components/Enforcement/EnforcementSuite';
 import { SecondOpinionConsultant } from './components/SecondOpinion/SecondOpinionConsultant';
 import { LegalServicesHub } from './components/LegalServices/LegalServicesHub';
 import { CaseManagerModal } from './components/CaseManager/CaseManagerModal';
@@ -83,6 +84,7 @@ const WorkstationRouter: React.FC = () => {
           {activeWorkstation === 'service-tracker' && <ServiceTracker />}
           {activeWorkstation === 'legalese-decoder' && <LegaleseDecoder />}
           {activeWorkstation === 'attorney-dossier' && <AttorneyDossier />}
+          {activeWorkstation === 'enforcement' && <EnforcementSuite />}
           {activeWorkstation === 'security-vault' && <SecurityVault />}
         </div>
       </main>

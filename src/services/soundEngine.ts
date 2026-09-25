@@ -3,9 +3,22 @@
 class SoundEngine {
   private ctx: AudioContext | null = null;
   public enabled: boolean = true;
+  public isMuted: boolean = typeof window !== 'undefined' ? localStorage.getItem('suechef_muted') === 'true' : false;
+
+  public setMuted(muted: boolean): void {
+    this.isMuted = muted;
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('suechef_muted', String(muted));
+    }
+  }
+
+  public toggleMute(): boolean {
+    this.setMuted(!this.isMuted);
+    return this.isMuted;
+  }
 
   private getContext(): AudioContext | null {
-    if (!this.enabled) return null;
+    if (!this.enabled || this.isMuted) return null;
     if (!this.ctx) {
       const AudioCtxClass = window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
       if (AudioCtxClass) {

@@ -74,6 +74,66 @@ export const SUPPORTED_COUNTRIES: CountryInfo[] = [
     legalSystemSummary: 'European Small Claims Procedure (ESCP) for cross-border claims up to €5,000 and national Mahnbescheid summary proceedings.'
   },
   {
+    code: 'IN',
+    name: 'India',
+    flag: '🇮🇳',
+    currencySymbol: '₹',
+    currencyCode: 'INR',
+    smallClaimsName: 'District Consumer Disputes Redressal Commission / Order 37 CPC',
+    defaultLimit: 1000000,
+    hasSubdivisions: true,
+    subdivisionType: 'State / Union Territory',
+    legalSystemSummary: 'Consumer Protection Act 2019 (District Commission up to ₹50 Lakhs), summary money suits under Order 37 CPC, and Sec 138 NI Act statutory cheque bounce notices.'
+  },
+  {
+    code: 'KE',
+    name: 'Kenya',
+    flag: '🇰🇪',
+    currencySymbol: 'KSh',
+    currencyCode: 'KES',
+    smallClaimsName: 'Small Claims Court (SCC Act 2016)',
+    defaultLimit: 1000000,
+    hasSubdivisions: true,
+    subdivisionType: 'County',
+    legalSystemSummary: 'Fast-track proceedings under Small Claims Court Act with mandatory 60-day trial determination and commercial debt thresholds up to KES 1,000,000.'
+  },
+  {
+    code: 'ZA',
+    name: 'South Africa',
+    flag: '🇿🇦',
+    currencySymbol: 'R',
+    currencyCode: 'ZAR',
+    smallClaimsName: 'Small Claims Court (Magistrates Courts)',
+    defaultLimit: 20000,
+    hasSubdivisions: true,
+    subdivisionType: 'Province',
+    legalSystemSummary: 'Small Claims Courts Act 61 of 1984: Fast, informal hearing before a Commissioner, zero advocates permitted, up to R20,000 limit.'
+  },
+  {
+    code: 'PH',
+    name: 'Philippines',
+    flag: '🇵🇭',
+    currencySymbol: '₱',
+    currencyCode: 'PHP',
+    smallClaimsName: 'Small Claims Court (MeTC / MTCC / MTC)',
+    defaultLimit: 1000000,
+    hasSubdivisions: true,
+    subdivisionType: 'Region / Province',
+    legalSystemSummary: 'A.M. No. 08-8-7-SC Revised Rules of Procedure for Small Claims Cases: strictly expedited, no attorneys at hearing, claims up to ₱1,000,000.'
+  },
+  {
+    code: 'SG',
+    name: 'Singapore',
+    flag: '🇸🇬',
+    currencySymbol: 'S$',
+    currencyCode: 'SGD',
+    smallClaimsName: 'Small Claims Tribunals (State Courts)',
+    defaultLimit: 20000,
+    hasSubdivisions: false,
+    subdivisionType: 'District',
+    legalSystemSummary: 'Small Claims Tribunals Act: Fast consultation & adjudication for consumer goods, services, and tenancy contracts up to S$20,000 (S$30,000 by consent).'
+  },
+  {
     code: 'GLOBAL',
     name: 'International / Other Jurisdiction',
     flag: '🌐',
@@ -356,6 +416,119 @@ export const REAL_LEGAL_SERVICES: LegalServiceDirectory[] = [
     websiteUrl: 'https://legalaidcouncil.gov.ng',
     isFree: true,
     intakeNotes: 'Provides alternative dispute resolution (ADR) and legal representation for civil disputes.'
+  },
+
+  // India
+  {
+    id: 'in_edaakhil',
+    country: 'IN',
+    subdivision: 'National',
+    name: 'e-Daakhil Consumer Grievance Portal',
+    category: 'court_self_help',
+    description: 'Official digital consumer dispute filing portal across all District, State, and National Consumer Commissions.',
+    websiteUrl: 'https://edaakhil.nic.in',
+    isFree: false,
+    intakeNotes: 'File consumer disputes online, track hearing dates, and upload digital evidence under Consumer Protection Act 2019.'
+  },
+  {
+    id: 'in_nalsa',
+    country: 'IN',
+    subdivision: 'National',
+    name: 'National Legal Services Authority (NALSA)',
+    category: 'legal_aid',
+    description: 'Apex statutory authority providing free legal aid, counsel, and Lok Adalat dispute settlement across India.',
+    phone: '15100',
+    websiteUrl: 'https://nalsa.gov.in',
+    isFree: true,
+    intakeNotes: 'Free legal aid clinics available in every district court complex for eligible citizens and marginalized litigants.'
+  },
+
+  // Kenya
+  {
+    id: 'ke_scc_portal',
+    country: 'KE',
+    subdivision: 'National',
+    name: 'Judiciary of Kenya Small Claims Court Registry',
+    category: 'court_self_help',
+    description: 'Fast-track courts designated to dispose of commercial debts, contracts, and tort claims within 60 days.',
+    websiteUrl: 'https://judiciary.go.ke',
+    isFree: false,
+    intakeNotes: 'Online electronic filing via Judiciary e-filing portal; claim ceiling KES 1,000,000; strict 60-day trial deadline.'
+  },
+  {
+    id: 'ke_nlas',
+    country: 'KE',
+    subdivision: 'National',
+    name: 'National Legal Aid Service (NLAS Kenya)',
+    category: 'legal_aid',
+    description: 'Government agency tasked with providing affordable and free legal aid services and civil mediation in Kenya.',
+    phone: '+254 20 221 4488',
+    websiteUrl: 'https://nlas.go.ke',
+    isFree: true,
+    intakeNotes: 'Free legal advice and conciliation assistance for tenancy, wage, and consumer recovery disputes.'
+  },
+
+  // South Africa
+  {
+    id: 'za_doj_scc',
+    country: 'ZA',
+    subdivision: 'National',
+    name: 'Department of Justice & Constitutional Development - Small Claims Courts',
+    category: 'court_self_help',
+    description: 'Statutory small claims forum for civil claims up to R20,000; no attorneys, informal presentation directly to Commissioner.',
+    websiteUrl: 'https://www.justice.gov.za/scc/scc.htm',
+    isFree: true,
+    intakeNotes: 'Free assistance by the Clerk of the Court to draw up the Letter of Demand and Summons; hearings held after office hours.'
+  },
+  {
+    id: 'za_legal_aid',
+    country: 'ZA',
+    subdivision: 'National',
+    name: 'Legal Aid South Africa',
+    category: 'legal_aid',
+    description: 'Independent statutory body providing free legal advisory services, dispute clinics, and civil advice to indigent citizens.',
+    phone: '0800 110 110',
+    websiteUrl: 'https://legal-aid.co.za',
+    isFree: true,
+    intakeNotes: 'Free toll-free advice line and walk-in Justice Centres in every major magistrate district.'
+  },
+
+  // Philippines
+  {
+    id: 'ph_sc_small_claims',
+    country: 'PH',
+    subdivision: 'National',
+    name: 'Supreme Court of the Philippines - Small Claims Procedural Portal',
+    category: 'court_self_help',
+    description: 'Inexpensive, informal, and expeditious procedure for money debts and damages up to ₱1,000,000 in first-level courts.',
+    websiteUrl: 'https://sc.judiciary.gov.ph',
+    isFree: false,
+    intakeNotes: 'Standardized Information Sheet (Form 1-SCC) and Statement of Claim; lawyers strictly not allowed to appear at hearings.'
+  },
+  {
+    id: 'ph_pao',
+    country: 'PH',
+    subdivision: 'National',
+    name: 'Public Attorney’s Office (PAO)',
+    category: 'legal_aid',
+    description: 'Principal law office of the Philippine government providing free legal assistance and representation to indigent litigants.',
+    phone: '+63 2 8929 9436',
+    websiteUrl: 'https://pao.gov.ph',
+    isFree: true,
+    intakeNotes: 'Free legal counseling, affidavit drafting, and mediation services at district PAO offices in all Halls of Justice.'
+  },
+
+  // Singapore
+  {
+    id: 'sg_state_courts_sct',
+    country: 'SG',
+    subdivision: 'National',
+    name: 'Singapore State Courts - Small Claims Tribunals (SCT)',
+    category: 'court_self_help',
+    description: 'Expeditious dispute resolution tribunal for consumer sales, motor damage, and tenancy agreements up to S$20,000.',
+    websiteUrl: 'https://www.judiciary.gov.sg/civil/small-claims-tribunals',
+    isFree: false,
+    intakeNotes: 'Lodged electronically via CJTS (Community Justice and Tribunals System); mandatory consultation session before formal hearing.'
   }
 ];
 

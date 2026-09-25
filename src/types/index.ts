@@ -9,7 +9,7 @@ export type CornerGeometry = 'sharp' | 'chamfer' | 'smooth';
 
 export type FontSizeScale = 'normal' | 'large' | 'xlarge';
 
-export type CountryCode = 'US' | 'GB' | 'CA' | 'AU' | 'NG' | 'DE' | 'GLOBAL';
+export type CountryCode = 'US' | 'GB' | 'CA' | 'AU' | 'NG' | 'DE' | 'IN' | 'KE' | 'ZA' | 'PH' | 'SG' | 'GLOBAL';
 
 export type WorkstationId = 
   | 'home'              // 0. Executive Homepage & Case Overview
@@ -21,11 +21,12 @@ export type WorkstationId =
   | 'legal-services'    // 6. Real-Life Legal Aid & Courts
   | 'discovery-studio'  // 7. Request Evidence (Discovery Studio)
   | 'trial-prep'        // 8. Practice Hearing & Objections
-  | 'sol-watcher'       // 9. Statute of Limitations Docket
-  | 'service-tracker'   // 10. Service of Process & Proof
-  | 'legalese-decoder'  // 11. Plain-English Legal Decoder
-  | 'attorney-dossier'  // 12. Opposing Counsel Tracker
-  | 'security-vault';   // 13. Privacy & Offline Vault
+  | 'enforcement'       // 9. Post-Judgment Debt Enforcement & Collections
+  | 'sol-watcher'       // 10. Statute of Limitations Docket
+  | 'service-tracker'   // 11. Service of Process & Proof
+  | 'legalese-decoder'  // 12. Plain-English Legal Decoder
+  | 'attorney-dossier'  // 13. Opposing Counsel Tracker
+  | 'security-vault';   // 14. Privacy & Offline Vault
 
 export type DisputeCategory = 
   | 'security_deposit'
@@ -37,7 +38,13 @@ export type DisputeCategory =
   | 'wage_theft'
   | 'property_damage'
   | 'negligence'
-  | 'hoa_neighbor';
+  | 'hoa_neighbor'
+  | 'airline_compensation'
+  | 'zombie_subscription'
+  | 'ecommerce_fraud'
+  | 'vacation_rental'
+  | 'predatory_towing'
+  | 'freelance_fifa';
 
 export interface CountryInfo {
   code: CountryCode;
@@ -432,6 +439,180 @@ export interface CaseFile {
   advisorConsultationHistory?: AdvisorConsultationResult[];
   dossierPrintSections?: DossierPrintOptions;
   securityAuditLogs?: SecurityAuditEntry[];
+  enforcement?: EnforcementPlan;
+  batesStampConfig?: BatesStampConfig;
+  hearingDate?: string;
+  pipelineStage?: 'intake' | 'demand_sent' | 'filed' | 'served' | 'discovery' | 'hearing_prep' | 'judgment_enforcing' | 'resolved';
+}
+
+export interface AssetDiscoveryItem {
+  id: string;
+  category: 'bank_account' | 'employer_wage' | 'real_property' | 'vehicle' | 'business_entity' | 'receivables' | 'other';
+  title: string;
+  institutionOrEmployer: string;
+  estimatedValue: number;
+  details: string;
+  sourceOfInfo: string;
+  isVerified: boolean;
+}
+
+export interface WritOfExecution {
+  id: string;
+  caseTitle: string;
+  caseNumber: string;
+  courtName: string;
+  county: string;
+  judgmentDate: string;
+  principalAmount: number;
+  courtCostsAdded: number;
+  accruedInterest: number;
+  paymentsReceived: number;
+  totalEnforceable: number;
+  targetDebtor: string;
+  levyOfficer: 'Sheriff' | 'Marshal' | 'Constable';
+  levyTargetAddress: string;
+  status: 'draft' | 'issued' | 'levied' | 'returned_satisfied' | 'returned_unsatisfied';
+}
+
+export interface BankLevyNotice {
+  bankName: string;
+  branchAddress: string;
+  accountNumberMasked?: string;
+  judgmentAmount: number;
+  statutoryExemptionClaimDeadlineDays: number;
+  holdInstructionText: string;
+}
+
+export interface WageGarnishmentCalc {
+  debtorGrossMonthlyPay: number;
+  debtorDisposableMonthlyPay: number;
+  statutoryMaxPercent: number;
+  monthlyWithholdingAmount: number;
+  estimatedMonthsToSatisfy: number;
+  exemptionsApplied: string[];
+}
+
+export interface JudgmentLienRecord {
+  id: string;
+  propertyAddress: string;
+  countyRecorderOffice: string;
+  apnOrParcelNumber?: string;
+  recordingDate?: string;
+  instrumentNumber?: string;
+  status: 'draft' | 'recorded' | 'satisfied';
+}
+
+export interface DebtorsExamQuestionnaire {
+  id: string;
+  category: 'banking' | 'employment' | 'real_estate' | 'vehicles' | 'business';
+  question: string;
+  expectedDocuments: string;
+}
+
+export interface EnforcementPlan {
+  judgmentObtained: boolean;
+  judgmentDate: string;
+  awardedPrincipal: number;
+  courtCosts: number;
+  postJudgmentCosts: number;
+  paymentsReceived: number;
+  statutoryInterestRate: number;
+  discoveredAssets: AssetDiscoveryItem[];
+  writRecords: WritOfExecution[];
+  lienRecords: JudgmentLienRecord[];
+  examQuestions: DebtorsExamQuestionnaire[];
+  garnishment: WageGarnishmentCalc;
+  activeTab: 'overview' | 'assets' | 'writ' | 'levy' | 'garnishment' | 'liens' | 'debtors_exam' | 'interest_calc';
+}
+
+export interface BatesStampConfig {
+  prefix: string;
+  startingNumber: number;
+  digits: number;
+  position: 'bottom_right' | 'bottom_center' | 'top_right';
+  fontSize: number;
+  includeDate: boolean;
+}
+
+export interface AudioTranscriptItem {
+  id: string;
+  speaker: string;
+  timestampStart: string;
+  timestampEnd: string;
+  text: string;
+  isAdmission: boolean;
+}
+
+export interface RecordingConsentRule {
+  jurisdiction: string;
+  consentType: 'one_party' | 'two_party_all_party';
+  statuteCitation: string;
+  summary: string;
+  admissibilityWarning: string;
+}
+
+export interface ParsedEmailHeader {
+  from: string;
+  to: string;
+  date: string;
+  subject: string;
+  messageId: string;
+  dkimSignature: string;
+  spfResult: string;
+  originatingIp: string;
+  hopsCount: number;
+}
+
+export interface DisputedBankTransaction {
+  id: string;
+  date: string;
+  description: string;
+  amount: number;
+  category: string;
+  isDisputed: boolean;
+  evidenceLinked: boolean;
+}
+
+export type OfficialFormId = 
+  | 'CA_SC_100'
+  | 'CA_POS_010'
+  | 'CA_PLD_C_001'
+  | 'CA_PLD_PI_001'
+  | 'NY_CIV_GP_58'
+  | 'TX_JUSTICE_CIVIL'
+  | 'UK_FORM_N1'
+  | 'UK_FORM_N180'
+  | 'NG_FORM_1_DEMAND'
+  | 'NG_FORM_2_SUMMONS';
+
+export interface OfficialFormDefinition {
+  id: OfficialFormId;
+  title: string;
+  jurisdiction: string;
+  description: string;
+  courtType: string;
+  fields: {
+    label: string;
+    value: string;
+    section: string;
+    isMandatory: boolean;
+  }[];
+}
+
+export interface NegotiationLogEntry {
+  speaker: 'adjuster' | 'plaintiff';
+  message: string;
+  offerAmount?: number;
+  tacticUsed?: string;
+  timestamp: string;
+}
+
+export interface NegotiationSimulatorState {
+  adjusterTone: 'aggressive' | 'skeptical' | 'nuisance_value' | 'fair';
+  currentOffer: number;
+  plaintiffCounter: number;
+  round: number;
+  negotiationLog: NegotiationLogEntry[];
 }
 
 export interface DisputeBlueprint {
