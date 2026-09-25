@@ -50,6 +50,7 @@ export const HomeDashboard: React.FC = () => {
     setIsPartiesModalOpen,
     setIsTourOpen,
     setIsSettingsOpen,
+    setIsOnboardingOpen,
     loadBlueprint
   } = useSueChef();
 
@@ -133,6 +134,18 @@ export const HomeDashboard: React.FC = () => {
               <button
                 onClick={() => {
                   sound.playClick();
+                  setIsOnboardingOpen(true);
+                }}
+                className="btn-geom px-4 py-3 bg-[var(--badge-bg)] border border-[var(--badge-border)] text-[var(--accent-gold)] hover:bg-[var(--accent-gold)] hover:text-slate-950 font-bold text-sm flex items-center gap-2 transition-all shadow-sm"
+                title="Launch personalized 4-step consumer assessment and statutory roadmap"
+              >
+                <Sparkles className="w-4 h-4" />
+                <span>Instant Dispute Assessment</span>
+              </button>
+
+              <button
+                onClick={() => {
+                  sound.playClick();
                   setIsTourOpen(true);
                 }}
                 className="btn-geom px-4 py-3 bg-[var(--bg-card)] border border-[var(--border-color)] text-[var(--text-muted)] hover:text-[var(--text-main)] hover:border-[var(--accent-gold)] font-semibold text-sm flex items-center gap-2 transition-all"
@@ -204,6 +217,36 @@ export const HomeDashboard: React.FC = () => {
       {/* Litigation Pipeline & Lifecycle Kanban Tracker */}
       <section>
         <PipelineKanban />
+      </section>
+
+      {/* Personalized Concierge Banner (Zero Decision Fatigue & Instant Value) */}
+      <section className="p-4 sm:p-5 bg-gradient-to-r from-[var(--badge-bg)] via-[var(--bg-secondary)] to-[var(--badge-bg)] border-2 border-[var(--accent-gold)] custom-geometry shadow-lg flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div className="flex items-center gap-3.5">
+          <div className="w-12 h-12 rounded-xl bg-[var(--accent-gold)]/10 border border-[var(--accent-gold)]/30 flex items-center justify-center shrink-0 text-xl">
+            ✨
+          </div>
+          <div className="space-y-1">
+            <h3 className="font-serif font-bold text-sm sm:text-base text-[var(--text-main)]">
+              New Dispute? Get an Instant Recovery Assessment
+            </h3>
+            <p className="text-xs text-[var(--text-muted)] leading-relaxed">
+              No legal jargon. Choose your atmosphere, define your goal in 1 tap, and unlock your statutory damage ceiling before doing any paperwork.
+            </p>
+          </div>
+        </div>
+
+        <button
+          type="button"
+          onClick={() => {
+            sound.playClick();
+            setIsOnboardingOpen(true);
+          }}
+          className="btn-geom px-5 py-2.5 bg-[var(--accent-gold)] text-slate-950 font-bold text-xs sm:text-sm hover:opacity-90 flex items-center gap-2 shadow-md shrink-0 w-full sm:w-auto justify-center transition-all"
+        >
+          <Sparkles className="w-4 h-4" />
+          <span>Launch 60-Sec Concierge</span>
+          <ArrowRight className="w-4 h-4" />
+        </button>
       </section>
 
       {/* Guided 30-Second Dispute Intake Assistant (Direct Real-World Help) */}

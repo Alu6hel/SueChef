@@ -22,7 +22,7 @@ import { BottomNavBar } from './components/Navigation/BottomNavBar';
 import { QuickSearchModal } from './components/QuickSearch/QuickSearchModal';
 import { WalkthroughTour } from './components/WalkthroughTour/WalkthroughTour';
 import { SettingsModal } from './components/Settings/SettingsModal';
-import { LocationOnboardingModal } from './components/Settings/LocationOnboardingModal';
+import { PersonalizedOnboardingModal } from './components/Onboarding/PersonalizedOnboardingModal';
 import { ParchmentBookAnimation } from './components/ThemeEffects/ParchmentBookAnimation';
 import { ChambersScalesAnimation } from './components/ThemeEffects/ChambersScalesAnimation';
 import { getCountryInfo } from './services/countries';
@@ -95,7 +95,7 @@ const WorkstationRouter: React.FC = () => {
       <QuickSearchModal />
       <WalkthroughTour />
       <SettingsModal />
-      <LocationOnboardingModal />
+      <PersonalizedOnboardingModal />
 
       {/* Status Bar (Clean Desktop bar above navigation) */}
       <footer className="hidden lg:block fixed bottom-14 left-0 right-0 z-30 bg-[var(--bg-secondary)] border-t border-[var(--border-color)] px-4 py-1.5 text-xs shadow-xl">

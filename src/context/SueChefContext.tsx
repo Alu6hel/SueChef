@@ -69,6 +69,8 @@ interface SueChefContextType {
   setIsTourOpen: (open: boolean) => void;
   isSettingsOpen: boolean;
   setIsSettingsOpen: (open: boolean) => void;
+  isOnboardingOpen: boolean;
+  setIsOnboardingOpen: (open: boolean) => void;
 }
 
 const SueChefContext = createContext<SueChefContextType | undefined>(undefined);
@@ -113,6 +115,9 @@ export const SueChefProvider: React.FC<{ children: ReactNode }> = ({ children })
   const [isQuickSearchOpen, setIsQuickSearchOpen] = useState<boolean>(false);
   const [isTourOpen, setIsTourOpen] = useState<boolean>(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState<boolean>(false);
+  const [isOnboardingOpen, setIsOnboardingOpen] = useState<boolean>(() => {
+    return !localStorage.getItem('suechef_onboarded_location');
+  });
 
   // Auto-sync country with active case to prevent jurisdiction/currency clash
   useEffect(() => {
@@ -523,7 +528,9 @@ export const SueChefProvider: React.FC<{ children: ReactNode }> = ({ children })
         isTourOpen,
         setIsTourOpen,
         isSettingsOpen,
-        setIsSettingsOpen
+        setIsSettingsOpen,
+        isOnboardingOpen,
+        setIsOnboardingOpen
       }}
     >
       {children}

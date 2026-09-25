@@ -219,7 +219,7 @@ export const ClaimKitchen: React.FC = () => {
                 The Claim Kitchen
               </h1>
               <p className="text-xs text-[var(--text-muted)] font-mono">
-                Dispute Evaluator, Prima Facie Element Matrix & Damages Viability Calculator
+                Dispute Strength Evaluator, Plain-English Legal Requirements & Damages Calculator
               </p>
             </div>
           </div>
@@ -359,11 +359,16 @@ export const ClaimKitchen: React.FC = () => {
           <div className="card-geom bg-[var(--bg-card)] border border-[var(--border-color)] p-4 space-y-4">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-[var(--border-color)] pb-3">
               <div>
-                <h3 className="font-serif font-bold text-base text-[var(--text-main)]">
-                  Prima Facie Element Checklist
-                </h3>
+                <div className="flex items-center gap-2">
+                  <h3 className="font-serif font-bold text-base text-[var(--text-main)]">
+                    What You Must Prove to the Judge (Legal Requirements)
+                  </h3>
+                  <span className="text-[10px] font-mono px-2 py-0.5 bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 font-bold rounded">
+                    Plain English Guide
+                  </span>
+                </div>
                 <p className="text-xs text-[var(--text-muted)]">
-                  Every civil cause of action requires satisfying each mandatory legal element.
+                  In court, judges use a checklist called <em>"Prima Facie Elements"</em>. Satisfying each condition below establishes clear liability in your favor.
                 </p>
               </div>
               <div className="flex items-center gap-2">

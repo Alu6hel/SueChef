@@ -188,12 +188,12 @@ export const EnforcementSuite: React.FC = () => {
           { id: 'overview', label: '1. Collection Roadmap', icon: Layers },
           { id: 'assets', label: `2. Asset Profiler (${plan.discoveredAssets.length})`, icon: Building },
           { id: 'interest_calc', label: '3. Interest Clock', icon: Calculator },
-          { id: 'writ', label: '4. Writ of Execution', icon: FileText },
-          { id: 'levy', label: '5. Bank Levy Notice', icon: Landmark },
-          { id: 'garnishment', label: '6. Wage Garnishment', icon: Briefcase },
-          { id: 'liens', label: '7. Real Property Lien', icon: Home },
-          { id: 'debtors_exam', label: '8. Debtor Subpoena', icon: UserCheck },
-          { id: 'memo_costs', label: '9. Memorandum of Costs (MC-012)', icon: FileText },
+          { id: 'writ', label: '4. Court Order (Writ of Execution)', icon: FileText },
+          { id: 'levy', label: '5. Freeze Bank Account (Bank Levy)', icon: Landmark },
+          { id: 'garnishment', label: '6. Wage Deduction (Garnishment)', icon: Briefcase },
+          { id: 'liens', label: '7. Real Estate Lien (Abstract)', icon: Home },
+          { id: 'debtors_exam', label: '8. Debtor Asset Subpoena', icon: UserCheck },
+          { id: 'memo_costs', label: '9. Recover Costs (Memo MC-012)', icon: FileText },
         ].map(tab => {
           const Icon = tab.icon;
           const isActive = activeTab === tab.id;
@@ -253,10 +253,15 @@ export const EnforcementSuite: React.FC = () => {
 
           {/* Step-by-Step Enforcement Strategy */}
           <div className="bg-[var(--bg-card)] border border-[var(--border-color)] p-5 custom-geometry space-y-4">
-            <h3 className="font-serif font-bold text-base text-[var(--text-main)] flex items-center gap-2">
-              <ShieldCheck className="w-5 h-5 text-emerald-400" />
-              <span>5-Step Statutory Judgment Collection Protocol</span>
-            </h3>
+            <div>
+              <h3 className="font-serif font-bold text-base text-[var(--text-main)] flex items-center gap-2">
+                <ShieldCheck className="w-5 h-5 text-emerald-400" />
+                <span>5-Step Statutory Judgment Collection Protocol</span>
+              </h3>
+              <p className="text-xs text-[var(--text-muted)] mt-1">
+                Winning in court gives you a judgment order. Follow these steps to freeze accounts, garnish wages, and collect every dollar owed plus interest.
+              </p>
+            </div>
 
             <div className="grid grid-cols-1 md:grid-cols-5 gap-3">
               {[

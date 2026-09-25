@@ -5,6 +5,7 @@ import {
   Scale, 
   Sparkles, 
   Plus, 
+  Minus,
   RotateCcw, 
   ChevronDown, 
   ChevronUp, 
@@ -12,6 +13,8 @@ import {
   ShieldCheck, 
   AlertTriangle,
   Info,
+  HelpCircle,
+  Check,
   X,
   ExternalLink
 } from 'lucide-react';
@@ -229,9 +232,31 @@ export const ChambersScalesAnimation: React.FC = () => {
         ctx.fill();
       });
 
+      // Central Calibrated Protractor Arc (-25° to +25°)
+      ctx.beginPath();
+      ctx.arc(0, -6, 20, -Math.PI * 0.75, -Math.PI * 0.25);
+      ctx.strokeStyle = isCyber ? 'rgba(52, 211, 153, 0.4)' : 'rgba(212, 175, 55, 0.45)';
+      ctx.lineWidth = 1.5;
+      ctx.stroke();
+
+      // Degree Graduation Marks
+      [-0.35, -0.18, 0, 0.18, 0.35].forEach(ang => {
+        const a = -Math.PI / 2 + ang;
+        const x1 = Math.cos(a) * 17;
+        const y1 = -6 + Math.sin(a) * 17;
+        const x2 = Math.cos(a) * (ang === 0 ? 22 : 20);
+        const y2 = -6 + Math.sin(a) * (ang === 0 ? 22 : 20);
+        ctx.beginPath();
+        ctx.moveTo(x1, y1);
+        ctx.lineTo(x2, y2);
+        ctx.strokeStyle = ang === 0 ? brassBright : brassGold;
+        ctx.lineWidth = ang === 0 ? 1.5 : 0.8;
+        ctx.stroke();
+      });
+
       // Central Pivot Dial / Gauge (Degree Pointer)
       ctx.beginPath();
-      ctx.arc(0, -6, 14, 0, Math.PI * 2);
+      ctx.arc(0, -6, 13, 0, Math.PI * 2);
       ctx.fillStyle = isCyber ? '#022C22' : '#2A1805';
       ctx.fill();
       ctx.strokeStyle = brassGold;
@@ -243,7 +268,7 @@ export const ChambersScalesAnimation: React.FC = () => {
       ctx.rotate(currentTilt * 1.5);
       ctx.beginPath();
       ctx.moveTo(0, 0);
-      ctx.lineTo(0, -11);
+      ctx.lineTo(0, -14);
       ctx.strokeStyle = isCyber ? '#6EE7B7' : '#FEF08A';
       ctx.lineWidth = 2;
       ctx.stroke();
@@ -480,17 +505,29 @@ export const ChambersScalesAnimation: React.FC = () => {
     };
   }, [theme, plaintiffWeight, defendantWeight, isMinimized]);
 
-  // Handlers for weight simulation
+  // Handlers for weight simulation (Add and Remove)
   const addPlaintiffWeight = (e: React.MouseEvent) => {
     e.stopPropagation();
     sound.playDocketStamp();
-    setPlaintiffSimOffset(prev => Math.min(prev + 1, 6));
+    setPlaintiffSimOffset(prev => Math.min(prev + 1, 10));
+  };
+
+  const removePlaintiffWeight = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    sound.playClick();
+    setPlaintiffSimOffset(prev => Math.max(prev - 1, -basePlaintiffWeight + 1));
   };
 
   const addDefendantWeight = (e: React.MouseEvent) => {
     e.stopPropagation();
     sound.playClick();
-    setDefendantSimOffset(prev => Math.min(prev + 1, 6));
+    setDefendantSimOffset(prev => Math.min(prev + 1, 10));
+  };
+
+  const removeDefendantWeight = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    sound.playClick();
+    setDefendantSimOffset(prev => Math.max(prev - 1, -baseDefendantWeight + 1));
   };
 
   const resetWeights = (e: React.MouseEvent) => {
@@ -604,59 +641,110 @@ export const ChambersScalesAnimation: React.FC = () => {
             <canvas ref={canvasRef} className="w-full h-full block select-none" />
           </div>
 
-          {/* Interactive Weight Controls & Status Footer */}
-          <div className="w-full pt-1 pb-0.5 flex flex-wrap items-center justify-between gap-2 text-[10px] font-mono border-t border-[var(--border-color)]">
-            {/* Left Button: Plaintiff Evidence */}
-            <div className="flex items-center gap-1.5">
+          {/* Interactive Weight Stepper Controls & Status Footer */}
+          <div className="w-full pt-2 pb-1 flex flex-col sm:flex-row items-center justify-between gap-3 border-t border-[var(--border-color)]">
+            {/* Left Stepper: Plaintiff Proof */}
+            <div className="flex items-center gap-1 bg-[var(--bg-secondary)] border border-[var(--border-color)] p-1 custom-geometry shadow-sm">
               <button
                 type="button"
-                onClick={addPlaintiffWeight}
-                className="btn-geom px-2.5 py-1 bg-[var(--badge-bg)] border border-[var(--badge-border)] text-[var(--accent-gold)] font-bold hover:bg-[var(--accent-gold)] hover:text-slate-950 transition-all flex items-center gap-1 shadow-sm"
-                title="Simulate adding evidentiary weight for Plaintiff"
+                onClick={removePlaintiffWeight}
+                disabled={plaintiffWeight <= 1}
+                className="w-8 h-8 flex items-center justify-center rounded hover:bg-white/10 text-[var(--text-muted)] hover:text-rose-400 transition-colors disabled:opacity-30 disabled:pointer-events-none"
+                title="Remove simulated evidence weight (-1)"
               >
-                <Plus className="w-3 h-3" />
-                <span>+ Exhibit / Proof ({plaintiffWeight})</span>
+                <Minus className="w-4 h-4" />
               </button>
 
               <button
                 type="button"
                 onClick={() => openDrawer('plaintiff')}
-                className="text-[10px] text-[var(--text-muted)] hover:text-[var(--accent-gold)] underline hidden sm:inline"
+                className="px-3 py-1 text-xs font-mono font-bold text-[var(--accent-gold)] hover:underline flex items-center gap-1.5"
+                title="Click to inspect all evidence items"
               >
-                Inspect ({realExhibits.length} exhibits)
+                <span>Proof:</span>
+                <span className="text-emerald-400 font-bold text-sm">{plaintiffWeight}</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={addPlaintiffWeight}
+                className="w-8 h-8 flex items-center justify-center rounded bg-[var(--accent-gold)] text-slate-950 hover:opacity-90 font-bold transition-all shadow-sm"
+                title="Add simulated evidence weight (+1)"
+              >
+                <Plus className="w-4 h-4" />
               </button>
             </div>
 
-            {/* Center Status Indicator */}
-            <div className="text-center font-bold">
-              <span className={plaintiffPercent >= 51 ? 'text-emerald-400' : 'text-amber-400'}>
-                {plaintiffPercent}% of Evidentiary Weight
-              </span>
-              <span className="text-[9px] text-[var(--text-muted)] block sm:inline sm:ml-1.5 font-normal">
-                ({weightDiff > 0 ? `+${weightDiff} advantage` : weightDiff === 0 ? 'level' : `${weightDiff} deficit`})
+            {/* Center Status & Preponderance Ratio */}
+            <div className="text-center font-mono">
+              <div className="flex items-center justify-center gap-2">
+                <span className={`text-xs font-bold ${plaintiffPercent >= 51 ? 'text-emerald-400' : plaintiffPercent === 50 ? 'text-amber-400' : 'text-rose-400'}`}>
+                  {plaintiffPercent}% Civil Scale Advantage
+                </span>
+                {(plaintiffSimOffset !== 0 || defendantSimOffset !== 0) && (
+                  <button
+                    type="button"
+                    onClick={resetWeights}
+                    className="text-[10px] text-[var(--text-muted)] hover:text-[var(--accent-gold)] underline"
+                    title="Reset to baseline"
+                  >
+                    Reset
+                  </button>
+                )}
+              </div>
+              <span className="text-[10px] text-[var(--text-muted)] block">
+                {weightDiff > 0 ? `+${weightDiff} advantage over defense` : weightDiff === 0 ? 'Exact 50/50 deadlock' : `${weightDiff} deficit`}
               </span>
             </div>
 
-            {/* Right Button: Defense Proof */}
-            <div className="flex items-center gap-1.5">
+            {/* Right Stepper: Defense Rebuttal */}
+            <div className="flex items-center gap-1 bg-[var(--bg-secondary)] border border-[var(--border-color)] p-1 custom-geometry shadow-sm">
+              <button
+                type="button"
+                onClick={removeDefendantWeight}
+                disabled={defendantWeight <= 1}
+                className="w-8 h-8 flex items-center justify-center rounded hover:bg-white/10 text-[var(--text-muted)] hover:text-emerald-400 transition-colors disabled:opacity-30 disabled:pointer-events-none"
+                title="Remove simulated defense rebuttal weight (-1)"
+              >
+                <Minus className="w-4 h-4" />
+              </button>
+
               <button
                 type="button"
                 onClick={() => openDrawer('defendant')}
-                className="text-[10px] text-[var(--text-muted)] hover:text-[var(--text-main)] underline hidden sm:inline"
+                className="px-3 py-1 text-xs font-mono font-bold text-[var(--text-main)] hover:underline flex items-center gap-1.5"
+                title="Click to inspect defense defects"
               >
-                Inspect ({realDefects.length} defects)
+                <span>Defense:</span>
+                <span className="text-amber-400 font-bold text-sm">{defendantWeight}</span>
               </button>
 
               <button
                 type="button"
                 onClick={addDefendantWeight}
-                className="btn-geom px-2.5 py-1 bg-[var(--bg-secondary)] border border-[var(--border-color)] text-[var(--text-main)] font-bold hover:bg-white/10 transition-all flex items-center gap-1 shadow-sm"
-                title="Simulate opponent rebuttal or defect challenge"
+                className="w-8 h-8 flex items-center justify-center rounded bg-slate-800 border border-slate-600 text-slate-100 hover:bg-slate-700 font-bold transition-all shadow-sm"
+                title="Add simulated defense rebuttal weight (+1)"
               >
-                <Plus className="w-3 h-3" />
-                <span>+ Defense Rebuttal ({defendantWeight})</span>
+                <Plus className="w-4 h-4" />
               </button>
             </div>
+          </div>
+
+          {/* Consumer-First Plain-English Explainer */}
+          <div className="w-full mt-2 p-2 bg-emerald-950/20 border border-emerald-500/20 rounded text-[11px] text-emerald-300 flex items-center justify-between gap-2">
+            <div className="flex items-center gap-2">
+              <ShieldCheck className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+              <span>
+                <strong>Plain English Rule:</strong> You only need <strong>51%+ proof</strong> (Preponderance of the Evidence) to win in civil court. Each contract, receipt, or message adds weight to your pan.
+              </span>
+            </div>
+            <button
+              type="button"
+              onClick={() => openDrawer('plaintiff')}
+              className="text-[10px] font-mono text-[var(--accent-gold)] underline hover:opacity-80 shrink-0"
+            >
+              View Evidence Breakdown &rarr;
+            </button>
           </div>
         </div>
       )}
