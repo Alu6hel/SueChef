@@ -370,4 +370,88 @@ I CERTIFY that the foregoing is a correct abstract of the judgment entered in th
 CLERK OF THE COURT, by ________________________________, Deputy Clerk
 `;
   }
+
+  /**
+   * Generates formal Memorandum of Costs After Judgment, Acknowledgment of Credit,
+   * and Declaration of Accrued Interest (Cal. CCP § 685.070 / MC-012 equivalent)
+   */
+  public static generateMemorandumOfCostsAfterJudgment(caseFile: CaseFile, plan: EnforcementPlan): string {
+    const p = caseFile.parties.find(x => x.role === 'plaintiff');
+    const d = caseFile.parties.find(x => x.role === 'defendant');
+    const pName = p ? cleanPartyName(p.name) : 'Plaintiff';
+    const dName = d ? cleanPartyName(d.name) : 'Defendant';
+
+    const interestInfo = this.calculateInterest(
+      plan.awardedPrincipal,
+      plan.statutoryInterestRate,
+      plan.judgmentDate,
+      plan.paymentsReceived,
+      false
+    );
+
+    const totalEnforceable = plan.awardedPrincipal + plan.courtCosts + plan.postJudgmentCosts + interestInfo.accruedInterest - plan.paymentsReceived;
+
+    return `================================================================================
+MEMORANDUM OF COSTS AFTER JUDGMENT, ACKNOWLEDGMENT OF CREDIT,
+AND DECLARATION OF ACCRUED STATUTORY INTEREST
+PURSUANT TO CAL. CODE CIV. PROC. § 685.070 / GENERAL CIVIL PRACTICE
+================================================================================
+
+COURT: ${caseFile.courtName.toUpperCase()}
+COUNTY: ${caseFile.county.toUpperCase()}, STATE: ${caseFile.state}
+CASE NUMBER: ${caseFile.caseNumber || 'CIVIL ACTION'}
+CASE TITLE: ${deriveCaseTitle(pName, dName)}
+
+1. JUDGMENT CREDITOR: ${pName}
+   Address: ${p?.address || ''}, ${p?.city || ''}, ${p?.state || ''} ${p?.zip || ''}
+
+2. JUDGMENT DEBTOR: ${dName}
+   Address: ${d?.address || ''}, ${d?.city || ''}, ${d?.state || ''} ${d?.zip || ''}
+
+3. JUDGMENT ENTERED ON: ${plan.judgmentDate}
+
+4. MEMORANDUM OF POST-JUDGMENT COSTS CLAIMED UNDER STATUTE:
+   a. Preparing, issuing, and filing Writ of Execution (Gov. Code § 70626):  $  40.00
+   b. Levying Officer statutory service fee for executing writ:               $  45.00
+   c. County Recorder statutory fee for recording Abstract of Judgment:       $  25.00
+   d. Service of process fees on third-party garnishee / employer:           $  50.00
+   e. Prior court-ordered post-judgment motion costs:                        $  ${Math.max(0, plan.postJudgmentCosts - 160).toFixed(2)}
+   -----------------------------------------------------------------------------
+   TOTAL ALLOWABLE POST-JUDGMENT COSTS CLAIMED:                              $  ${plan.postJudgmentCosts.toFixed(2)}
+
+5. DECLARATION OF ACCRUED STATUTORY POST-JUDGMENT INTEREST:
+   a. Principal Judgment Amount Remaining:                                   $  ${plan.awardedPrincipal.toFixed(2)}
+   b. Statutory Annual Interest Rate:                                           ${plan.statutoryInterestRate}% per annum
+   c. Interest Accrual Period: From ${plan.judgmentDate} to ${new Date().toISOString().split('T')[0]} (${interestInfo.daysElapsed} days)
+   d. Daily Interest Accrual Rate: $${(interestInfo.dailyInterestRate * interestInfo.currentPrincipalBalance).toFixed(2)} / day
+   -----------------------------------------------------------------------------
+   TOTAL STATUTORY POST-JUDGMENT INTEREST ACCRUED:                           $  ${interestInfo.accruedInterest.toFixed(2)}
+
+6. ACKNOWLEDGMENT OF CREDIT (PAYMENTS RECEIVED):
+   Total partial payments credited against interest and costs:              -$  ${plan.paymentsReceived.toFixed(2)}
+
+7. RECAPITULATION & NET BALANCE OWING:
+   Original Judgment Principal Awarded:                                      $  ${plan.awardedPrincipal.toFixed(2)}
+   Court Costs Awarded in Judgment:                                          $  ${plan.courtCosts.toFixed(2)}
+   Allowable Post-Judgment Costs (Item 4):                                   $  ${plan.postJudgmentCosts.toFixed(2)}
+   Accrued Statutory Interest (Item 5):                                      $  ${interestInfo.accruedInterest.toFixed(2)}
+   Less Acknowledged Credits (Item 6):                                      -$  ${plan.paymentsReceived.toFixed(2)}
+   =============================================================================
+   NET COLLECTIBLE BALANCE NOW SOUGHT TO BE ENFORCED:                        $  ${totalEnforceable.toFixed(2)}
+
+DECLARATION OF JUDGMENT CREDITOR:
+I am the Judgment Creditor in the above-entitled action. I have personal knowledge of the
+facts stated herein. The post-judgment costs claimed above were reasonably and necessarily
+incurred in enforcing the judgment, and the calculation of interest and credits is correct.
+
+I declare under penalty of perjury under the laws of the State of ${caseFile.state} that the foregoing
+is true and correct.
+
+EXECUTED ON: ${new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
+
+_____________________________________________
+${pName}, Judgment Creditor in Pro Se
+`;
+  }
 }
+

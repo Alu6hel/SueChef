@@ -9,13 +9,22 @@ interface OfficialFormsModalProps {
   onClose: () => void;
 }
 
-type FormKey = 'ca_sc100' | 'uk_n1' | 'nyc_civgp58' | 'nigeria_form1_2';
+type FormKey = 
+  | 'ca_sc100' 
+  | 'ca_pos010' 
+  | 'ca_pldc001' 
+  | 'tx_petition' 
+  | 'uk_n1' 
+  | 'uk_n180' 
+  | 'nyc_civgp58' 
+  | 'nigeria_form1_2';
 
 export const OfficialFormsModal: React.FC<OfficialFormsModalProps> = ({ isOpen, onClose }) => {
   const { activeCase, totalDamages, country } = useSueChef();
   const [selectedForm, setSelectedForm] = useState<FormKey>(() => {
     if (country === 'GB') return 'uk_n1';
     if (country === 'NG') return 'nigeria_form1_2';
+    if (activeCase.state === 'TX') return 'tx_petition';
     return 'ca_sc100';
   });
   const [copied, setCopied] = useState(false);
@@ -32,10 +41,30 @@ export const OfficialFormsModal: React.FC<OfficialFormsModalProps> = ({ isOpen, 
       formTitle = 'California SC-100: Plaintiff’s Claim and Order';
       jurisdictionLabel = 'California Judicial Council Official Form SC-100';
       break;
+    case 'ca_pos010':
+      formText = OfficialFormGenerators.generateCaliforniaPOS010(activeCase);
+      formTitle = 'California POS-010: Proof of Service of Summons';
+      jurisdictionLabel = 'California Judicial Council Official Form POS-010';
+      break;
+    case 'ca_pldc001':
+      formText = OfficialFormGenerators.generateCaliforniaPLDC001(activeCase, totalDamages);
+      formTitle = 'California PLD-C-001: Complaint - Contract Cause of Action';
+      jurisdictionLabel = 'California Judicial Council Form PLD-C-001';
+      break;
+    case 'tx_petition':
+      formText = OfficialFormGenerators.generateTexasJusticeCourtPetition(activeCase, totalDamages);
+      formTitle = 'Texas Justice Court: Small Claims Civil Petition (Rules 500-507)';
+      jurisdictionLabel = 'Texas Justice Court Rules of Civil Procedure Part V';
+      break;
     case 'uk_n1':
       formText = OfficialFormGenerators.generateUKFormN1(activeCase, totalDamages);
       formTitle = 'UK HMCTS Form N1: CPR Part 7 County Court Claim';
       jurisdictionLabel = 'Her Majesty\'s Courts & Tribunals Service Form N1';
+      break;
+    case 'uk_n180':
+      formText = OfficialFormGenerators.generateUKFormN180(activeCase, totalDamages);
+      formTitle = 'UK HMCTS Form N180: Directions Questionnaire (Small Claims Track)';
+      jurisdictionLabel = 'Her Majesty\'s Courts & Tribunals Service Form N180 (CPR Part 27)';
       break;
     case 'nyc_civgp58':
       formText = OfficialFormGenerators.generateNYCFormCIVGP58(activeCase, totalDamages);
@@ -115,7 +144,43 @@ export const OfficialFormsModal: React.FC<OfficialFormsModalProps> = ({ isOpen, 
             }`}
           >
             <div className="text-[11px] font-bold">California SC-100</div>
-            <div className="text-[9px] font-mono text-slate-400">Judicial Council Form</div>
+            <div className="text-[9px] font-mono text-slate-400">Small Claims Claim</div>
+          </button>
+
+          <button
+            onClick={() => { sound.playClick(); setSelectedForm('ca_pos010'); }}
+            className={`p-2.5 card-geom border text-left transition-all ${
+              selectedForm === 'ca_pos010'
+                ? 'border-[var(--accent-gold)] bg-amber-950/40 text-[var(--accent-gold)] font-bold shadow-md'
+                : 'border-white/10 bg-slate-900/60 hover:border-white/30 text-slate-300'
+            }`}
+          >
+            <div className="text-[11px] font-bold">California POS-010</div>
+            <div className="text-[9px] font-mono text-slate-400">Proof of Service</div>
+          </button>
+
+          <button
+            onClick={() => { sound.playClick(); setSelectedForm('ca_pldc001'); }}
+            className={`p-2.5 card-geom border text-left transition-all ${
+              selectedForm === 'ca_pldc001'
+                ? 'border-[var(--accent-gold)] bg-amber-950/40 text-[var(--accent-gold)] font-bold shadow-md'
+                : 'border-white/10 bg-slate-900/60 hover:border-white/30 text-slate-300'
+            }`}
+          >
+            <div className="text-[11px] font-bold">California PLD-C-001</div>
+            <div className="text-[9px] font-mono text-slate-400">Contract Complaint</div>
+          </button>
+
+          <button
+            onClick={() => { sound.playClick(); setSelectedForm('tx_petition'); }}
+            className={`p-2.5 card-geom border text-left transition-all ${
+              selectedForm === 'tx_petition'
+                ? 'border-[var(--accent-gold)] bg-amber-950/40 text-[var(--accent-gold)] font-bold shadow-md'
+                : 'border-white/10 bg-slate-900/60 hover:border-white/30 text-slate-300'
+            }`}
+          >
+            <div className="text-[11px] font-bold">Texas Justice Court</div>
+            <div className="text-[9px] font-mono text-slate-400">Civil Small Claims</div>
           </button>
 
           <button
@@ -127,7 +192,19 @@ export const OfficialFormsModal: React.FC<OfficialFormsModalProps> = ({ isOpen, 
             }`}
           >
             <div className="text-[11px] font-bold">UK Form N1</div>
-            <div className="text-[9px] font-mono text-slate-400">CPR Part 7 Claim Form</div>
+            <div className="text-[9px] font-mono text-slate-400">CPR Part 7 Claim</div>
+          </button>
+
+          <button
+            onClick={() => { sound.playClick(); setSelectedForm('uk_n180'); }}
+            className={`p-2.5 card-geom border text-left transition-all ${
+              selectedForm === 'uk_n180'
+                ? 'border-[var(--accent-gold)] bg-amber-950/40 text-[var(--accent-gold)] font-bold shadow-md'
+                : 'border-white/10 bg-slate-900/60 hover:border-white/30 text-slate-300'
+            }`}
+          >
+            <div className="text-[11px] font-bold">UK Form N180</div>
+            <div className="text-[9px] font-mono text-slate-400">Directions Questionnaire</div>
           </button>
 
           <button

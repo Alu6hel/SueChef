@@ -47,7 +47,7 @@ export const EnforcementSuite: React.FC = () => {
   const countryInfo = getCountryInfo(country);
 
   const plan = activeCase.enforcement || EnforcementEngine.createDefaultPlan(activeCase);
-  const [activeTab, setActiveTab] = useState<'overview' | 'assets' | 'interest_calc' | 'writ' | 'levy' | 'garnishment' | 'liens' | 'debtors_exam'>('overview');
+  const [activeTab, setActiveTab] = useState<'overview' | 'assets' | 'interest_calc' | 'writ' | 'levy' | 'garnishment' | 'liens' | 'debtors_exam' | 'memo_costs'>('overview');
   const [copiedKey, setCopiedKey] = useState<string | null>(null);
 
   // New asset form state
@@ -193,6 +193,7 @@ export const EnforcementSuite: React.FC = () => {
           { id: 'garnishment', label: '6. Wage Garnishment', icon: Briefcase },
           { id: 'liens', label: '7. Real Property Lien', icon: Home },
           { id: 'debtors_exam', label: '8. Debtor Subpoena', icon: UserCheck },
+          { id: 'memo_costs', label: '9. Memorandum of Costs (MC-012)', icon: FileText },
         ].map(tab => {
           const Icon = tab.icon;
           const isActive = activeTab === tab.id;
@@ -723,6 +724,45 @@ export const EnforcementSuite: React.FC = () => {
               </div>
             ))}
           </div>
+        </div>
+      )}
+
+      {/* TAB 9: MEMORANDUM OF COSTS AFTER JUDGMENT (MC-012) */}
+      {activeTab === 'memo_costs' && (
+        <div className="bg-[var(--bg-card)] border border-[var(--border-color)] p-5 custom-geometry space-y-4">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-[var(--border-color)] pb-3">
+            <div>
+              <h3 className="font-serif font-bold text-lg text-[var(--text-main)]">
+                Memorandum of Costs After Judgment &amp; Accrued Interest (MC-012)
+              </h3>
+              <p className="text-xs text-[var(--text-muted)]">
+                Required statutory filing to formally claim post-judgment enforcement fees, writ costs, and accrued legal interest.
+              </p>
+            </div>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => {
+                  const doc = EnforcementEngine.generateMemorandumOfCostsAfterJudgment(activeCase, plan);
+                  copyToClipboard(doc, 'memo_costs_doc');
+                }}
+                className="px-3 py-1.5 bg-[var(--bg-secondary)] border border-[var(--border-color)] text-xs font-mono font-bold custom-geometry flex items-center gap-1.5 hover:text-[var(--accent-gold)]"
+              >
+                {copiedKey === 'memo_costs_doc' ? <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
+                <span>{copiedKey === 'memo_costs_doc' ? 'Copied' : 'Copy Text'}</span>
+              </button>
+              <button
+                onClick={() => window.print()}
+                className="px-3 py-1.5 bg-[var(--accent-gold)] text-slate-950 text-xs font-mono font-bold custom-geometry flex items-center gap-1.5"
+              >
+                <Printer className="w-3.5 h-3.5" />
+                <span>Print Memorandum</span>
+              </button>
+            </div>
+          </div>
+
+          <pre className="bg-[var(--bg-secondary)] border border-[var(--border-color)] p-4 text-xs font-mono text-[var(--text-main)] whitespace-pre-wrap leading-relaxed overflow-x-auto max-h-[500px]">
+            {EnforcementEngine.generateMemorandumOfCostsAfterJudgment(activeCase, plan)}
+          </pre>
         </div>
       )}
     </div>

@@ -341,4 +341,258 @@ FOR POSTAL USE ONLY:
 [ ] Denied / No Boxholder Record Found for this P.O. Box.
 Postal Official Signature: _______________________ Date: _______________________`;
   }
+
+  /**
+   * Generates California Judicial Council Form POS-010
+   * "Proof of Service of Summons"
+   */
+  public static generateCaliforniaPOS010(caseFile: CaseFile): string {
+    const pl = caseFile.parties.find(p => p.role === 'plaintiff') || caseFile.parties[0];
+    const df = caseFile.parties.find(p => p.role === 'defendant') || caseFile.parties[1];
+    const rec = caseFile.serviceRecords[0];
+    const attempt = rec?.attempts.find(a => a.success) || rec?.attempts[0];
+
+    return `JUDICIAL COUNCIL OF CALIFORNIA • OFFICIAL FORM POS-010
+[Rev. January 1, 2024]
+PROOF OF SERVICE OF SUMMONS
+================================================================================
+ATTORNEY OR PARTY WITHOUT ATTORNEY (Name, State Bar number, and address):
+Name: ${pl?.name || 'Plaintiff'}
+Address: ${pl?.address || ''}, ${pl?.city || ''}, ${pl?.state || 'CA'} ${pl?.zip || ''}
+Telephone No: ${pl?.phone || 'N/A'} | Email: ${pl?.email || 'N/A'}
+ATTORNEY FOR (Name): Self-Represented Plaintiff (In Pro Per)
+
+SUPERIOR COURT OF CALIFORNIA, COUNTY OF: ${caseFile.county.toUpperCase()}
+STREET ADDRESS: ${caseFile.courtName || 'Superior Court of California'}
+BRANCH NAME: CIVIL DIVISION
+PLAINTIFF/PETITIONER: ${pl?.name || 'Plaintiff'}
+DEFENDANT/RESPONDENT: ${df?.name || 'Defendant'}
+CASE NUMBER: ${caseFile.caseNumber || 'CIVIL ACTION'}
+================================================================================
+
+1. AT THE TIME OF SERVICE I WAS AT LEAST 18 YEARS OF AGE AND NOT A PARTY TO THIS ACTION.
+
+2. I SERVED COPIES OF:
+   [X] Summons and Complaint
+   [X] Civil Case Cover Sheet
+   [X] Notice of Case Assignment / Alternative Dispute Resolution (ADR) Information Package
+   [X] Plaintiff's Statement of Claim and Evidentiary Exhibits
+
+3. a. PARTY SERVED: ${df?.name || 'Defendant'}
+   b. PERSON SERVED: ${attempt?.recipientName || df?.name || 'Authorized Recipient / Registered Agent'}
+   c. TITLE/CAPACITY: ${attempt?.recipientTitle || (df?.entityType === 'corporation' ? 'Registered Agent for Service of Process' : 'Individual Defendant')}
+
+4. ADDRESS WHERE PARTY WAS SERVED:
+   ${attempt?.address || df?.address || 'Defendant Physical Address'}, ${df?.city || ''}, ${df?.state || 'CA'} ${df?.zip || ''}
+
+5. MANNER OF SERVICE:
+   [X] Personal Service (CCP § 415.10): I personally delivered the documents to the person identified
+       in item 3 on: ${attempt?.timestamp || new Date().toLocaleDateString('en-US')}.
+
+6. THE "NOTICE TO THE PERSON SERVED" (ON THE SUMMONS) WAS COMPLETED AS FOLLOWS:
+   [X] As an individual defendant.
+   ${df?.entityType === 'corporation' || df?.entityType === 'llc' ? '[X] On behalf of a corporation/LLC under CCP § 416.10 (Corporation) / CCP § 416.40 (Association).' : ''}
+
+7. PERSON WHO SERVED PAPERS:
+   a. Name: ${attempt?.serverName || 'Disinterested Adult Process Server'}
+   b. Address: Sacramento, CA
+   c. Telephone: (555) 019-9481
+   d. The fee for service was: $55.00
+   e. I am:
+      [X] Not a registered California process server.
+      [ ] Registered California process server: Registration No: ${attempt?.serverLicenseNumber || 'N/A'}, County: ${caseFile.county}
+
+8. DECLARATION OF SERVER:
+I declare under penalty of perjury under the laws of the State of California that the foregoing
+is true and correct.
+
+Date: ${new Date().toLocaleDateString('en-US')}
+
+_____________________________________________________
+Signature of Process Server: ${attempt?.serverName || 'Process Server'}
+`;
+  }
+
+  /**
+   * Generates California Judicial Council Form PLD-C-001
+   * "Complaint - Contract (Cause of Action)"
+   */
+  public static generateCaliforniaPLDC001(caseFile: CaseFile, totalDamages: number): string {
+    const pl = caseFile.parties.find(p => p.role === 'plaintiff') || caseFile.parties[0];
+    const df = caseFile.parties.find(p => p.role === 'defendant') || caseFile.parties[1];
+
+    return `JUDICIAL COUNCIL OF CALIFORNIA • OFFICIAL FORM PLD-C-001
+[Rev. January 1, 2024]
+COMPLAINT - CONTRACT (CAUSE OF ACTION)
+================================================================================
+SUPERIOR COURT OF CALIFORNIA, COUNTY OF: ${caseFile.county.toUpperCase()}
+CASE NUMBER: ${caseFile.caseNumber || 'CIV-2026-PENDING'}
+CROSS-COMPLAINT: [ ] YES  [X] NO
+
+PLAINTIFF: ${pl?.name || 'Plaintiff'}
+DEFENDANT: ${df?.name || 'Defendant'}
+
+ATTACHMENT TO COMPLAINT: CAUSE OF ACTION - BREACH OF CONTRACT
+(Number of Pages: 2)
+--------------------------------------------------------------------------------
+
+BC-1. Plaintiff ${pl?.name} alleges that on or about ${caseFile.createdAt || 'recent date'},
+      plaintiff and defendant entered into a [X] written  [ ] oral agreement.
+
+BC-2. The essential terms of the contract were:
+      ${caseFile.title || 'Contractual agreement for goods, services, or tenancy deposit return.'}
+      Defendant agreed to satisfy all contractual terms and timely release funds owed.
+
+BC-3. Plaintiff has performed all conditions, covenants, and promises required on plaintiff's part
+      to be performed, except those conditions excused by defendant's breach.
+
+BC-4. Defendant breached the agreement on or about ${caseFile.createdAt || 'recent date'} by:
+      [X] Failing to pay money due under the agreement.
+      [X] Failing to perform required covenants within statutory timeframes.
+      Specifically: ${caseFile.claimEvaluation.defectWarnings.join('; ') || 'Willful failure to remit funds upon demand.'}
+
+BC-5. Plaintiff suffered damages as a proximate legal result of defendant's breach in the amount of:
+      $${totalDamages.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+      plus statutory prejudgment interest pursuant to California Civil Code § 3287.
+
+COMMON COUNTS ATTACHMENT (CC-1):
+Defendant became indebted to plaintiff within the applicable four-year statute of limitations:
+[X] For money had and received by defendant for the use and benefit of plaintiff.
+[X] For work, labor, services and materials rendered at defendant's request.
+[X] For an account stated between plaintiff and defendant in which it was agreed that
+    defendant was indebted to plaintiff in the sum stated above.
+
+PRAYER FOR RELIEF:
+WHEREFORE, Plaintiff prays for judgment against Defendant for:
+1. Compensatory damages according to proof in the amount of: $${totalDamages.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+2. Prejudgment interest at the legal rate of 10% per annum under Cal. Civ. Code § 3289(b).
+3. Allowable statutory court costs of suit.
+4. For such other and further relief as the Court deems equitable and proper.
+
+Dated: ${new Date().toLocaleDateString('en-US')}
+
+_____________________________________________________
+${pl?.name}, Plaintiff in Pro Per
+`;
+  }
+
+  /**
+   * Generates Texas Justice Court Civil Petition
+   * (Texas Rules of Civil Procedure Rules 500-507 Small Claims / Debt Claim)
+   */
+  public static generateTexasJusticeCourtPetition(caseFile: CaseFile, totalDamages: number): string {
+    const pl = caseFile.parties.find(p => p.role === 'plaintiff') || caseFile.parties[0];
+    const df = caseFile.parties.find(p => p.role === 'defendant') || caseFile.parties[1];
+
+    return `================================================================================
+PETITION: SMALL CLAIMS CIVIL CASE
+TEXAS RULES OF CIVIL PROCEDURE PART V (RULES 500 - 507)
+IN THE JUSTICE COURT, PRECINCT 1, PLACE 1
+COUNTY OF ${caseFile.county.toUpperCase() || 'HARRIS / DALLAS / TRAVIS'}, STATE OF TEXAS
+================================================================================
+
+CAUSE NUMBER: ${caseFile.caseNumber || 'CIV-2026-PENDING'}
+
+PLAINTIFF: ${pl?.name || 'Plaintiff'}
+VS.
+DEFENDANT: ${df?.name || 'Defendant'}
+
+DEFENDANT INFORMATION FOR CITATION:
+Defendant Name: ${df?.name || 'Defendant Entity LLC'}
+Physical Street Address for Service of Citation:
+${df?.address || '100 Texas Way'}, ${df?.city || 'Austin'}, TX ${df?.zip || '78701'}
+Phone: ${df?.phone || 'N/A'} | Registered Agent: ${caseFile.serviceRecords[0]?.attempts[0]?.recipientName || 'Managing Officer'}
+
+1. COMPLAINT:
+   Plaintiff files this small claims action against Defendant under the jurisdiction of the
+   Texas Justice Court (claim does not exceed $20,000.00 statutory ceiling).
+
+2. BASIS OF CLAIM:
+   Defendant owes Plaintiff the principal balance of: $${totalDamages.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+   for the following factual reasons:
+   ${caseFile.title || 'Breach of contractual covenants and statutory duty to pay.'}
+   Defendant wrongfully withheld funds and failed to cure upon receipt of formal written demand.
+
+3. RELIEF REQUESTED:
+   Plaintiff demands judgment against Defendant for:
+   a. Actual damages in the principal sum of: $${totalDamages.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+   b. Filing and constable service fees allowable under Texas Civil Practice & Remedies Code.
+   c. Prejudgment interest as allowed by law and post-judgment interest at statutory Texas Finance Code rate.
+
+4. SERVICEMEMBERS CIVIL RELIEF ACT (SCRA) AFFIDAVIT:
+   Plaintiff declares under penalty of perjury that:
+   [X] Defendant is not on active military duty in the United States Armed Forces.
+   [ ] Defendant is in military service.
+   [ ] Plaintiff is unable to determine whether Defendant is in military service.
+
+Respectfully submitted,
+
+Date: ${new Date().toLocaleDateString('en-US')}
+
+_____________________________________________________
+Signature: ${pl?.name}, Plaintiff Pro Se
+Address: ${pl?.address || ''}, ${pl?.city || ''}, TX ${pl?.zip || ''}
+Phone: ${pl?.phone || ''} | Email: ${pl?.email || ''}
+`;
+  }
+
+  /**
+   * Generates UK HMCTS Form N180
+   * "Directions Questionnaire (Small Claims Track) - CPR Part 27"
+   */
+  public static generateUKFormN180(caseFile: CaseFile, totalDamages: number): string {
+    const pl = caseFile.parties.find(p => p.role === 'plaintiff') || caseFile.parties[0];
+    const df = caseFile.parties.find(p => p.role === 'defendant') || caseFile.parties[1];
+
+    return `HM COURTS & TRIBUNALS SERVICE • FORM N180
+DIRECTIONS QUESTIONNAIRE (SMALL CLAIMS TRACK)
+CIVIL PROCEDURE RULES PART 27
+================================================================================
+IN THE COUNTY COURT AT: ${caseFile.county || 'LONDON / BIRMINGHAM / MANCHESTER'}
+CLAIM NUMBER: ${caseFile.caseNumber || 'MC-2026-CLAIM'}
+NAME OF CLAIMANT: ${pl?.name || 'Claimant'}
+NAME OF DEFENDANT: ${df?.name || 'Defendant'}
+================================================================================
+
+A. SETTLEMENT MEDIATION:
+   Under the HMCTS Small Claims Mediation Service, parties are offered a free 1-hour
+   telephone mediation appointment with an independent court mediator prior to hearing.
+   
+   Do you agree to this case being referred to the Small Claims Mediation Service?
+   [X] YES, Claimant agrees to participate in free court telephone mediation.
+   [ ] NO.
+
+   Claimant's direct telephone contact for mediation: ${pl?.phone || '07123 456789'}
+   Claimant's email address: ${pl?.email || 'claimant@example.co.uk'}
+
+B. VENUE & HEARING LOCATION:
+   Under CPR rule 26.2A, this claim should be heard at the County Court hearing centre
+   closest to Claimant's address because Claimant is an individual acting in person:
+   Preferred Court Hearing Centre: ${caseFile.county || 'Local County Court Hearing Centre'}
+
+C. WITNESSES & EVIDENCE:
+   1. Number of witnesses (including yourself) whose evidence you intend to present: 1
+   2. Name of witness: ${pl?.name || 'Claimant in Person'}
+   3. Witness statement and documentary exhibits (invoices, contemporaneous communications,
+      and bank remittance slips totaling £${totalDamages.toLocaleString()}) have been paginated
+      and served in accordance with Small Claims Pre-Action Protocol.
+
+D. EXPERT EVIDENCE:
+   Do you consider that you require permission to rely on expert evidence?
+   [ ] YES  [X] NO (Factual dispute of record; no expert evidence required).
+
+E. HEARING TIME ESTIMATE & DATES TO AVOID:
+   1. Estimated hearing duration: 2 hours.
+   2. Are there any days within the next 6 months when you cannot attend court?
+      None; available on standard 21-day notice.
+
+F. SIGNATURE & STATEMENT OF TRUTH:
+   I believe that the facts stated in this Directions Questionnaire are true.
+
+Signed: _________________________________________________
+Date: ${new Date().toLocaleDateString('en-GB')}
+Position or Office: Claimant in Person
+`;
+  }
 }
+

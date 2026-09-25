@@ -25,10 +25,12 @@ import {
   XCircle,
   HelpCircle,
   Handshake,
-  FileSignature
+  FileSignature,
+  FileText
 } from 'lucide-react';
 import { SettlementAgreementModal } from './SettlementAgreementModal';
 import { NegotiationSimulator } from './NegotiationSimulator';
+import { MediationBriefModal } from './MediationBriefModal';
 
 export const SettlementMatrix: React.FC = () => {
   const { activeCase, updateActiveCase, country } = useSueChef();
@@ -36,6 +38,7 @@ export const SettlementMatrix: React.FC = () => {
   const [copiedLetter, setCopiedLetter] = useState(false);
   const [showAddOfferModal, setShowAddOfferModal] = useState(false);
   const [showAgreementModal, setShowAgreementModal] = useState(false);
+  const [showMediationBriefModal, setShowMediationBriefModal] = useState(false);
   const [settlementView, setSettlementView] = useState<'matrix' | 'simulator'>('matrix');
   
   // New offer log form state
@@ -262,6 +265,17 @@ Tel: ${pl?.phone || 'N/A'} | Email: ${pl?.email || 'N/A'}
           >
             <FileSignature className="w-4 h-4" />
             <span>📝 Agreement &amp; Mutual Release</span>
+          </button>
+
+          <button
+            onClick={() => {
+              sound.playClick();
+              setShowMediationBriefModal(true);
+            }}
+            className="flex items-center gap-1.5 px-3.5 py-2 bg-indigo-600 text-white text-xs font-semibold hover:bg-indigo-500 transition-all custom-geometry shadow-sm"
+          >
+            <FileText className="w-4 h-4" />
+            <span>📄 1-Page Mediation Brief</span>
           </button>
 
           <button
@@ -811,6 +825,12 @@ Tel: ${pl?.phone || 'N/A'} | Email: ${pl?.email || 'N/A'}
       <SettlementAgreementModal
         isOpen={showAgreementModal}
         onClose={() => setShowAgreementModal(false)}
+      />
+
+      {/* 1-Page Confidential Mediation Statement & Brief Modal */}
+      <MediationBriefModal
+        isOpen={showMediationBriefModal}
+        onClose={() => setShowMediationBriefModal(false)}
       />
     </div>
   );
