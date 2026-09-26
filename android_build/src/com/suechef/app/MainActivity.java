@@ -117,6 +117,16 @@ public class MainActivity extends Activity {
                     exitButton.setVisibility(android.view.View.GONE);
                 }
             }
+
+            @Override
+            public boolean onRenderProcessGone(WebView view, android.webkit.RenderProcessGoneDetail detail) {
+                if (webView != null) {
+                    webView.destroy();
+                    webView = null;
+                }
+                recreate();
+                return true;
+            }
         });
         webView.setWebChromeClient(new WebChromeClient() {
             @Override
@@ -168,12 +178,26 @@ public class MainActivity extends Activity {
         }
     }
 
+    private long backPressedTime = 0;
+    private android.widget.Toast exitToast;
+
     @Override
     public void onBackPressed() {
-        if (webView.canGoBack()) {
+        if (webView != null && webView.canGoBack()) {
             webView.goBack();
-        } else {
-            super.onBackPressed();
+            return;
         }
+
+        if (backPressedTime + 2000 > System.currentTimeMillis()) {
+            if (exitToast != null) {
+                exitToast.cancel();
+            }
+            super.onBackPressed();
+            return;
+        } else {
+            exitToast = android.widget.Toast.makeText(this, "Press back again to exit SueChef", android.widget.Toast.LENGTH_SHORT);
+            exitToast.show();
+        }
+        backPressedTime = System.currentTimeMillis();
     }
 }

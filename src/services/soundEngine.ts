@@ -31,8 +31,34 @@ class SoundEngine {
     return this.ctx;
   }
 
+  // --- Tactile Hardware Haptics (navigator.vibrate) ---
+  public hapticTick(): void {
+    if (typeof navigator !== 'undefined' && 'vibrate' in navigator) {
+      try { navigator.vibrate(12); } catch (_) {}
+    }
+  }
+
+  public hapticPulse(): void {
+    if (typeof navigator !== 'undefined' && 'vibrate' in navigator) {
+      try { navigator.vibrate(30); } catch (_) {}
+    }
+  }
+
+  public hapticHeavy(): void {
+    if (typeof navigator !== 'undefined' && 'vibrate' in navigator) {
+      try { navigator.vibrate(60); } catch (_) {}
+    }
+  }
+
+  public hapticError(): void {
+    if (typeof navigator !== 'undefined' && 'vibrate' in navigator) {
+      try { navigator.vibrate([40, 60, 40]); } catch (_) {}
+    }
+  }
+
   // Realistic wooden gavel strike on sounding block
   public playGavelStrike(): void {
+    this.hapticHeavy();
     const ctx = this.getContext();
     if (!ctx) return;
 
@@ -183,6 +209,7 @@ class SoundEngine {
 
   // Subtle tactical haptic click
   public playClick(): void {
+    this.hapticTick();
     const ctx = this.getContext();
     if (!ctx) return;
 

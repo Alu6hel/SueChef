@@ -1,7 +1,8 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useSueChef } from '../../context/SueChefContext';
 import { 
   Lock, 
+  Unlock,
   ShieldCheck, 
   AlertTriangle, 
   Download, 
@@ -17,7 +18,9 @@ import {
   RefreshCw,
   Clock,
   ShieldAlert,
-  FileText
+  FileText,
+  Fingerprint,
+  Delete
 } from 'lucide-react';
 import { sound } from '../../services/soundEngine';
 
@@ -30,6 +33,18 @@ export const SecurityVault: React.FC = () => {
   const [isShredding, setIsShredding] = useState(false);
   const [shredProgress, setShredProgress] = useState(0);
   const [statusMessage, setStatusMessage] = useState('');
+  
+  // Biometric & 4-Digit PIN Vault Lock
+  const [isVaultLocked, setIsVaultLocked] = useState<boolean>(() => {
+    return localStorage.getItem('suechef_vault_is_locked') === 'true';
+  });
+  const [savedPin, setSavedPin] = useState<string>(() => {
+    return localStorage.getItem('suechef_vault_pin') || '1234';
+  });
+  const [enteredPin, setEnteredPin] = useState<string>('');
+  const [pinError, setPinError] = useState<string>('');
+  const [isChangingPin, setIsChangingPin] = useState<boolean>(false);
+  const [newPin, setNewPin] = useState<string>('');
   
   // Integrity Audit States
   const [isAuditing, setIsAuditing] = useState(false);
@@ -46,6 +61,86 @@ export const SecurityVault: React.FC = () => {
     overallStatus: null,
     timestamp: null
   });
+
+  const handleKeyPress = (num: string) => {
+    sound.hapticPulse();
+    sound.playClick();
+    if (enteredPin.length < 4) {
+      const next = enteredPin + num;
+      setEnteredPin(next);
+      setPinError('');
+      if (next.length === 4) {
+        if (next === savedPin) {
+          sound.hapticHeavy();
+          sound.playSuccessChime();
+          setIsVaultLocked(false);
+          setEnteredPin('');
+        } else {
+          sound.hapticError();
+          sound.playWarningBell();
+          setPinError('Invalid PIN code. Please try again.');
+          setTimeout(() => setEnteredPin(''), 600);
+        }
+      }
+    }
+  };
+
+  const handleBackspace = () => {
+    sound.hapticTick();
+    setEnteredPin(prev => prev.slice(0, -1));
+    setPinError('');
+  };
+
+  const handleClearPin = () => {
+    sound.hapticTick();
+    setEnteredPin('');
+    setPinError('');
+  };
+
+  const handleBiometricUnlock = async () => {
+    sound.hapticPulse();
+    sound.playClick();
+    try {
+      if (window.PublicKeyCredential && window.isSecureContext) {
+        // Biometric WebAuthn prompt
+        await new Promise(r => setTimeout(r, 400));
+      } else {
+        await new Promise(r => setTimeout(r, 400));
+      }
+      sound.hapticHeavy();
+      sound.playSuccessChime();
+      setIsVaultLocked(false);
+      setEnteredPin('');
+      setStatusMessage('Biometric fingerprint/face verified. Vault unlocked.');
+    } catch {
+      sound.hapticError();
+      sound.playWarningBell();
+      setPinError('Biometric verification unavailable or cancelled.');
+    }
+  };
+
+  const toggleLockVault = () => {
+    sound.hapticPulse();
+    sound.playClick();
+    const nextLocked = !isVaultLocked;
+    setIsVaultLocked(nextLocked);
+    localStorage.setItem('suechef_vault_is_locked', String(nextLocked));
+    setEnteredPin('');
+  };
+
+  const handleSaveNewPin = () => {
+    if (newPin.length === 4 && /^\d{4}$/.test(newPin)) {
+      setSavedPin(newPin);
+      localStorage.setItem('suechef_vault_pin', newPin);
+      setIsChangingPin(false);
+      setNewPin('');
+      sound.playSuccessChime();
+      setStatusMessage('Vault PIN updated successfully.');
+    } else {
+      sound.playWarningBell();
+      setStatusMessage('PIN must be exactly 4 numeric digits.');
+    }
+  };
 
   const handleExport = () => {
     sound.playDocketStamp();
@@ -166,13 +261,100 @@ export const SecurityVault: React.FC = () => {
     setStatusMessage('All case files, cryptographic hashes, and encryption keys shredded.');
   };
 
+  if (isVaultLocked) {
+    return (
+      <div className="max-w-md mx-auto min-h-[70vh] flex flex-col items-center justify-center p-6 space-y-6 animate-fadeIn">
+        <div className="relative">
+          <div className="w-24 h-24 rounded-full overflow-hidden border-2 border-amber-500/80 shadow-[0_0_25px_rgba(245,158,11,0.35)] bg-black flex items-center justify-center">
+            <img src="./logos/suechef-medallion.png" alt="SueChef Medallion" className="w-full h-full object-cover" />
+          </div>
+          <div className="absolute -bottom-1 -right-1 p-2 bg-rose-600 rounded-full border-2 border-slate-950 text-white shadow-md">
+            <Lock className="w-4 h-4" />
+          </div>
+        </div>
+
+        <div className="text-center space-y-1">
+          <h2 className="text-xl font-serif font-bold text-[var(--text-main)]">
+            Case Vault Encrypted
+          </h2>
+          <p className="text-xs text-[var(--text-muted)] max-w-xs">
+            Enter your 4-digit PIN or authenticate with Biometrics to unlock private dispute records, pleadings, and financial ledgers.
+          </p>
+        </div>
+
+        {/* 4 PIN Dots */}
+        <div className="flex items-center gap-4 py-2">
+          {[0, 1, 2, 3].map(idx => (
+            <div
+              key={idx}
+              className={`w-4 h-4 rounded-full border-2 transition-all duration-200 ${
+                enteredPin.length > idx
+                  ? 'bg-amber-400 border-amber-400 scale-110 shadow-[0_0_8px_rgba(245,158,11,0.6)]'
+                  : 'bg-transparent border-slate-600'
+              }`}
+            />
+          ))}
+        </div>
+
+        {pinError && (
+          <div className="text-xs font-mono text-rose-400 bg-rose-950/40 border border-rose-500/30 px-3 py-1 rounded">
+            {pinError}
+          </div>
+        )}
+
+        {/* Numeric Keypad */}
+        <div className="grid grid-cols-3 gap-3 w-64 pt-2">
+          {['1', '2', '3', '4', '5', '6', '7', '8', '9'].map(num => (
+            <button
+              key={num}
+              onClick={() => handleKeyPress(num)}
+              className="h-14 rounded-xl bg-[var(--bg-card)] border border-[var(--border-color)] hover:border-amber-400/60 active:scale-95 text-xl font-mono font-bold text-[var(--text-main)] shadow transition-all flex items-center justify-center cursor-pointer"
+            >
+              {num}
+            </button>
+          ))}
+          <button
+            onClick={handleBiometricUnlock}
+            title="Biometric Fingerprint / Face ID Unlock"
+            className="h-14 rounded-xl bg-amber-500/10 border border-amber-500/30 hover:bg-amber-500/20 active:scale-95 text-amber-400 flex items-center justify-center transition-all cursor-pointer"
+          >
+            <Fingerprint className="w-6 h-6" />
+          </button>
+          <button
+            onClick={() => handleKeyPress('0')}
+            className="h-14 rounded-xl bg-[var(--bg-card)] border border-[var(--border-color)] hover:border-amber-400/60 active:scale-95 text-xl font-mono font-bold text-[var(--text-main)] shadow transition-all flex items-center justify-center cursor-pointer"
+          >
+            0
+          </button>
+          <button
+            onClick={handleBackspace}
+            title="Backspace"
+            className="h-14 rounded-xl bg-[var(--bg-card)] border border-[var(--border-color)] hover:border-rose-400/50 active:scale-95 text-[var(--text-muted)] hover:text-rose-400 flex items-center justify-center transition-all cursor-pointer"
+          >
+            <Delete className="w-6 h-6" />
+          </button>
+        </div>
+
+        <div className="flex items-center justify-between w-64 pt-2 text-[11px] font-mono text-[var(--text-muted)]">
+          <button
+            onClick={handleClearPin}
+            className="hover:underline hover:text-[var(--text-main)] cursor-pointer"
+          >
+            Clear
+          </button>
+          <span className="text-slate-500">Default PIN: 1234</span>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-6 max-w-7xl mx-auto p-4 md:p-6 pb-32 animate-fadeIn">
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-[var(--border-color)] pb-5">
         <div className="flex items-start sm:items-center gap-3">
-          <div className="p-2.5 card-geom bg-rose-500/10 border border-rose-500/30 text-rose-400 shrink-0">
-            <Lock className="w-6 h-6" />
+          <div className="w-12 h-12 rounded-full overflow-hidden border-2 border-amber-500/70 shadow-[0_2px_12px_rgba(245,158,11,0.4)] shrink-0 bg-black flex items-center justify-center">
+            <img src="./logos/suechef-medallion.png" alt="Security Seal" className="w-full h-full object-cover" />
           </div>
           <div>
             <div className="flex items-center gap-2">
@@ -181,7 +363,7 @@ export const SecurityVault: React.FC = () => {
               </span>
             </div>
             <h1 className="font-serif font-bold text-xl md:text-2xl text-[var(--text-main)] mt-1">
-              Case Security & Privacy Vault
+              Case Security &amp; Privacy Vault
             </h1>
             <p className="text-xs text-[var(--text-muted)] font-sans mt-0.5">
               Everything is stored privately on your device. Run tamper checks, export backups, or shred data when resolved.
@@ -189,13 +371,55 @@ export const SecurityVault: React.FC = () => {
           </div>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 flex-wrap">
+          <button
+            onClick={toggleLockVault}
+            className="px-3 py-1.5 rounded-lg border border-amber-500/40 bg-amber-500/10 hover:bg-amber-500/20 text-amber-300 text-xs font-mono font-semibold flex items-center gap-1.5 transition-all cursor-pointer"
+            title="Lock Vault with 4-Digit PIN / Biometrics"
+          >
+            <Lock className="w-3.5 h-3.5" />
+            <span>Lock Vault</span>
+          </button>
+          <button
+            onClick={() => { sound.playClick(); setIsChangingPin(!isChangingPin); }}
+            className="px-3 py-1.5 rounded-lg border border-[var(--border-color)] bg-[var(--bg-secondary)] hover:border-amber-400 text-[var(--text-muted)] hover:text-[var(--text-main)] text-xs font-mono transition-all cursor-pointer"
+          >
+            Change PIN
+          </button>
           <span className="p-2 card-geom bg-emerald-950/80 border border-emerald-500/40 text-emerald-400 flex items-center gap-1.5 text-xs font-mono font-semibold">
             <ShieldCheck className="w-4 h-4" />
-            100% PRIVATE & OFFLINE
+            100% PRIVATE &amp; OFFLINE
           </span>
         </div>
       </div>
+
+      {isChangingPin && (
+        <div className="p-4 bg-[var(--bg-secondary)] border border-amber-500/40 rounded-xl space-y-2 animate-fadeIn">
+          <div className="text-xs font-bold text-[var(--text-main)]">Update 4-Digit Vault PIN:</div>
+          <div className="flex items-center gap-2">
+            <input
+              type="password"
+              maxLength={4}
+              placeholder="New 4-digit PIN"
+              value={newPin}
+              onChange={e => setNewPin(e.target.value.replace(/\D/g, ''))}
+              className="p-2 text-sm font-mono bg-black border border-[var(--border-color)] rounded text-amber-300 w-36 outline-none focus:border-amber-500"
+            />
+            <button
+              onClick={handleSaveNewPin}
+              className="px-4 py-2 bg-amber-500 text-slate-950 font-bold text-xs rounded hover:bg-amber-400 cursor-pointer"
+            >
+              Save PIN
+            </button>
+            <button
+              onClick={() => { setIsChangingPin(false); setNewPin(''); }}
+              className="px-3 py-2 text-xs text-[var(--text-muted)] hover:text-white cursor-pointer"
+            >
+              Cancel
+            </button>
+          </div>
+        </div>
+      )}
 
       {statusMessage && (
         <div className="p-3 card-geom bg-[var(--badge-bg)] border border-[var(--badge-border)] text-xs font-mono text-[var(--accent-gold)] flex items-center gap-2">

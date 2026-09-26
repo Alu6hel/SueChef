@@ -25,6 +25,7 @@ import { SettingsModal } from './components/Settings/SettingsModal';
 import { PersonalizedOnboardingModal } from './components/Onboarding/PersonalizedOnboardingModal';
 import { ParchmentBookAnimation } from './components/ThemeEffects/ParchmentBookAnimation';
 import { ChambersScalesAnimation } from './components/ThemeEffects/ChambersScalesAnimation';
+import { CourtAtmosphereCanvas } from './components/ThemeEffects/CourtAtmosphereCanvas';
 import { getCountryInfo } from './services/countries';
 import { 
   ShieldCheck, 
@@ -54,7 +55,8 @@ const WorkstationRouter: React.FC = () => {
   const countryInfo = getCountryInfo(country);
 
   return (
-    <div className="min-h-screen flex flex-col bg-[var(--bg-primary)] text-[var(--text-main)] transition-colors">
+    <div className="min-h-screen flex flex-col bg-[var(--bg-primary)] text-[var(--text-main)] transition-colors relative">
+      <CourtAtmosphereCanvas />
       <Header />
       
       <main className="flex-1 pb-32 sm:pb-36 p-3 sm:p-4 md:p-6 max-w-7xl w-full mx-auto space-y-5">

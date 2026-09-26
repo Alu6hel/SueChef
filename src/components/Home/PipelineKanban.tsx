@@ -43,7 +43,7 @@ const PIPELINE_STAGES: StageConfig[] = [
     label: '14-Day Demand',
     stepNumber: 2,
     icon: FileText,
-    workstation: 'pleadings',
+    workstation: 'pleading-builder',
     workstationLabel: 'Pleadings & Demand',
     description: 'Certified pre-lawsuit notice with statutory deadline.'
   },
@@ -88,7 +88,7 @@ const PIPELINE_STAGES: StageConfig[] = [
     label: 'Case Resolved',
     stepNumber: 7,
     icon: CheckCircle2,
-    workstation: 'settlement',
+    workstation: 'settlement-matrix',
     workstationLabel: 'Settlement Matrix',
     description: 'Full settlement executed or judgment collected.'
   }
@@ -103,12 +103,14 @@ export const PipelineKanban: React.FC = () => {
   const currentStage = PIPELINE_STAGES[currentStageIndex] || PIPELINE_STAGES[0];
 
   const handleStageSelect = (stageId: StageId) => {
+    sound.hapticPulse();
     sound.playDocketStamp();
     setPipelineStage(stageId);
   };
 
   const handleAdvance = () => {
     if (currentStageIndex < PIPELINE_STAGES.length - 1) {
+      sound.hapticHeavy();
       sound.playSuccessChime();
       const nextStage = PIPELINE_STAGES[currentStageIndex + 1];
       setPipelineStage(nextStage.id);

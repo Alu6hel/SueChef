@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useSueChef } from '../../context/SueChefContext';
 import { DISPUTE_BLUEPRINTS } from '../../services/disputeTemplates';
 import { getCountryInfo } from '../../services/countries';
@@ -54,6 +54,8 @@ export const HomeDashboard: React.FC = () => {
     loadBlueprint
   } = useSueChef();
 
+  const [isLimitsModalOpen, setIsLimitsModalOpen] = useState(false);
+
   const countryInfo = getCountryInfo(country);
   const stateJurisdiction = (country === 'US' || !country) ? STATE_JURISDICTIONS[activeCase.state] : null;
   const claimCeiling = stateJurisdiction ? stateJurisdiction.smallClaimsLimitIndividual : countryInfo.defaultLimit;
@@ -80,7 +82,7 @@ export const HomeDashboard: React.FC = () => {
               </span>
               <button
                 onClick={() => { sound.playClick(); setIsSettingsOpen(true); }}
-                className="text-xs font-mono px-3 py-1 bg-[var(--bg-secondary)] border border-[var(--border-color)] text-[var(--text-muted)] hover:text-[var(--text-main)] hover:border-[var(--accent-gold)] custom-geometry transition-all flex items-center gap-1.5"
+                className="text-xs font-mono px-3 py-1 bg-[var(--bg-secondary)] border border-[var(--border-color)] text-[var(--text-muted)] hover:text-[var(--text-main)] hover:border-[var(--accent-gold)] custom-geometry transition-all flex items-center gap-1.5 cursor-pointer"
               >
                 <span>{countryInfo.flag} {country === 'US' ? `${stateJurisdiction?.stateName || activeCase.state} Court` : countryInfo.name}</span>
                 <span className="text-[var(--accent-gold)] font-bold">Limit: {countryInfo.currencySymbol}{claimCeiling.toLocaleString()}</span>
@@ -95,63 +97,88 @@ export const HomeDashboard: React.FC = () => {
               Prepare, substantiate, and negotiate small claims disputes, unreturned deposits, and contract breaches with professional precision without paying high legal retainers.
             </p>
 
+            {/* Three-Pill Core Action Cluster */}
             <div className="flex flex-wrap items-center gap-3 pt-2">
               <button
                 onClick={() => {
+                  sound.hapticPulse();
+                  sound.playClick();
+                  setIsOnboardingOpen(true);
+                }}
+                className="btn-geom px-5 py-3.5 bg-[var(--accent-gold)] text-slate-950 hover:opacity-90 font-bold text-sm flex items-center gap-2 shadow-lg shadow-amber-500/20 transition-all cursor-pointer"
+                title="Launch personalized 4-step consumer assessment and statutory roadmap"
+              >
+                <Sparkles className="w-4 h-4 fill-slate-950" />
+                <span>Instant Dispute Assessment</span>
+                <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-slate-950/20 uppercase tracking-wider font-extrabold ml-1">
+                  Start Here
+                </span>
+              </button>
+
+              <button
+                onClick={() => {
+                  sound.hapticPulse();
                   sound.playClick();
                   setActiveWorkstation('claim-kitchen');
                 }}
-                className="btn-geom px-5 py-3 bg-[var(--accent-gold)] text-slate-950 hover:opacity-90 font-bold text-sm flex items-center gap-2 shadow-lg shadow-amber-500/10 transition-all"
+                className="btn-geom px-4 py-3 bg-[var(--bg-card)] border border-[var(--border-color)] text-[var(--text-main)] hover:border-[var(--accent-gold)] font-bold text-sm flex items-center gap-2 transition-all cursor-pointer"
               >
-                <Scale className="w-4 h-4" />
-                <span>Work on Active Case: {activeCase.title}</span>
+                <Scale className="w-4 h-4 text-[var(--accent-gold)]" />
+                <span>Build Active Case: {activeCase.title}</span>
                 <ArrowRight className="w-4 h-4" />
               </button>
 
               <button
                 onClick={() => {
+                  sound.hapticPulse();
                   sound.playClick();
                   setIsCaseManagerOpen(true);
                 }}
-                className="btn-geom px-4 py-3 bg-[var(--bg-card)] border border-[var(--border-color)] text-[var(--text-main)] hover:border-[var(--accent-gold)] font-semibold text-sm flex items-center gap-2 transition-all"
+                className="btn-geom px-4 py-3 bg-[var(--bg-card)] border border-[var(--border-color)] text-[var(--text-muted)] hover:text-[var(--text-main)] hover:border-[var(--accent-gold)] font-semibold text-sm flex items-center gap-2 transition-all cursor-pointer"
               >
                 <FolderGit2 className="w-4 h-4 text-[var(--accent-gold)]" />
                 <span>Switch / New Dispute</span>
               </button>
+            </div>
 
+            {/* Secondary Utility Chips Row */}
+            <div className="flex flex-wrap items-center gap-2 pt-1">
               <button
                 onClick={() => {
+                  sound.hapticTick();
                   sound.playClick();
                   setIsPartiesModalOpen(true);
                 }}
-                className="btn-geom px-4 py-3 bg-[var(--bg-card)] border border-[var(--border-color)] text-[var(--text-main)] hover:border-[var(--accent-gold)] font-semibold text-sm flex items-center gap-2 transition-all"
+                className="px-3 py-1.5 rounded-lg bg-[var(--bg-secondary)] border border-[var(--border-color)] text-[var(--text-muted)] hover:text-[var(--text-main)] hover:border-[var(--accent-gold)] font-medium text-xs flex items-center gap-1.5 transition-all cursor-pointer"
                 title="Edit real names and addresses for you and opponent"
               >
-                <Users className="w-4 h-4 text-[var(--accent-gold)]" />
-                <span>Edit Your Names</span>
+                <Users className="w-3.5 h-3.5 text-[var(--accent-gold)]" />
+                <span>Edit Case Parties</span>
               </button>
 
               <button
                 onClick={() => {
-                  sound.playClick();
-                  setIsOnboardingOpen(true);
-                }}
-                className="btn-geom px-4 py-3 bg-[var(--badge-bg)] border border-[var(--badge-border)] text-[var(--accent-gold)] hover:bg-[var(--accent-gold)] hover:text-slate-950 font-bold text-sm flex items-center gap-2 transition-all shadow-sm"
-                title="Launch personalized 4-step consumer assessment and statutory roadmap"
-              >
-                <Sparkles className="w-4 h-4" />
-                <span>Instant Dispute Assessment</span>
-              </button>
-
-              <button
-                onClick={() => {
+                  sound.hapticTick();
                   sound.playClick();
                   setIsTourOpen(true);
                 }}
-                className="btn-geom px-4 py-3 bg-[var(--bg-card)] border border-[var(--border-color)] text-[var(--text-muted)] hover:text-[var(--text-main)] hover:border-[var(--accent-gold)] font-semibold text-sm flex items-center gap-2 transition-all"
+                className="px-3 py-1.5 rounded-lg bg-[var(--bg-secondary)] border border-[var(--border-color)] text-[var(--text-muted)] hover:text-[var(--text-main)] hover:border-[var(--accent-gold)] font-medium text-xs flex items-center gap-1.5 transition-all cursor-pointer"
               >
-                <Sparkles className="w-4 h-4 text-[var(--accent-gold)]" />
+                <Sparkles className="w-3.5 h-3.5 text-[var(--accent-gold)]" />
                 <span>Guided Tour</span>
+              </button>
+
+              <button
+                onClick={() => {
+                  sound.hapticPulse();
+                  sound.playClick();
+                  setIsLimitsModalOpen(true);
+                }}
+                className="px-3 py-1.5 rounded-lg bg-amber-500/10 border border-amber-500/30 text-amber-300 hover:bg-amber-500/20 font-medium text-xs flex items-center gap-1.5 transition-all cursor-pointer"
+                title="View small claims limits, statutory deadlines & fee scales"
+              >
+                <HelpCircle className="w-3.5 h-3.5 text-amber-400" />
+                <span>ⓘ Statutory Limits &amp; Court Rules</span>
               </button>
             </div>
           </div>
@@ -756,6 +783,104 @@ export const HomeDashboard: React.FC = () => {
           </div>
         </div>
       </section>
+
+      {/* Progressive Disclosure Modal: Statutory Limits & Court Rules */}
+      {isLimitsModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-fadeIn">
+          <div className="bg-[var(--bg-card)] border-2 border-[var(--border-color)] rounded-2xl max-w-xl w-full p-6 space-y-5 shadow-2xl relative">
+            <div className="flex items-start justify-between gap-4 border-b border-[var(--border-color)] pb-4">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-full bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-[var(--accent-gold)] shrink-0">
+                  <Scale className="w-5 h-5" />
+                </div>
+                <div>
+                  <h3 className="text-base font-serif font-bold text-[var(--text-main)]">
+                    {countryInfo.flag} {country === 'US' ? `${stateJurisdiction?.stateName || activeCase.state} Court Rules & Limits` : `${countryInfo.name} Dispute Guidelines`}
+                  </h3>
+                  <p className="text-xs text-[var(--text-muted)] font-mono">
+                    Jurisdictional Thresholds &amp; Statutory Deadlines
+                  </p>
+                </div>
+              </div>
+              <button
+                onClick={() => {
+                  sound.hapticTick();
+                  sound.playClick();
+                  setIsLimitsModalOpen(false);
+                }}
+                className="text-[var(--text-muted)] hover:text-white p-1 rounded-lg hover:bg-white/10 transition-colors text-lg font-bold"
+              >
+                ✕
+              </button>
+            </div>
+
+            <div className="space-y-4 text-xs">
+              <div className="grid grid-cols-2 gap-3">
+                <div className="p-3 bg-[var(--bg-secondary)] border border-[var(--border-color)] rounded-xl space-y-1">
+                  <div className="text-[10px] uppercase font-mono text-[var(--text-muted)]">Individual Claim Ceiling</div>
+                  <div className="text-lg font-mono font-bold text-[var(--accent-gold)]">
+                    {countryInfo.currencySymbol}{claimCeiling.toLocaleString()}
+                  </div>
+                  <div className="text-[10px] text-slate-400">Maximum recoverable in small claims</div>
+                </div>
+
+                <div className="p-3 bg-[var(--bg-secondary)] border border-[var(--border-color)] rounded-xl space-y-1">
+                  <div className="text-[10px] uppercase font-mono text-[var(--text-muted)]">Attorney Representation</div>
+                  <div className="text-base font-mono font-bold text-emerald-400">
+                    {stateJurisdiction?.attorneysAllowedInSmallClaims ? 'Permitted' : 'Barred (Pro Se Only)'}
+                  </div>
+                  <div className="text-[10px] text-slate-400">
+                    {stateJurisdiction?.attorneysAllowedInSmallClaims ? 'Parties may retain counsel' : 'Self-representation required by law'}
+                  </div>
+                </div>
+              </div>
+
+              <div className="p-3 bg-[var(--bg-secondary)] border border-[var(--border-color)] rounded-xl space-y-2">
+                <div className="text-[11px] font-bold font-serif text-[var(--text-main)]">
+                  ⏱️ Common Statutory Deadlines (Statute of Limitations):
+                </div>
+                <div className="grid grid-cols-3 gap-2 text-center font-mono text-[11px]">
+                  <div className="p-2 bg-black/40 rounded border border-white/5">
+                    <div className="text-slate-400 text-[10px]">Written Contract</div>
+                    <div className="font-bold text-amber-300">4 Years</div>
+                  </div>
+                  <div className="p-2 bg-black/40 rounded border border-white/5">
+                    <div className="text-slate-400 text-[10px]">Oral Contract</div>
+                    <div className="font-bold text-amber-300">2 Years</div>
+                  </div>
+                  <div className="p-2 bg-black/40 rounded border border-white/5">
+                    <div className="text-slate-400 text-[10px]">Property Damage</div>
+                    <div className="font-bold text-amber-300">3 Years</div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="space-y-1.5 p-3 bg-amber-500/5 border border-amber-500/20 rounded-xl text-[11px] text-[var(--text-muted)]">
+                <div className="font-bold text-amber-300 flex items-center gap-1.5">
+                  <HelpCircle className="w-3.5 h-3.5" />
+                  <span>Court Filing Fee Waiver Notice (In Forma Pauperis):</span>
+                </div>
+                <p>
+                  If you are low-income or receive public assistance (SNAP, SSI, Medicaid), you may request a 100% waiver of court filing and service fees by filing Form FW-001 with the court clerk.
+                </p>
+              </div>
+            </div>
+
+            <div className="flex justify-end pt-2 border-t border-[var(--border-color)]">
+              <button
+                onClick={() => {
+                  sound.hapticPulse();
+                  sound.playClick();
+                  setIsLimitsModalOpen(false);
+                }}
+                className="px-5 py-2.5 bg-[var(--accent-gold)] text-slate-950 font-bold text-xs rounded-xl hover:opacity-90 transition-all cursor-pointer shadow-md"
+              >
+                Understood &amp; Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

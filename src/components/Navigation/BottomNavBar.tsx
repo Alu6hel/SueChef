@@ -78,16 +78,16 @@ export const BottomNavBar: React.FC = () => {
           >
             {/* Drawer Header */}
             <div className="bg-[var(--bg-secondary)] border-b border-[var(--border-color)] px-4 py-3 flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <div className="w-7 h-7 rounded-lg bg-[var(--badge-bg)] border border-[var(--badge-border)] flex items-center justify-center text-[var(--accent-gold)]">
-                  <Grid className="w-4 h-4" />
+              <div className="flex items-center gap-2.5">
+                <div className="w-8 h-8 rounded-full overflow-hidden border border-amber-500/60 shadow-[0_2px_8px_rgba(245,158,11,0.35)] shrink-0">
+                  <img src="./logos/suechef-medallion.png" alt="SueChef Medallion" className="w-full h-full object-cover" />
                 </div>
                 <div>
                   <h3 className="font-serif font-bold text-sm text-[var(--text-main)]">
                     All Litigation Workstations
                   </h3>
                   <p className="text-[10px] font-mono text-[var(--text-muted)]">
-                    Everyday legal dispute toolbox
+                    SueChef Everyday Legal Dispute Toolbox
                   </p>
                 </div>
               </div>
@@ -179,6 +179,24 @@ export const BottomNavBar: React.FC = () => {
                   );
                 })}
               </div>
+            </div>
+
+            {/* Drawer Footer: Official Alumungandr Company Charter Notice */}
+            <div className="bg-[var(--bg-secondary)] border-t border-[var(--border-color)] px-4 py-2.5 flex items-center justify-between gap-3 text-xs text-[var(--text-muted)]">
+              <div className="flex items-center gap-2">
+                <img 
+                  src="./logos/alu-company-logo-symbol.svg" 
+                  alt="Alumungandr Company Charter" 
+                  className="w-5 h-5 object-contain shrink-0 drop-shadow-[0_1px_4px_rgba(245,158,11,0.3)]" 
+                />
+                <div className="text-[10px] leading-tight font-mono">
+                  <div className="font-bold text-[var(--text-main)]">Alumungandr Master Charter © 2026</div>
+                  <div className="text-[var(--text-muted)]">100% Client-Side Privacy • Zero Cloud Upload</div>
+                </div>
+              </div>
+              <span className="text-[9px] font-mono uppercase px-2 py-0.5 rounded bg-emerald-950/60 text-emerald-400 border border-emerald-500/30 font-bold shrink-0">
+                VERIFIED LOCAL
+              </span>
             </div>
           </div>
         </div>

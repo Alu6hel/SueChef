@@ -21,7 +21,8 @@ import {
   Clock, 
   Lightbulb, 
   Building,
-  Users
+  Users,
+  ArrowLeft
 } from 'lucide-react';
 
 export const Header: React.FC = () => {
@@ -65,22 +66,38 @@ export const Header: React.FC = () => {
       <div className="max-w-7xl mx-auto px-2.5 sm:px-4 py-2 sm:py-2.5 space-y-2">
         {/* Top Tier: Alu Brand, Case Switcher, Quick Search, Tour & Settings */}
         <div className="flex items-center justify-between gap-1.5 sm:gap-3">
-          {/* Official Alu Logo & Platform Name (Clickable -> Home) */}
-          <button
-            onClick={() => {
-              sound.playClick();
-              setActiveWorkstation('home');
-            }}
-            className="flex items-center gap-1.5 sm:gap-2 text-left hover:opacity-90 transition-opacity shrink-0 select-none"
-            title="Return to Home Dashboard"
-          >
-            <AluLogo size="md" showLabel={true} />
-            <div className="hidden xl:flex items-center gap-2 pl-3 border-l-2 border-[var(--border-color)]">
-              <span className="text-[11px] font-mono uppercase px-2.5 py-1 bg-[var(--badge-bg)] border border-[var(--badge-border)] text-[var(--accent-gold)] custom-geometry font-bold tracking-wider">
-                CIVIL DISPUTE SUITE
-              </span>
-            </div>
-          </button>
+          <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
+            {activeWorkstation !== 'home' && (
+              <button
+                onClick={() => {
+                  sound.playClick();
+                  setActiveWorkstation('home');
+                }}
+                className="btn-geom px-2 sm:px-2.5 py-1.5 text-xs font-bold bg-[var(--accent-gold)] text-slate-950 hover:opacity-90 transition-all flex items-center gap-1 shadow-md shrink-0 select-none animate-in fade-in slide-in-from-left-2 duration-150"
+                title="Return to Home Dashboard"
+              >
+                <ArrowLeft className="w-3.5 h-3.5 stroke-[2.5]" />
+                <span className="text-[11px] font-extrabold hidden xs:inline">Back</span>
+              </button>
+            )}
+
+            {/* Official SueChef Logo & Platform Name (Clickable -> Home) */}
+            <button
+              onClick={() => {
+                sound.playClick();
+                setActiveWorkstation('home');
+              }}
+              className="flex items-center gap-1.5 sm:gap-2 text-left hover:opacity-90 transition-opacity shrink-0 select-none"
+              title="Return to Home Dashboard"
+            >
+              <AluLogo size="md" showLabel={true} />
+              <div className="hidden xl:flex items-center gap-2 pl-3 border-l-2 border-[var(--border-color)]">
+                <span className="text-[11px] font-mono uppercase px-2.5 py-1 bg-[var(--badge-bg)] border border-[var(--badge-border)] text-[var(--accent-gold)] custom-geometry font-bold tracking-wider">
+                  CIVIL DISPUTE SUITE
+                </span>
+              </div>
+            </button>
+          </div>
 
           {/* Center: Active Dispute Switcher & Edit Parties */}
           <div className="flex items-center gap-1 sm:gap-1.5 min-w-0 flex-1 max-w-[280px] xs:max-w-[340px] sm:max-w-md mx-1 sm:mx-2">

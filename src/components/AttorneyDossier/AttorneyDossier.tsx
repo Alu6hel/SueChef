@@ -474,6 +474,11 @@ export const AttorneyDossier: React.FC = () => {
           <div className="max-w-4xl mx-auto pleading-paper-container p-8 md:p-12 text-slate-900 border border-slate-300 rounded-sm shadow-2xl space-y-8 font-pleading text-xs leading-relaxed bg-white">
             {/* Binder Cover Header */}
             <div className="text-center border-b-2 border-slate-900 pb-6 space-y-2">
+              <div className="flex justify-center mb-2">
+                <div className="w-14 h-14 rounded-full overflow-hidden border-2 border-amber-500/80 shadow-[0_2px_10px_rgba(245,158,11,0.3)]">
+                  <img src="./logos/suechef-medallion.png" alt="Official Seal" className="w-full h-full object-cover" />
+                </div>
+              </div>
               <div className="text-[10px] uppercase font-mono tracking-widest text-slate-500">
                 CONFIDENTIAL ATTORNEY INTAKE DOSSIER • PRE-LITIGATION MASTER BINDER
               </div>
