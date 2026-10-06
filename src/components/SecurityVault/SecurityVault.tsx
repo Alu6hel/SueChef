@@ -23,9 +23,18 @@ import {
   Delete
 } from 'lucide-react';
 import { sound } from '../../services/soundEngine';
+import { exportFile, triggerHaptic } from '../../services/fileExport';
 
 export const SecurityVault: React.FC = () => {
-  const { panicWipe, exportCaseBundle, importCaseBundle, activeCase, updateActiveCase } = useSueChef();
+  const { 
+    panicWipe, 
+    exportCaseBundle, 
+    importCaseBundle, 
+    activeCase, 
+    updateActiveCase,
+    exportEncryptedVault,
+    importEncryptedVault
+  } = useSueChef();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [importJsonText, setImportJsonText] = useState('');
   const [wipeConfirmed, setWipeConfirmed] = useState(false);
@@ -142,18 +151,15 @@ export const SecurityVault: React.FC = () => {
     }
   };
 
-  const handleExport = () => {
+  const [vaultPassphrase, setVaultPassphrase] = useState('');
+  const [showPassphraseSection, setShowPassphraseSection] = useState(false);
+
+  const handleExport = async () => {
     sound.playDocketStamp();
+    triggerHaptic(40);
     const bundle = exportCaseBundle();
-    const blob = new Blob([bundle], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.setAttribute('download', `${activeCase.title.replace(/\s+/g, '_')}_Backup.suechef`);
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    URL.revokeObjectURL(url);
+    const cleanTitle = activeCase.title.replace(/\s+/g, '_');
+    await exportFile(`${cleanTitle}_Backup.suechef`, 'application/json', bundle);
     setStatusMessage('Case backup exported successfully.');
 
     // Log to security audit
@@ -172,9 +178,39 @@ export const SecurityVault: React.FC = () => {
     }));
   };
 
+  const handleExportZeroKnowledgeVault = async () => {
+    if (!vaultPassphrase || vaultPassphrase.length < 6) {
+      sound.playWarningBell();
+      setStatusMessage('Error: Passphrase must be at least 6 characters.');
+      return;
+    }
+    try {
+      sound.playDocketStamp();
+      triggerHaptic(50);
+      const encrypted = await exportEncryptedVault(vaultPassphrase);
+      const cleanTitle = activeCase.title.replace(/\s+/g, '_');
+      await exportFile(`${cleanTitle}_ZeroKnowledge.vault`, 'application/json', encrypted);
+      setStatusMessage('✓ Case encrypted with AES-GCM (PBKDF2 100k) and exported.');
+      setVaultPassphrase('');
+      setShowPassphraseSection(false);
+    } catch (e) {
+      sound.playWarningBell();
+      setStatusMessage('Error exporting encrypted vault.');
+    }
+  };
+
   const handleImport = async () => {
     if (!importJsonText.trim()) return;
     try {
+      if (importJsonText.includes('suechef-aes-gcm-v1')) {
+        const pass = prompt('Enter passphrase to decrypt Zero-Knowledge Vault:');
+        if (!pass) return;
+        await importEncryptedVault(importJsonText, pass);
+        setImportJsonText('');
+        sound.playSuccessChime();
+        setStatusMessage('✓ Zero-Knowledge Vault decrypted successfully.');
+        return;
+      }
       await importCaseBundle(importJsonText);
       setImportJsonText('');
       sound.playSuccessChime();
@@ -194,12 +230,20 @@ export const SecurityVault: React.FC = () => {
       const text = evt.target?.result as string;
       if (!text) return;
       try {
+        if (text.includes('suechef-aes-gcm-v1')) {
+          const pass = prompt('Enter passphrase to decrypt Zero-Knowledge Vault:');
+          if (!pass) return;
+          await importEncryptedVault(text, pass);
+          sound.playSuccessChime();
+          setStatusMessage(`✓ AES-GCM Zero-Knowledge Vault "${file.name}" decrypted successfully.`);
+          return;
+        }
         await importCaseBundle(text);
         sound.playSuccessChime();
         setStatusMessage(`✓ Case archive "${file.name}" imported and decrypted successfully.`);
-      } catch {
+      } catch (err: any) {
         sound.playWarningBell();
-        setStatusMessage('Error: Invalid .suechef encrypted archive format.');
+        setStatusMessage(err?.message || 'Error: Invalid .suechef encrypted archive format.');
       }
     };
     reader.readAsText(file);
@@ -537,11 +581,47 @@ export const SecurityVault: React.FC = () => {
           </p>
           <button
             onClick={handleExport}
+            id="btn-export-standard-backup"
             className="btn-geom w-full flex items-center justify-center gap-2 py-2.5 text-xs font-bold bg-[var(--accent-gold)] text-slate-950 hover:opacity-90"
           >
             <Download className="w-4 h-4" />
-            Download Case Backup
+            Download Case Backup (.suechef)
           </button>
+
+          <div className="space-y-2 pt-2 border-t border-[var(--border-color)]">
+            <button
+              onClick={() => setShowPassphraseSection(!showPassphraseSection)}
+              id="btn-toggle-zk-section"
+              className="text-xs text-[var(--accent-gold)] hover:underline flex items-center gap-1 font-mono"
+            >
+              <Key className="w-3.5 h-3.5" />
+              <span>{showPassphraseSection ? 'Hide Zero-Knowledge Vault Options' : 'Zero-Knowledge AES-GCM Vault (Passphrase Encrypted)'}</span>
+            </button>
+
+            {showPassphraseSection && (
+              <div className="p-3 bg-[var(--bg-secondary)] border border-[var(--border-color)] space-y-2 text-xs">
+                <span className="text-[11px] text-[var(--text-muted)] block">
+                  Encrypts entire case with Web Crypto AES-256-GCM + PBKDF2 (100,000 rounds). Ideal for saving to private Google Drive or iCloud.
+                </span>
+                <input
+                  type="password"
+                  value={vaultPassphrase}
+                  onChange={e => setVaultPassphrase(e.target.value)}
+                  placeholder="Enter vault passphrase (min 6 chars)..."
+                  className="w-full px-3 py-2 bg-[var(--bg-card)] border border-[var(--border-color)] focus:border-[var(--accent-gold)] text-xs text-[var(--text-main)] outline-none"
+                />
+                <button
+                  type="button"
+                  id="btn-export-zk-vault"
+                  onClick={handleExportZeroKnowledgeVault}
+                  className="w-full py-2 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs uppercase tracking-wider btn-geom flex items-center justify-center gap-2"
+                >
+                  <Lock className="w-3.5 h-3.5" />
+                  <span>Export Password-Locked .vault Container</span>
+                </button>
+              </div>
+            )}
+          </div>
         </div>
 
         {/* Import Backup */}

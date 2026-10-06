@@ -23,6 +23,7 @@ import {
 import { ServiceRecord, ServiceAttempt } from '../../types';
 import { sound } from '../../services/soundEngine';
 import { RegisteredAgentModal } from './RegisteredAgentModal';
+import { triggerPrint, triggerHaptic } from '../../services/fileExport';
 import { UspsSkipTraceModal } from './UspsSkipTraceModal';
 import { RegisteredAgentService } from '../../services/registeredAgents';
 import { CalendarSyncService } from '../../services/calendarSync';
@@ -608,7 +609,8 @@ ${currentRecord.serverLicenseNumber ? `Registered Process Server #${currentRecor
                   <button
                     onClick={() => {
                       sound.playDocketStamp();
-                      window.print();
+                      triggerHaptic(30);
+                      triggerPrint();
                     }}
                     className="px-3 py-1 bg-slate-900 text-white text-xs font-bold hover:bg-slate-800"
                   >
@@ -622,7 +624,8 @@ ${currentRecord.serverLicenseNumber ? `Registered Process Server #${currentRecor
                 <button
                   onClick={() => {
                     sound.playDocketStamp();
-                    window.print();
+                    triggerHaptic(30);
+                    triggerPrint();
                   }}
                   className="btn-geom flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold bg-[var(--accent-gold)] text-slate-950 shadow-sm"
                 >

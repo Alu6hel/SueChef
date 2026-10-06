@@ -22,7 +22,8 @@ import {
   Lightbulb, 
   Building,
   Users,
-  ArrowLeft
+  ArrowLeft,
+  Crown
 } from 'lucide-react';
 
 export const Header: React.FC = () => {
@@ -35,7 +36,9 @@ export const Header: React.FC = () => {
     setIsPartiesModalOpen,
     setIsQuickSearchOpen,
     setIsTourOpen,
-    setIsSettingsOpen
+    setIsSettingsOpen,
+    setIsPricingModalOpen,
+    setIsUplModalOpen
   } = useSueChef();
 
   const currCountry = getCountryInfo(country);
@@ -165,6 +168,20 @@ export const Header: React.FC = () => {
             >
               <Sparkles className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-slate-950 fill-slate-950" />
               <span className="hidden sm:inline">Tour Guide</span>
+            </button>
+
+            {/* Pro Tiers Commercial Modal Button */}
+            <button
+              onClick={() => {
+                sound.playClick();
+                setIsPricingModalOpen(true);
+              }}
+              id="btn-header-pricing"
+              className="btn-geom flex items-center gap-1 sm:gap-1.5 px-2.5 sm:px-3 py-1.5 sm:py-2 text-xs md:text-sm bg-[var(--bg-card)] border border-[var(--accent-gold)] text-[var(--accent-gold)] hover:bg-[var(--bg-hover)] transition-all font-bold shadow-sm shrink-0"
+              title="Commercial Litigation Tiers & Licensing"
+            >
+              <Crown className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[var(--accent-gold)]" />
+              <span className="hidden sm:inline">Pro Tiers</span>
             </button>
 
             {/* Settings Button */}

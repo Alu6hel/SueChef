@@ -3,6 +3,7 @@ import { FileText, Printer, Copy, Check, X, Scale, Landmark, ShieldCheck, Downlo
 import { useSueChef } from '../../context/SueChefContext';
 import { OfficialFormGenerators } from '../../services/officialFormGenerators';
 import { sound } from '../../services/soundEngine';
+import { triggerPrint, triggerHaptic, exportFile } from '../../services/fileExport';
 
 interface OfficialFormsModalProps {
   isOpen: boolean;
@@ -87,7 +88,8 @@ export const OfficialFormsModal: React.FC<OfficialFormsModalProps> = ({ isOpen, 
 
   const handlePrint = () => {
     sound.playDocketStamp();
-    window.print();
+    triggerHaptic(30);
+    triggerPrint();
   };
 
   return (

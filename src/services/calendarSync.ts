@@ -1,5 +1,6 @@
 import { CaseFile } from '../types';
 import { sound } from './soundEngine';
+import { exportFile, triggerHaptic } from './fileExport';
 
 export interface CalendarEventDef {
   uid: string;
@@ -139,17 +140,10 @@ export class CalendarSyncService {
     sound.playDocketStamp();
     const events = this.generateCaseDocketEvents(caseFile);
     const icsString = this.generateIcsContent(events, `SueChef Docket - ${caseFile.title}`);
-
-    const blob = new Blob([icsString], { type: 'text/calendar;charset=utf-8' });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = url;
     const cleanTitle = caseFile.title.replace(/[^a-zA-Z0-9]/g, '_');
-    link.setAttribute('download', `${cleanTitle}_Court_Deadlines.ics`);
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    URL.revokeObjectURL(url);
+    
+    triggerHaptic(40);
+    exportFile(`${cleanTitle}_Court_Deadlines.ics`, 'text/calendar;charset=utf-8', icsString);
 
     return { success: true, eventCount: events.length };
   }

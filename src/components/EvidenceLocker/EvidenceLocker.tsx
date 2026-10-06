@@ -11,6 +11,7 @@ import {
   Trash2, 
   CheckCircle2, 
   AlertCircle, 
+  ShieldAlert,
   Lock, 
   Sparkles,
   ExternalLink,
@@ -299,6 +300,22 @@ export const EvidenceLocker: React.FC = () => {
                 <Plus className="w-4 h-4" />
                 <span>Add Exhibit</span>
               </button>
+            </div>
+          </div>
+
+          {/* Evidentiary Privilege Notice Banner */}
+          <div 
+            id="banner-privilege-warning"
+            className="p-3.5 bg-amber-500/10 border-l-4 border-amber-500 border-r border-t border-b border-amber-500/30 text-amber-200 text-xs flex items-start gap-3 shadow-sm"
+          >
+            <ShieldAlert className="w-5 h-5 text-amber-400 shrink-0 mt-0.5" />
+            <div className="space-y-1">
+              <span className="font-mono font-bold uppercase tracking-wider text-[11px] text-amber-400 block">
+                EVIDENTIARY PRIVILEGE LIMITATION NOTICE (FRE 502 / STATE RULES OF EVIDENCE)
+              </span>
+              <p className="text-[12px] leading-relaxed text-[var(--text-main)] font-serif">
+                Information and documents entered into SueChef are not protected by attorney-client privilege until transmitted to a licensed attorney retained to represent you. Keep case materials confidential to prevent accidental privilege waiver.
+              </p>
             </div>
           </div>
 

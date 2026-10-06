@@ -25,6 +25,7 @@ import { getJurisdiction } from '../../services/jurisdictions';
 import { getCountryInfo } from '../../services/countries';
 import { sound } from '../../services/soundEngine';
 import { OfficialFormsModal } from './OfficialFormsModal';
+import { exportFile, triggerPrint, triggerHaptic } from '../../services/fileExport';
 
 export const PleadingBuilder: React.FC = () => {
   const { activeCase, updateActiveCase, updateParagraph, country } = useSueChef();
@@ -233,7 +234,20 @@ export const PleadingBuilder: React.FC = () => {
     const serviceFee = 115;
     const totalFees = filingFee + serviceFee;
 
+    const uplHeader = [
+      divider,
+      'STATUTORY PRO SE LITIGANT NOTICE (ABA MODEL RULE 5.5 / UPL SAFEGUARDS)',
+      divider,
+      'SueChef is a legal preparation, document organization, and self-help educational platform.',
+      'SueChef is NOT a law firm and its software does not provide legal advice or create an',
+      'attorney-client relationship. This pleading packet was assembled by a self-represented',
+      'pro se litigant for judicial filing in the appropriate state or federal court.',
+      divider
+    ].join('\n');
+
     const part1 = [
+      uplHeader,
+      '',
       divider,
       'PART 1: FORMAL 28-LINE VERIFIED CIVIL COMPLAINT',
       divider,
@@ -334,26 +348,20 @@ export const PleadingBuilder: React.FC = () => {
     return [part1, part2, part3, part4, part5].join('\n\n');
   };
 
-  const handleDownloadPacketTxt = () => {
+  const handleDownloadPacketTxt = async () => {
     sound.playDocketStamp();
+    triggerHaptic(40);
     const packetText = generateFullCourtPacketText();
-    const blob = new Blob([packetText], { type: 'text/plain;charset=utf-8' });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = url;
     const cleanTitle = activeCase.title.replace(/[^a-zA-Z0-9]/g, '_');
-    link.setAttribute('download', `${cleanTitle}_Complete_Court_Filing_Packet.txt`);
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    URL.revokeObjectURL(url);
+    await exportFile(`${cleanTitle}_Complete_Court_Filing_Packet.txt`, 'text/plain;charset=utf-8', packetText);
     setDownloadedPacket(true);
     setTimeout(() => setDownloadedPacket(false), 3000);
   };
 
   const handlePrint = () => {
     sound.playDocketStamp();
-    window.print();
+    triggerHaptic(30);
+    triggerPrint();
   };
 
   // Generate 28 margin line numbers

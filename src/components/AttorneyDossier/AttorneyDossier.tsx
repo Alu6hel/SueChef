@@ -21,9 +21,10 @@ import {
 } from 'lucide-react';
 import { sound } from '../../services/soundEngine';
 import { getCountryInfo } from '../../services/countries';
+import { exportFile, triggerPrint, triggerHaptic } from '../../services/fileExport';
 
 export const AttorneyDossier: React.FC = () => {
-  const { activeCase, updateActiveCase, totalDamages, exportCaseBundle, country } = useSueChef();
+  const { activeCase, updateActiveCase, totalDamages, exportCaseBundle, country, setIsReferralModalOpen } = useSueChef();
   const countryInfo = getCountryInfo(country);
   const [hourlyRate, setHourlyRate] = useState<number>(325); // Average litigation associate/paralegal blended rate
   const [activeTab, setActiveTab] = useState<'binder' | 'opposing_counsel' | 'hours_breakdown'>('binder');
@@ -79,23 +80,18 @@ export const AttorneyDossier: React.FC = () => {
     }));
   };
 
-  const handleDownloadBundle = () => {
+  const handleDownloadBundle = async () => {
     sound.playDocketStamp();
+    triggerHaptic(40);
     const bundle = exportCaseBundle();
-    const blob = new Blob([bundle], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.setAttribute('download', `${activeCase.title.replace(/\s+/g, '_')}_Master_Dossier.suechef`);
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    URL.revokeObjectURL(url);
+    const cleanTitle = activeCase.title.replace(/\s+/g, '_');
+    await exportFile(`${cleanTitle}_Master_Dossier.suechef`, 'application/json', bundle);
   };
 
   const handlePrintDossier = () => {
     sound.playDocketStamp();
-    window.print();
+    triggerHaptic(30);
+    triggerPrint();
   };
 
   return (
@@ -123,7 +119,22 @@ export const AttorneyDossier: React.FC = () => {
 
         <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 w-full sm:w-auto">
           <button
+            onClick={() => {
+              sound.playClick();
+              triggerHaptic(40);
+              setIsReferralModalOpen(true);
+            }}
+            id="btn-refer-attorney"
+            className="btn-geom flex items-center justify-center gap-1.5 px-3.5 py-2 text-xs font-bold bg-indigo-600 hover:bg-indigo-500 text-white shadow-sm transition-all"
+            title="Connect with a licensed attorney in your state to review this packet"
+          >
+            <UserCheck className="w-3.5 h-3.5" />
+            <span>Connect with Attorney</span>
+          </button>
+
+          <button
             onClick={handleDownloadBundle}
+            id="btn-export-dossier"
             className="btn-geom flex items-center justify-center gap-1.5 px-3.5 py-2 text-xs font-semibold bg-[var(--bg-card)] border border-[var(--border-color)] text-[var(--text-main)] hover:bg-[var(--bg-hover)] transition-all"
             title="Download full case JSON backup"
           >
@@ -132,6 +143,7 @@ export const AttorneyDossier: React.FC = () => {
           </button>
           <button
             onClick={handlePrintDossier}
+            id="btn-print-dossier"
             className="btn-geom flex items-center justify-center gap-1.5 px-4 py-2 text-xs font-bold bg-[var(--accent-gold)] text-slate-950 hover:opacity-90 shadow-sm transition-all"
             title="Print or save as PDF"
           >

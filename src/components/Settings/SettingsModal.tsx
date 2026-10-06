@@ -5,6 +5,7 @@ import { SUPPORTED_COUNTRIES } from '../../services/countries';
 import { STATE_JURISDICTIONS } from '../../services/jurisdictions';
 import { sound } from '../../services/soundEngine';
 import { AluLogo } from '../Branding/AluLogo';
+import { exportFile, triggerHaptic } from '../../services/fileExport';
 import { 
   Settings, 
   Globe, 
@@ -67,16 +68,11 @@ export const SettingsModal: React.FC = () => {
     updateActiveCase(prev => ({ ...prev, state: st }));
   };
 
-  const handleExport = () => {
+  const handleExport = async () => {
     sound.playDocketStamp();
+    triggerHaptic(40);
     const jsonStr = exportCaseBundle();
-    const blob = new Blob([jsonStr], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `${activeCase.title.replace(/\s+/g, '_')}_backup.suechef`;
-    a.click();
-    URL.revokeObjectURL(url);
+    await exportFile(`${activeCase.title.replace(/\s+/g, '_')}_backup.suechef`, 'application/json', jsonStr);
   };
 
   const handleImportFile = (e: React.ChangeEvent<HTMLInputElement>) => {

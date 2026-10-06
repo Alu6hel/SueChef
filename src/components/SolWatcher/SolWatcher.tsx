@@ -18,6 +18,7 @@ import { SolDocketItem } from '../../types';
 import { getJurisdiction } from '../../services/jurisdictions';
 import { sound } from '../../services/soundEngine';
 import { CalendarSyncService } from '../../services/calendarSync';
+import { exportFile, triggerHaptic } from '../../services/fileExport';
 
 export const SolWatcher: React.FC = () => {
   const { activeCase, updateActiveCase } = useSueChef();
@@ -98,15 +99,8 @@ export const SolWatcher: React.FC = () => {
       'END:VCALENDAR'
     ].join('\r\n');
 
-    const blob = new Blob([icsContent], { type: 'text/calendar;charset=utf-8' });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.setAttribute('download', `${item.title.replace(/\s+/g, '_')}_deadline.ics`);
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    URL.revokeObjectURL(url);
+    triggerHaptic(35);
+    exportFile(`${item.title.replace(/\s+/g, '_')}_deadline.ics`, 'text/calendar;charset=utf-8', icsContent);
   };
 
   return (

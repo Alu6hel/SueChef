@@ -2,6 +2,7 @@ import React, { useRef, useState, useEffect } from 'react';
 import { useSueChef } from '../../context/SueChefContext';
 import { sound } from '../../services/soundEngine';
 import { cleanPartyName } from '../../services/caseUtils';
+import { exportFile, triggerHaptic } from '../../services/fileExport';
 import { 
   ShieldAlert, 
   RotateCcw, 
@@ -179,17 +180,15 @@ export const RedactionCanvas: React.FC = () => {
     setRedactions([]);
   };
 
-  const handleDownloadPng = () => {
+  const handleDownloadPng = async () => {
     const canvas = canvasRef.current;
     if (!canvas) return;
     sound.playDocketStamp();
+    triggerHaptic(40);
     const dataUrl = canvas.toDataURL('image/png');
-    const a = document.createElement('a');
-    a.href = dataUrl;
-    a.download = `Exhibit_Redacted_${Date.now()}.png`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
+    const res = await fetch(dataUrl);
+    const blob = await res.blob();
+    await exportFile(`Exhibit_Redacted_${Date.now()}.png`, 'image/png', blob);
   };
 
   const handleSaveToEvidenceLocker = async () => {

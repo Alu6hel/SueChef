@@ -27,6 +27,9 @@ import { ParchmentBookAnimation } from './components/ThemeEffects/ParchmentBookA
 import { ChambersScalesAnimation } from './components/ThemeEffects/ChambersScalesAnimation';
 import { CourtAtmosphereCanvas } from './components/ThemeEffects/CourtAtmosphereCanvas';
 import { getCountryInfo } from './services/countries';
+import { UplDisclaimerModal } from './components/common/UplDisclaimerModal';
+import { PricingTiersModal } from './components/common/PricingTiersModal';
+import { AttorneyReferralModal } from './components/LegalServices/AttorneyReferralModal';
 import { 
   ShieldCheck, 
   Scale, 
@@ -37,20 +40,95 @@ import {
   Eye,
   EyeOff,
   Building,
-  Settings
+  Settings,
+  Crown
 } from 'lucide-react';
 
 const WorkstationRouter: React.FC = () => {
   const { 
     activeWorkstation, 
+    setActiveWorkstation,
     totalDamages, 
     estimatedParalegalSavings, 
     activeCase, 
     theme,
     country,
-    setIsSettingsOpen
+    setIsSettingsOpen,
+    isSettingsOpen,
+    isUplModalOpen,
+    setIsUplModalOpen,
+    isPricingModalOpen,
+    setIsPricingModalOpen,
+    isReferralModalOpen,
+    setIsReferralModalOpen,
+    isCaseManagerOpen,
+    setIsCaseManagerOpen,
+    isPartiesModalOpen,
+    setIsPartiesModalOpen,
+    isQuickSearchOpen,
+    setIsQuickSearchOpen,
+    isTourOpen,
+    setIsTourOpen,
+    isOnboardingOpen,
+    setIsOnboardingOpen
   } = useSueChef();
   const [showLiveTheme, setShowLiveTheme] = useState(true);
+
+  // Native Android hardware back-button handler
+  React.useEffect(() => {
+    (window as any).handleAndroidBack = () => {
+      if (isPricingModalOpen) {
+        setIsPricingModalOpen(false);
+        return true;
+      }
+      if (isReferralModalOpen) {
+        setIsReferralModalOpen(false);
+        return true;
+      }
+      if (isSettingsOpen) {
+        setIsSettingsOpen(false);
+        return true;
+      }
+      if (isCaseManagerOpen) {
+        setIsCaseManagerOpen(false);
+        return true;
+      }
+      if (isPartiesModalOpen) {
+        setIsPartiesModalOpen(false);
+        return true;
+      }
+      if (isQuickSearchOpen) {
+        setIsQuickSearchOpen(false);
+        return true;
+      }
+      if (isTourOpen) {
+        setIsTourOpen(false);
+        return true;
+      }
+      if (isOnboardingOpen) {
+        setIsOnboardingOpen(false);
+        return true;
+      }
+      if (activeWorkstation !== 'home') {
+        setActiveWorkstation('home');
+        return true;
+      }
+      return false;
+    };
+    return () => {
+      delete (window as any).handleAndroidBack;
+    };
+  }, [
+    isPricingModalOpen,
+    isReferralModalOpen,
+    isSettingsOpen,
+    isCaseManagerOpen,
+    isPartiesModalOpen,
+    isQuickSearchOpen,
+    isTourOpen,
+    isOnboardingOpen,
+    activeWorkstation
+  ]);
 
   const countryInfo = getCountryInfo(country);
 
@@ -98,6 +176,9 @@ const WorkstationRouter: React.FC = () => {
       <WalkthroughTour />
       <SettingsModal />
       <PersonalizedOnboardingModal />
+      <UplDisclaimerModal />
+      <PricingTiersModal />
+      <AttorneyReferralModal />
 
       {/* Status Bar (Clean Desktop bar above navigation) */}
       <footer className="hidden lg:block fixed bottom-14 left-0 right-0 z-30 bg-[var(--bg-secondary)] border-t border-[var(--border-color)] px-4 py-1.5 text-xs shadow-xl">
@@ -121,6 +202,26 @@ const WorkstationRouter: React.FC = () => {
             >
               {showLiveTheme ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
               <span>{showLiveTheme ? 'Hide Stage' : 'Show Stage'}</span>
+            </button>
+
+            <button
+              onClick={() => setIsUplModalOpen(true)}
+              id="btn-footer-upl"
+              className="text-xs text-amber-400 hover:underline flex items-center gap-1 font-sans font-bold"
+              title="Mandatory ABA Model Rule 5.5 Pro Se Notice"
+            >
+              <Scale className="w-3.5 h-3.5 text-amber-400" />
+              <span>UPL Notice</span>
+            </button>
+
+            <button
+              onClick={() => setIsPricingModalOpen(true)}
+              id="btn-footer-pricing"
+              className="text-xs text-[var(--accent-gold)] hover:underline flex items-center gap-1 font-sans font-bold"
+              title="Commercial Litigation Tiers & Licensing"
+            >
+              <Crown className="w-3.5 h-3.5 text-[var(--accent-gold)]" />
+              <span>Pro Tiers</span>
             </button>
 
             <button

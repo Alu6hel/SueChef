@@ -71,6 +71,14 @@ interface SueChefContextType {
   setIsSettingsOpen: (open: boolean) => void;
   isOnboardingOpen: boolean;
   setIsOnboardingOpen: (open: boolean) => void;
+  isUplModalOpen: boolean;
+  setIsUplModalOpen: (open: boolean) => void;
+  isPricingModalOpen: boolean;
+  setIsPricingModalOpen: (open: boolean) => void;
+  isReferralModalOpen: boolean;
+  setIsReferralModalOpen: (open: boolean) => void;
+  exportEncryptedVault: (passphrase: string) => Promise<string>;
+  importEncryptedVault: (payload: string, passphrase: string) => Promise<void>;
 }
 
 const SueChefContext = createContext<SueChefContextType | undefined>(undefined);
@@ -118,6 +126,11 @@ export const SueChefProvider: React.FC<{ children: ReactNode }> = ({ children })
   const [isOnboardingOpen, setIsOnboardingOpen] = useState<boolean>(() => {
     return !localStorage.getItem('suechef_onboarded_location');
   });
+  const [isUplModalOpen, setIsUplModalOpen] = useState<boolean>(() => {
+    return !localStorage.getItem('suechef_upl_accepted');
+  });
+  const [isPricingModalOpen, setIsPricingModalOpen] = useState<boolean>(false);
+  const [isReferralModalOpen, setIsReferralModalOpen] = useState<boolean>(false);
 
   // Auto-sync country with active case to prevent jurisdiction/currency clash
   useEffect(() => {
@@ -482,6 +495,19 @@ export const SueChefProvider: React.FC<{ children: ReactNode }> = ({ children })
     }
   };
 
+  const exportEncryptedVault = async (passphrase: string): Promise<string> => {
+    sound.playDocketStamp();
+    return CryptoDbService.exportEncryptedVault(activeCase, passphrase);
+  };
+
+  const importEncryptedVault = async (payload: string, passphrase: string): Promise<void> => {
+    const loaded = await CryptoDbService.importEncryptedVault(payload, passphrase);
+    setActiveCase(loaded);
+    await CryptoDbService.saveCase(loaded);
+    localStorage.setItem('suechef_active_case_data', JSON.stringify(loaded));
+    sound.playSuccessChime();
+  };
+
   return (
     <SueChefContext.Provider
       value={{
@@ -530,7 +556,15 @@ export const SueChefProvider: React.FC<{ children: ReactNode }> = ({ children })
         isSettingsOpen,
         setIsSettingsOpen,
         isOnboardingOpen,
-        setIsOnboardingOpen
+        setIsOnboardingOpen,
+        isUplModalOpen,
+        setIsUplModalOpen,
+        isPricingModalOpen,
+        setIsPricingModalOpen,
+        isReferralModalOpen,
+        setIsReferralModalOpen,
+        exportEncryptedVault,
+        importEncryptedVault
       }}
     >
       {children}

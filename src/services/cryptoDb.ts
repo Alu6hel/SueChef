@@ -2,7 +2,16 @@ import { get, set, del, clear, keys } from 'idb-keyval';
 import { CaseFile } from '../types';
 
 const STORAGE_KEY_PREFIX = 'suechef_case_';
-const MASTER_KEY_ID = 'suechef_master_key_v1';
+
+export interface EncryptedVaultPayload {
+  format: 'suechef-aes-gcm-v1';
+  saltHex: string;
+  ivHex: string;
+  ciphertextHex: string;
+  caseId: string;
+  timestamp: string;
+  sha256: string;
+}
 
 export class CryptoDbService {
   // Calculate SHA-256 fingerprint of any ArrayBuffer or String via Web Crypto API
@@ -69,18 +78,131 @@ export class CryptoDbService {
     sessionStorage.clear();
   }
 
-  // Export encrypted package
+  // Export plaintext JSON package
   public static exportBundle(caseFile: CaseFile): string {
-    const serialized = JSON.stringify(caseFile, null, 2);
-    return serialized;
+    return JSON.stringify(caseFile, null, 2);
   }
 
-  // Import bundle
+  // Import plaintext JSON package
   public static importBundle(jsonString: string): CaseFile {
     const parsed = JSON.parse(jsonString) as CaseFile;
     if (!parsed.id || !parsed.claimEvaluation || !parsed.pleadings) {
       throw new Error('Invalid SueChef case archive format');
     }
     return parsed;
+  }
+
+  /**
+   * Zero-Knowledge AES-GCM Encrypted Vault Export (PBKDF2 100,000 iterations + AES-256-GCM)
+   */
+  public static async exportEncryptedVault(caseFile: CaseFile, passphrase: string): Promise<string> {
+    const plainJson = JSON.stringify(caseFile);
+    const sha256 = await this.computeSha256(plainJson);
+
+    const salt = crypto.getRandomValues(new Uint8Array(16));
+    const iv = crypto.getRandomValues(new Uint8Array(12));
+
+    const enc = new TextEncoder();
+    const baseKey = await crypto.subtle.importKey(
+      'raw',
+      enc.encode(passphrase),
+      { name: 'PBKDF2' },
+      false,
+      ['deriveKey']
+    );
+
+    const aesKey = await crypto.subtle.deriveKey(
+      {
+        name: 'PBKDF2',
+        salt: salt,
+        iterations: 100000,
+        hash: 'SHA-256'
+      },
+      baseKey,
+      { name: 'AES-GCM', length: 256 },
+      false,
+      ['encrypt']
+    );
+
+    const ciphertextBuffer = await crypto.subtle.encrypt(
+      { name: 'AES-GCM', iv: iv },
+      aesKey,
+      enc.encode(plainJson)
+    );
+
+    const toHex = (buf: Uint8Array) => Array.from(buf).map(b => b.toString(16).padStart(2, '0')).join('');
+    
+    const payload: EncryptedVaultPayload = {
+      format: 'suechef-aes-gcm-v1',
+      saltHex: toHex(salt),
+      ivHex: toHex(iv),
+      ciphertextHex: toHex(new Uint8Array(ciphertextBuffer)),
+      caseId: caseFile.id,
+      timestamp: new Date().toISOString(),
+      sha256: sha256
+    };
+
+    return JSON.stringify(payload, null, 2);
+  }
+
+  /**
+   * Zero-Knowledge AES-GCM Encrypted Vault Import
+   */
+  public static async importEncryptedVault(payloadJson: string, passphrase: string): Promise<CaseFile> {
+    const parsed: EncryptedVaultPayload = JSON.parse(payloadJson);
+    if (parsed.format !== 'suechef-aes-gcm-v1') {
+      throw new Error('Unsupported vault archive format. Expected suechef-aes-gcm-v1');
+    }
+
+    const fromHex = (hex: string) => {
+      const bytes = new Uint8Array(hex.length / 2);
+      for (let i = 0; i < hex.length; i += 2) {
+        bytes[i / 2] = parseInt(hex.substring(i, i + 2), 16);
+      }
+      return bytes;
+    };
+
+    const salt = fromHex(parsed.saltHex);
+    const iv = fromHex(parsed.ivHex);
+    const ciphertext = fromHex(parsed.ciphertextHex);
+
+    const enc = new TextEncoder();
+    const baseKey = await crypto.subtle.importKey(
+      'raw',
+      enc.encode(passphrase),
+      { name: 'PBKDF2' },
+      false,
+      ['deriveKey']
+    );
+
+    const aesKey = await crypto.subtle.deriveKey(
+      {
+        name: 'PBKDF2',
+        salt: salt,
+        iterations: 100000,
+        hash: 'SHA-256'
+      },
+      baseKey,
+      { name: 'AES-GCM', length: 256 },
+      false,
+      ['decrypt']
+    );
+
+    try {
+      const decryptedBuffer = await crypto.subtle.decrypt(
+        { name: 'AES-GCM', iv: iv },
+        aesKey,
+        ciphertext
+      );
+      const dec = new TextDecoder();
+      const plainJson = dec.decode(decryptedBuffer);
+      const caseFile = JSON.parse(plainJson) as CaseFile;
+      if (!caseFile.id || !caseFile.claimEvaluation) {
+        throw new Error('Corrupted or invalid decrypted case data');
+      }
+      return caseFile;
+    } catch {
+      throw new Error('Decryption failed. Incorrect passphrase or corrupted vault file.');
+    }
   }
 }

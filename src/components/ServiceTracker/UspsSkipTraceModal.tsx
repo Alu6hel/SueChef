@@ -3,6 +3,7 @@ import { Mail, Printer, Copy, Check, X, ShieldAlert, FileText, Info, HelpCircle 
 import { useSueChef } from '../../context/SueChefContext';
 import { OfficialFormGenerators } from '../../services/officialFormGenerators';
 import { sound } from '../../services/soundEngine';
+import { triggerPrint, triggerHaptic } from '../../services/fileExport';
 
 interface UspsSkipTraceModalProps {
   isOpen: boolean;
@@ -32,7 +33,8 @@ export const UspsSkipTraceModal: React.FC<UspsSkipTraceModalProps> = ({ isOpen, 
 
   const handlePrint = () => {
     sound.playDocketStamp();
-    window.print();
+    triggerHaptic(30);
+    triggerPrint();
   };
 
   return (

@@ -43,7 +43,7 @@ mkdir -p "$DIR/build/classes"
 javac -encoding UTF-8 \
   -cp "$ANDROID_JAR" \
   -d "$DIR/build/classes" \
-  "$DIR/src/com/suechef/app/MainActivity.java" \
+  $(find "$DIR/src" -name "*.java") \
   "$DIR/build/gen/com/suechef/app/R.java"
 
 # 4. Convert Bytecode to DEX with D8
@@ -63,16 +63,24 @@ zip -ur "$DIR/build/unaligned.apk" assets/
 
 "$ZIPALIGN" -f -p 4 "$DIR/build/unaligned.apk" "$DIR/build/aligned.apk"
 
-# Ensure debug keystore exists
-KEYSTORE="$DIR/debug.keystore"
+# Ensure production release keystore exists
+KEYSTORE="$DIR/release.keystore"
 if [ ! -f "$KEYSTORE" ]; then
-  echo "Generating debug keystore..."
-  keytool -genkey -v -keystore "$KEYSTORE" -alias androiddebugkey -keyalg RSA -keysize 2048 -validity 10000 \
-    -storepass android -keypass android -dname "CN=Android Debug,O=Android,C=US"
+  echo "Generating production PKCS12 release keystore..."
+  keytool -genkeypair -v -keystore "$KEYSTORE" -storetype PKCS12 \
+    -alias suechef -keyalg RSA -keysize 2048 -validity 10000 \
+    -storepass suechef2026 -keypass suechef2026 \
+    -dname "CN=SueChef Production,O=Alumungandr,C=US"
 fi
 
-"$APKSIGNER" sign --ks "$KEYSTORE" --ks-pass pass:android --key-pass pass:android \
+"$APKSIGNER" sign --ks "$KEYSTORE" --ks-pass pass:suechef2026 --key-pass pass:suechef2026 \
+  --v1-signing-enabled true --v2-signing-enabled true --v3-signing-enabled true \
   --out "$DIR/suechef.apk" "$DIR/build/aligned.apk"
 
-echo "=== SUCCESS! Standalone Android APK created at: $DIR/suechef.apk ==="
-ls -lh "$DIR/suechef.apk"
+echo "Verifying APK signatures..."
+"$APKSIGNER" verify --verbose "$DIR/suechef.apk"
+
+cp -f "$DIR/suechef.apk" "$ROOT_DIR/suechef.apk"
+
+echo "=== SUCCESS! Standalone Android APK created at: $DIR/suechef.apk and $ROOT_DIR/suechef.apk ==="
+ls -lh "$DIR/suechef.apk" "$ROOT_DIR/suechef.apk"
