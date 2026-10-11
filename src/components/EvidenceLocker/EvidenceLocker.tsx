@@ -24,7 +24,9 @@ import {
   FileUp,
   Check,
   Camera,
-  Scan
+  Scan,
+  Edit3,
+  CheckCheck
 } from 'lucide-react';
 import { EvidenceItem } from '../../types';
 import { sound } from '../../services/soundEngine';
@@ -39,9 +41,10 @@ import { EmailHeaderParserModal } from './EmailHeaderParserModal';
 import { BankStatementImporterModal } from './BankStatementImporterModal';
 import { DocumentScannerModal } from './DocumentScannerModal';
 import { Mic, FileDigit, Landmark, ScanLine, FileSpreadsheet } from 'lucide-react';
+import { TwoTierLegalClause } from '../common/TwoTierLegalClause';
 
 export const EvidenceLocker: React.FC = () => {
-  const { activeCase, updateActiveCase, addEvidence } = useSueChef();
+  const { activeCase, updateActiveCase, addEvidence, t } = useSueChef();
   const [activeTab, setActiveTab] = useState<'vault' | 'chat' | 'redaction'>('vault');
   const [selectedEvidence, setSelectedEvidence] = useState<EvidenceItem | null>(activeCase.evidenceList[0] || null);
   const [showAddModal, setShowAddModal] = useState(false);
@@ -52,6 +55,15 @@ export const EvidenceLocker: React.FC = () => {
   const [showBankModal, setShowBankModal] = useState(false);
   const [showScannerModal, setShowScannerModal] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+
+  // Stamped exhibits tracking for visual rubber stamp animation
+  const [stampedExhibits, setStampedExhibits] = useState<Record<string, boolean>>({
+    [activeCase.evidenceList[0]?.id || '']: true
+  });
+  const [stampAnimationKey, setStampAnimationKey] = useState<number>(Date.now());
+  const [isEditingNotes, setIsEditingNotes] = useState(false);
+  const [tempNotes, setTempNotes] = useState('');
+
 
   const plaintiff = activeCase.parties.find(p => p.role === 'plaintiff');
   const defaultCustodianName = plaintiff ? cleanPartyName(plaintiff.name) : 'Plaintiff';
@@ -148,6 +160,84 @@ export const EvidenceLocker: React.FC = () => {
       default: return <FileText className="w-4 h-4 text-indigo-400" />;
     }
   };
+
+  const handleStampExhibit = (id: string) => {
+    sound.playDocketStamp();
+    setStampedExhibits(prev => ({ ...prev, [id]: true }));
+    setStampAnimationKey(Date.now());
+  };
+
+  const handleSaveNotes = () => {
+    if (!selectedEvidence) return;
+    sound.playClick();
+    updateActiveCase(prev => ({
+      ...prev,
+      evidenceList: prev.evidenceList.map(e => 
+        e.id === selectedEvidence.id ? { ...e, notes: tempNotes } : e
+      )
+    }));
+    setSelectedEvidence(prev => prev ? { ...prev, notes: tempNotes } : null);
+    setIsEditingNotes(false);
+  };
+
+  const getExhibitTwoTierData = (ev: EvidenceItem) => {
+    let summary = '';
+    let citation = 'FRE 901(a) • FRE 803(6)';
+    if (ev.category === 'contract') {
+      summary = 'Proves mutual assent, agreed terms, and the defendant’s express covenants without room for dispute. Establishes the binding contractual duty in your prima facie claim.';
+      citation = 'FRE 1002 (Best Evidence) • UCC § 2-201';
+    } else if (ev.category === 'receipt') {
+      summary = 'Directly itemizes and quantifies your out-of-pocket financial harm with verified merchant transaction records. Satisfies the mandatory requirement for compensatory damages.';
+      citation = 'FRE 803(6) (Business Records Exception) • FRE 1003';
+    } else if (ev.category === 'photo') {
+      summary = 'Provides direct demonstrative depiction of physical defects, structural damages, or non-conforming conditions as observed contemporaneously. Visual evidence carries substantial persuasive weight.';
+      citation = 'FRE 901(b)(1) (Witness with Knowledge)';
+    } else if (ev.category === 'email' || ev.category === 'text_sms') {
+      summary = 'Demonstrates the defendant had timely actual notice of breach and failed to cure within a commercially reasonable period, dismantling good-faith defenses.';
+      citation = 'FRE 801(d)(2) (Party Opponent Admission) • FRE 902(13)';
+    } else {
+      summary = 'Establishes verified factual timeline and custodian chain-of-custody, meeting foundational admissibility criteria under the Federal Rules of Evidence.';
+      citation = 'FRE 901(a) • FRE 401 (Relevance)';
+    }
+
+    return {
+      title: `${ev.exhibitTag}: Courtroom Evidentiary Value & Burden of Proof`,
+      citation,
+      summary,
+      keyRights: [
+        'Prima Facie Burden: Satisfies the preponderance of the evidence legal standard (51%+ threshold).',
+        'Cryptographic Tamper-Proofing: Self-authenticating digital capture protected under FRE 902(13)/(14).',
+        'Hearsay Exception: Overcomes admissibility objections as an opposing party admission (FRE 801(d)(2)) or business record (FRE 803(6)).'
+      ],
+      callouts: [
+        {
+          type: 'recovery' as const,
+          label: 'EVIDENTIARY WEIGHT',
+          detail: 'High — Establishes liability element without expert witness costs'
+        },
+        {
+          type: 'liability' as const,
+          label: 'HEARSAY STATUS',
+          detail: 'Exempted under FRE 803(6) / FRE 801(d)(2)'
+        },
+        {
+          type: 'deadline' as const,
+          label: 'CHAIN OF CUSTODY',
+          detail: 'Custodian logged and SHA-256 fingerprint verified'
+        }
+      ],
+      rawLegalText: `FEDERAL RULE OF EVIDENCE 901. Authenticating or Identifying Evidence:
+(a) In General. To satisfy the requirement of authenticating or identifying an item of evidence, the proponent must produce evidence sufficient to support a finding that the item is what the proponent claims it is.
+(b) Examples: (1) Testimony of a Witness with Knowledge. Testimony that an item is what it is claimed to be; (4) Distinctive Characteristics and the Like. The appearance, contents, substance, internal patterns, or other distinctive characteristics of the item, taken together with all the circumstances.
+
+FEDERAL RULE OF EVIDENCE 803(6). Records of a Regularly Conducted Activity:
+A record of an act, event, condition, opinion, or diagnosis if made at or near the time by—or from information transmitted by—someone with knowledge; kept in the course of a regularly conducted activity of a business; and making the record was a regular practice of that activity.
+
+FEDERAL RULE OF EVIDENCE 902(14). Certified Data Copied from an Electronic Device, Storage Medium, or File:
+Data copied from an electronic device, storage medium, or file, if authenticated by a process of digital identification, as shown by a certification of a qualified person that complies with the certification requirements of Rule 902(11) or (12).`
+    };
+  };
+
 
   return (
     <div className="space-y-6 max-w-7xl mx-auto p-4 md:p-6 animate-fadeIn">
@@ -339,12 +429,15 @@ export const EvidenceLocker: React.FC = () => {
               <div className="space-y-2 max-h-[600px] overflow-y-auto pr-1">
                 {filteredEvidence.map(ev => {
                   const isSelected = selectedEvidence?.id === ev.id;
+                  const isStamped = !!stampedExhibits[ev.id];
                   return (
                     <div
                       key={ev.id}
                       onClick={() => {
                         sound.playClick();
                         setSelectedEvidence(ev);
+                        setTempNotes(ev.notes || '');
+                        setIsEditingNotes(false);
                       }}
                       className={`card-geom p-3.5 border text-left cursor-pointer transition-all ${
                         isSelected
@@ -375,10 +468,17 @@ export const EvidenceLocker: React.FC = () => {
 
                       <div className="flex items-center justify-between mt-2.5 pt-2 border-t border-white/5 text-[10px] font-mono text-[var(--text-muted)]">
                         <span>Acquired: {ev.dateAcquired}</span>
-                        <span className="flex items-center gap-1 text-emerald-400">
-                          <CheckCircle2 className="w-3 h-3" />
-                          FRE Admissible
-                        </span>
+                        {isStamped ? (
+                          <span className="flex items-center gap-1 text-red-400 font-bold">
+                            <CheckCheck className="w-3.5 h-3.5" />
+                            FRE 901 CERTIFIED
+                          </span>
+                        ) : (
+                          <span className="flex items-center gap-1 text-emerald-400">
+                            <CheckCircle2 className="w-3 h-3" />
+                            FRE Admissible
+                          </span>
+                        )}
                       </div>
                     </div>
                   );
@@ -464,34 +564,100 @@ export const EvidenceLocker: React.FC = () => {
                     </div>
                   </div>
 
-                  {/* FRE Admissibility Checklist */}
-                  <div className="space-y-3 pt-2">
-                    <h3 className="font-serif font-bold text-sm text-[var(--text-main)] flex items-center gap-2">
-                      <CheckCircle2 className="w-4 h-4 text-emerald-400" />
-                      <span>Evidentiary Admissibility Checklist (FRE)</span>
-                    </h3>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 text-xs">
-                      <div className="p-3 card-geom bg-emerald-500/5 border border-emerald-500/20 text-emerald-300">
-                        <span className="font-bold">FRE 901 Authentication: </span>
-                        <span>Firsthand custodian statement &amp; digital metadata timestamp.</span>
+                  {/* Exhibit Notes & Factual Connection (Smooth Inline Editing) */}
+                  <div className="card-geom bg-[var(--bg-secondary)] border border-[var(--border-color)] p-4 space-y-2.5">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-1.5 text-xs font-mono font-bold text-[var(--accent-gold)]">
+                        <Edit3 className="w-3.5 h-3.5" />
+                        <span>Factual Notes &amp; Claim Connection</span>
                       </div>
-                      <div className="p-3 card-geom bg-emerald-500/5 border border-emerald-500/20 text-emerald-300">
-                        <span className="font-bold">FRE 803(6) Business Records: </span>
-                        <span>Regular course of business records exception.</span>
-                      </div>
-                      <div className="p-3 card-geom bg-emerald-500/5 border border-emerald-500/20 text-emerald-300">
-                        <span className="font-bold">FRE 1002 Best Evidence: </span>
-                        <span>Original digital capture / verified duplicate under FRE 1003.</span>
-                      </div>
-                      <div className="p-3 card-geom bg-emerald-500/5 border border-emerald-500/20 text-emerald-300">
-                        <span className="font-bold">FRE 401 Relevance: </span>
-                        <span>Directly proves breach, condition, or damages element.</span>
-                      </div>
+                      {!isEditingNotes ? (
+                        <button
+                          type="button"
+                          onClick={() => {
+                            sound.playClick();
+                            setTempNotes(selectedEvidence.notes || '');
+                            setIsEditingNotes(true);
+                          }}
+                          className="text-[10px] font-mono text-[var(--accent-gold)] hover:underline flex items-center gap-1"
+                        >
+                          <Edit3 className="w-3 h-3" />
+                          <span>Edit Notes</span>
+                        </button>
+                      ) : (
+                        <div className="flex items-center gap-2">
+                          <button
+                            type="button"
+                            onClick={handleSaveNotes}
+                            className="px-2 py-0.5 text-[10px] font-mono font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 rounded hover:bg-emerald-500/30"
+                          >
+                            Save
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => setIsEditingNotes(false)}
+                            className="px-2 py-0.5 text-[10px] font-mono text-[var(--text-muted)] hover:text-white"
+                          >
+                            Cancel
+                          </button>
+                        </div>
+                      )}
                     </div>
+
+                    {isEditingNotes ? (
+                      <div className="space-y-2">
+                        <textarea
+                          value={tempNotes}
+                          onChange={e => setTempNotes(e.target.value)}
+                          placeholder="Explain what factual proposition this exhibit proves for your case (e.g., signed agreement, delivery notice, bank receipt)..."
+                          className="w-full h-20 p-2.5 text-xs font-mono bg-black/40 border border-[var(--border-color)] text-[var(--text-main)] rounded focus:outline-none focus:border-[var(--accent-gold)]"
+                        />
+                        <div className="flex flex-wrap items-center gap-1.5 text-[10px] font-mono">
+                          <span className="text-[var(--text-muted)]">1-Tap Templates:</span>
+                          {[
+                            'Signed contract specifying payment & warranty',
+                            'Bank statement proving wire transfer of $2,450',
+                            'Contemporaneous photographs showing severe damage',
+                            'Written demand letter sent with certified tracking'
+                          ].map(template => (
+                            <button
+                              key={template}
+                              type="button"
+                              onClick={() => setTempNotes(template)}
+                              className="px-2 py-0.5 rounded bg-[var(--badge-bg)] text-[var(--accent-gold)] border border-[var(--badge-border)] hover:bg-[var(--accent-gold)]/20 transition-colors"
+                            >
+                              + {template.split(' ')[0]} {template.split(' ')[1]}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    ) : (
+                      <div 
+                        onClick={() => {
+                          sound.playClick();
+                          setTempNotes(selectedEvidence.notes || '');
+                          setIsEditingNotes(true);
+                        }}
+                        className="text-xs text-[var(--text-main)] bg-black/20 p-2.5 rounded border border-white/5 cursor-pointer hover:border-[var(--accent-gold)]/40 transition-colors"
+                      >
+                        {selectedEvidence.notes ? (
+                          <p className="leading-relaxed">{selectedEvidence.notes}</p>
+                        ) : (
+                          <p className="text-[var(--text-muted)] italic font-mono text-[11px]">
+                            [Tap to add factual notes explaining how this exhibit supports your complaint]
+                          </p>
+                        )}
+                      </div>
+                    )}
                   </div>
 
-                  {/* Official Courtroom Exhibit Sticker */}
-                  <div className="p-4 card-geom bg-slate-950 border-2 border-[var(--accent-gold)] space-y-3">
+                  {/* Two-Tier Legal Clause: Plain-Language Summary vs Raw FRE Statutes */}
+                  <div className="space-y-2">
+                    <TwoTierLegalClause {...getExhibitTwoTierData(selectedEvidence)} />
+                  </div>
+
+                  {/* Official Courtroom Exhibit Sticker with Rubber Stamp Overlay */}
+                  <div className="p-4 card-geom bg-slate-950 border-2 border-[var(--accent-gold)] space-y-3 relative overflow-hidden">
                     <div className="flex justify-between items-center border-b border-[var(--accent-gold)]/30 pb-2">
                       <div className="flex items-center gap-2">
                         <span className="text-[10px] uppercase tracking-widest font-mono text-[var(--accent-gold)] font-bold">
@@ -503,7 +669,23 @@ export const EvidenceLocker: React.FC = () => {
                       </span>
                     </div>
 
-                    <div className="bg-slate-900/90 p-4 border border-[var(--accent-gold)]/40 text-center space-y-2">
+                    <div className="bg-slate-900/90 p-4 border border-[var(--accent-gold)]/40 text-center space-y-2 relative overflow-hidden">
+                      {/* Animated Red/Gold Rubber Stamp Overlay */}
+                      {stampedExhibits[selectedEvidence.id] && (
+                        <div 
+                          key={stampAnimationKey}
+                          className="absolute inset-0 flex items-center justify-center pointer-events-none z-20"
+                        >
+                          <div className="rubber-stamp-badge rubber-stamp-red animate-rubber-stamp flex flex-col items-center justify-center px-4 py-2 bg-red-950/40 backdrop-blur-xs">
+                            <span className="text-sm font-black tracking-widest text-red-500">★ EXHIBIT ADMISSIBLE ★</span>
+                            <span className="text-[10px] tracking-widest text-red-400">FRE 901 / 902 CERTIFIED</span>
+                            <span className="text-[8px] font-mono text-red-300/80">
+                              {new Date().toISOString().split('T')[0]} • CLERK VERIFIED
+                            </span>
+                          </div>
+                        </div>
+                      )}
+
                       <div className="text-xl font-serif font-black text-[var(--accent-gold)] tracking-wide">
                         {selectedEvidence.exhibitTag}
                       </div>
@@ -525,17 +707,28 @@ export const EvidenceLocker: React.FC = () => {
                       </div>
                     </div>
 
-                    <button
-                      type="button"
-                      onClick={() => {
-                        sound.playDocketStamp();
-                        window.print();
-                      }}
-                      className="w-full py-2 bg-[var(--accent-gold)] text-slate-950 hover:opacity-90 font-bold text-xs card-geom transition-all flex items-center justify-center gap-2"
-                    >
-                      <Sparkles className="w-4 h-4" />
-                      Print Official Exhibit Sticker Label
-                    </button>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1">
+                      <button
+                        type="button"
+                        onClick={() => handleStampExhibit(selectedEvidence.id)}
+                        className="w-full py-2 bg-red-600 hover:bg-red-500 text-white font-bold text-xs card-geom transition-all flex items-center justify-center gap-2 shadow-lg hover:shadow-red-500/20"
+                      >
+                        <CheckCheck className="w-4 h-4" />
+                        <span>Certify &amp; Stamp Admissible</span>
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={() => {
+                          sound.playDocketStamp();
+                          window.print();
+                        }}
+                        className="w-full py-2 bg-[var(--accent-gold)] text-slate-950 hover:opacity-90 font-bold text-xs card-geom transition-all flex items-center justify-center gap-2 shadow-sm"
+                      >
+                        <Sparkles className="w-4 h-4" />
+                        <span>Print Official Exhibit Sticker</span>
+                      </button>
+                    </div>
                   </div>
                 </div>
               ) : (

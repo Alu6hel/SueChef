@@ -30,6 +30,7 @@ import { getCountryInfo } from './services/countries';
 import { UplDisclaimerModal } from './components/common/UplDisclaimerModal';
 import { PricingTiersModal } from './components/common/PricingTiersModal';
 import { AttorneyReferralModal } from './components/LegalServices/AttorneyReferralModal';
+import { CaseMetadataSummaryCard } from './components/common/CaseMetadataSummaryCard';
 import { 
   ShieldCheck, 
   Scale, 
@@ -148,6 +149,9 @@ const WorkstationRouter: React.FC = () => {
             )}
           </div>
         )}
+
+        {/* Interactive Case Metadata Summary Card & Multi-Step Progress Tracker */}
+        <CaseMetadataSummaryCard />
 
         {/* Workstation View Routing */}
         <div className="transition-all duration-200">

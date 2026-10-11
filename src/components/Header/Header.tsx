@@ -23,12 +23,17 @@ import {
   Building,
   Users,
   ArrowLeft,
-  Crown
+  Crown,
+  Languages
 } from 'lucide-react';
+import { SUPPORTED_LANGUAGES } from '../../services/i18n';
 
 export const Header: React.FC = () => {
   const { 
     country,
+    language,
+    setLanguage,
+    t,
     activeWorkstation,
     setActiveWorkstation,
     activeCase,
@@ -41,6 +46,9 @@ export const Header: React.FC = () => {
     setIsUplModalOpen
   } = useSueChef();
 
+  const [isLangDropdownOpen, setIsLangDropdownOpen] = React.useState(false);
+  const currentLangInfo = SUPPORTED_LANGUAGES.find(l => l.code === language) || SUPPORTED_LANGUAGES[0];
+
   const currCountry = getCountryInfo(country);
   const plaintiff = activeCase.parties.find(p => p.role === 'plaintiff');
   const defendant = activeCase.parties.find(p => p.role === 'defendant');
@@ -48,20 +56,20 @@ export const Header: React.FC = () => {
 
   // Numbered workstation tabs starting with Home
   const workstations: { id: WorkstationId; stepNum?: string; label: string; icon: React.ReactNode; badge?: string }[] = [
-    { id: 'home', label: 'Home', icon: <Home className="w-4 h-4" /> },
-    { id: 'claim-kitchen', stepNum: '1', label: 'Build Case', icon: <Scale className="w-4 h-4" /> },
-    { id: 'evidence-locker', stepNum: '2', label: 'Evidence & Proof', icon: <ShieldCheck className="w-4 h-4" />, badge: 'SHA256' },
-    { id: 'pleading-builder', stepNum: '3', label: 'Court Papers', icon: <FileText className="w-4 h-4" /> },
-    { id: 'settlement-matrix', stepNum: '4', label: 'Demand & Settle', icon: <Calculator className="w-4 h-4" /> },
-    { id: 'second-opinion', stepNum: '5', label: 'Case Strategy', icon: <Lightbulb className="w-4 h-4" />, badge: 'Strategy' },
-    { id: 'legal-services', stepNum: '6', label: 'Legal Aid & Courts', icon: <Building className="w-4 h-4" />, badge: 'Verified' },
-    { id: 'discovery-studio', stepNum: '7', label: 'Request Evidence', icon: <FolderSearch className="w-4 h-4" /> },
-    { id: 'trial-prep', stepNum: '8', label: 'Trial Prep', icon: <Gavel className="w-4 h-4" /> },
-    { id: 'sol-watcher', stepNum: '9', label: 'SOL Docket', icon: <Clock className="w-4 h-4" /> },
-    { id: 'service-tracker', stepNum: '10', label: 'Service & Proof', icon: <Clock className="w-4 h-4" /> },
-    { id: 'legalese-decoder', stepNum: '11', label: 'Legal Decoder', icon: <Layers className="w-4 h-4" /> },
-    { id: 'attorney-dossier', stepNum: '12', label: 'Attorney Binder', icon: <FileText className="w-4 h-4" />, badge: 'Savings' },
-    { id: 'security-vault', stepNum: '13', label: 'Security Vault', icon: <ShieldCheck className="w-4 h-4" /> },
+    { id: 'home', label: t('navHome', 'Home'), icon: <Home className="w-4 h-4" /> },
+    { id: 'claim-kitchen', stepNum: '1', label: t('navBuildCase', 'Build Case'), icon: <Scale className="w-4 h-4" /> },
+    { id: 'evidence-locker', stepNum: '2', label: t('navEvidence', 'Evidence & Proof'), icon: <ShieldCheck className="w-4 h-4" />, badge: 'SHA256' },
+    { id: 'pleading-builder', stepNum: '3', label: t('navCourtPapers', 'Court Papers'), icon: <FileText className="w-4 h-4" /> },
+    { id: 'settlement-matrix', stepNum: '4', label: t('navDemandSettle', 'Demand & Settle'), icon: <Calculator className="w-4 h-4" /> },
+    { id: 'second-opinion', stepNum: '5', label: t('navCaseStrategy', 'Case Strategy'), icon: <Lightbulb className="w-4 h-4" />, badge: 'Strategy' },
+    { id: 'legal-services', stepNum: '6', label: t('navLegalAid', 'Legal Aid & Courts'), icon: <Building className="w-4 h-4" />, badge: 'Verified' },
+    { id: 'discovery-studio', stepNum: '7', label: t('navRequestEvidence', 'Request Evidence'), icon: <FolderSearch className="w-4 h-4" /> },
+    { id: 'trial-prep', stepNum: '8', label: t('navTrialPrep', 'Trial Prep'), icon: <Gavel className="w-4 h-4" /> },
+    { id: 'sol-watcher', stepNum: '9', label: t('navSolDocket', 'SOL Docket'), icon: <Clock className="w-4 h-4" /> },
+    { id: 'service-tracker', stepNum: '10', label: t('navServiceProof', 'Service & Proof'), icon: <Clock className="w-4 h-4" /> },
+    { id: 'legalese-decoder', stepNum: '11', label: t('navLegalDecoder', 'Legal Decoder'), icon: <Layers className="w-4 h-4" /> },
+    { id: 'attorney-dossier', stepNum: '12', label: t('navAttorneyBinder', 'Attorney Binder'), icon: <FileText className="w-4 h-4" />, badge: 'Savings' },
+    { id: 'security-vault', stepNum: '13', label: t('navSecurityVault', 'Security Vault'), icon: <ShieldCheck className="w-4 h-4" /> },
   ];
 
   return (
@@ -135,11 +143,11 @@ export const Header: React.FC = () => {
               title="Edit Dispute Parties (You & Opponent names / details)"
             >
               <Users className="w-3.5 h-3.5 text-[var(--accent-gold)] shrink-0" />
-              <span className="hidden md:inline text-[11px] font-bold">Edit Parties</span>
+              <span className="hidden md:inline text-[11px] font-bold">{t('btnEditParties', 'Edit Parties')}</span>
             </button>
           </div>
 
-          {/* Right Tools: Tour, Search & Settings */}
+          {/* Right Tools: Tour, Search, Language & Settings */}
           <div className="flex items-center gap-1 sm:gap-2 shrink-0">
             {/* Quick Search Shortcut */}
             <button
@@ -151,7 +159,7 @@ export const Header: React.FC = () => {
               title="Global Legal Command Palette (Ctrl+K)"
             >
               <Search className="w-3.5 h-3.5 text-[var(--accent-gold)]" />
-              <span>Search</span>
+              <span>{t('btnSearch', 'Search')}</span>
               <kbd className="text-[10px] font-mono bg-[var(--bg-secondary)] px-1.5 py-0.5 border border-[var(--border-color)] text-[var(--text-muted)]">
                 ⌘K
               </kbd>
@@ -167,7 +175,7 @@ export const Header: React.FC = () => {
               title="Start Interactive Guided Tour"
             >
               <Sparkles className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-slate-950 fill-slate-950" />
-              <span className="hidden sm:inline">Tour Guide</span>
+              <span className="hidden sm:inline">{t('btnGuidedTour', 'Tour Guide')}</span>
             </button>
 
             {/* Pro Tiers Commercial Modal Button */}
@@ -181,8 +189,52 @@ export const Header: React.FC = () => {
               title="Commercial Litigation Tiers & Licensing"
             >
               <Crown className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[var(--accent-gold)]" />
-              <span className="hidden sm:inline">Pro Tiers</span>
+              <span className="hidden sm:inline">{t('btnCommercialTiers', 'Pro Tiers')}</span>
             </button>
+
+            {/* Language Switcher Dropdown */}
+            <div className="relative">
+              <button
+                onClick={() => {
+                  sound.playClick();
+                  setIsLangDropdownOpen(prev => !prev);
+                }}
+                className="btn-geom flex items-center gap-1 sm:gap-1.5 px-2 sm:px-2.5 py-1.5 sm:py-2 text-xs md:text-sm bg-[var(--bg-card)] border border-[var(--border-color)] text-[var(--text-main)] hover:border-[var(--accent-gold)] transition-all font-bold shadow-sm shrink-0"
+                title={`Language: ${currentLangInfo.name}`}
+              >
+                <span className="text-base">{currentLangInfo.flag}</span>
+                <span className="hidden xl:inline text-[11px] font-mono">{currentLangInfo.nativeName}</span>
+              </button>
+
+              {isLangDropdownOpen && (
+                <div className="absolute right-0 mt-1.5 w-48 bg-[var(--bg-card)] border-2 border-[var(--accent-gold)] shadow-2xl custom-geometry z-50 p-1.5 space-y-1 animate-in fade-in duration-150">
+                  <div className="px-2 py-1 text-[10px] font-mono text-[var(--text-muted)] uppercase border-b border-[var(--border-color)] font-bold">
+                    {t('selectLanguage', 'Select Language')}
+                  </div>
+                  {SUPPORTED_LANGUAGES.map(langItem => (
+                    <button
+                      key={langItem.code}
+                      onClick={() => {
+                        sound.playClick();
+                        setLanguage(langItem.code);
+                        setIsLangDropdownOpen(false);
+                      }}
+                      className={`w-full text-left px-2.5 py-1.5 text-xs custom-geometry flex items-center justify-between transition-all ${
+                        language === langItem.code
+                          ? 'bg-[var(--accent-gold)] text-slate-950 font-bold'
+                          : 'text-[var(--text-main)] hover:bg-[var(--bg-hover)]'
+                      }`}
+                    >
+                      <span className="flex items-center gap-2">
+                        <span>{langItem.flag}</span>
+                        <span>{langItem.nativeName}</span>
+                      </span>
+                      {language === langItem.code && <span className="text-[10px]">✓</span>}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
 
             {/* Settings Button */}
             <button
@@ -194,7 +246,7 @@ export const Header: React.FC = () => {
               title="Application Settings & Country Laws"
             >
               <Settings className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[var(--accent-gold)]" />
-              <span className="hidden sm:inline">Settings</span>
+              <span className="hidden sm:inline">{t('btnSettings', 'Settings')}</span>
             </button>
           </div>
         </div>

@@ -20,7 +20,10 @@ import {
   Check,
   X,
   Users,
-  ShieldCheck
+  ShieldCheck,
+  BookOpen,
+  ChevronDown,
+  ChevronUp
 } from 'lucide-react';
 import { DisputeCategory, DamageItem, ClaimElement } from '../../types';
 import { STATE_JURISDICTIONS, getJurisdiction } from '../../services/jurisdictions';
@@ -51,6 +54,20 @@ export const ClaimKitchen: React.FC = () => {
   const [newElemNotes, setNewElemNotes] = useState('');
   const [editingElemId, setEditingElemId] = useState<string | null>(null);
   const [editingNotesText, setEditingNotesText] = useState('');
+  const [expandedStandards, setExpandedStandards] = useState<Record<string, boolean>>({});
+
+  const noteTemplates = [
+    { label: '📝 Signed Contract', text: 'Executed written agreement establishing valid obligation.' },
+    { label: '💳 Wire / Bank Receipt', text: 'Bank wire / payment confirmation proving transfer of funds.' },
+    { label: '📸 Condition Photos', text: 'Time-stamped photos demonstrating property condition upon surrender.' },
+    { label: '✉️ Written Notice', text: 'Formal statutory cure notice delivered via certified mail.' },
+    { label: '🗑️ Clear Sample', text: '' },
+  ];
+
+  const toggleStandardExpanded = (id: string) => {
+    sound.playClick();
+    setExpandedStandards(prev => ({ ...prev, [id]: !prev[id] }));
+  };
 
   const currJurisdiction = getJurisdiction(activeCase.state);
 
@@ -452,32 +469,86 @@ export const ClaimKitchen: React.FC = () => {
                             </button>
                           </div>
                         </div>
-                        <p className="text-xs text-[var(--text-muted)] leading-relaxed">
-                          {elem.description}
-                        </p>
+                        {/* Tier 1: Plain-language summary */}
+                        <div className="space-y-1">
+                          <div className="text-[10px] font-mono uppercase font-bold text-[var(--accent-gold)] flex items-center gap-1">
+                            <Sparkles className="w-3 h-3" />
+                            <span>What this means for you:</span>
+                          </div>
+                          <p className="text-xs text-[var(--text-main)] leading-relaxed font-sans">
+                            {elem.description}
+                          </p>
+                        </div>
+
+                        {/* Tier 2: Collapsible Official Legal Standard */}
+                        <div className="pt-1">
+                          <button
+                            type="button"
+                            onClick={() => toggleStandardExpanded(elem.id)}
+                            className="inline-flex items-center gap-1.5 text-[10px] font-mono font-bold text-[var(--text-muted)] hover:text-[var(--accent-gold)] transition-colors"
+                          >
+                            <BookOpen className="w-3 h-3 text-[var(--accent-gold)]" />
+                            <span>{expandedStandards[elem.id] ? 'Hide Legal Authority' : 'Read Full Legal Standard'}</span>
+                            {expandedStandards[elem.id] ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
+                          </button>
+
+                          {expandedStandards[elem.id] && (
+                            <div className="mt-1.5 p-2.5 bg-[var(--bg-card)] border border-[var(--accent-gold)]/30 rounded text-[11px] font-mono space-y-1 text-slate-300 animate-in fade-in duration-150">
+                              <div className="text-[var(--accent-gold)] font-bold">
+                                Official Legal Terms &amp; Governing Authority:
+                              </div>
+                              <p className="leading-relaxed">
+                                {elem.legalStandard}. Under applicable state civil procedure, plaintiff must establish this element by a preponderance of the evidence (&gt;50% probability) to establish prima facie liability.
+                              </p>
+                            </div>
+                          )}
+                        </div>
 
                         {/* Evidence Notes / Editor */}
                         {editingElemId === elem.id ? (
-                          <div className="space-y-1.5 pt-2">
+                          <div className="space-y-2 pt-2 border-t border-[var(--border-color)]/60 mt-2">
+                            {/* 1-Tap Quick Fill Template Chips */}
+                            <div className="space-y-1">
+                              <span className="text-[10px] font-mono uppercase text-[var(--text-muted)] font-bold">
+                                1-Tap Quick Evidence Helpers:
+                              </span>
+                              <div className="flex flex-wrap gap-1.5">
+                                {noteTemplates.map((tmpl, tIdx) => (
+                                  <button
+                                    key={tIdx}
+                                    type="button"
+                                    onClick={() => {
+                                      sound.playClick();
+                                      setEditingNotesText(tmpl.text);
+                                    }}
+                                    className="px-2 py-0.5 text-[10px] font-mono bg-slate-900 border border-[var(--border-color)] hover:border-[var(--accent-gold)] text-slate-300 hover:text-[var(--accent-gold)] rounded transition-all"
+                                  >
+                                    {tmpl.label}
+                                  </button>
+                                ))}
+                              </div>
+                            </div>
+
                             <textarea
                               value={editingNotesText}
                               onChange={e => setEditingNotesText(e.target.value)}
                               rows={2}
                               className="input-geom w-full p-2 text-xs bg-black/60 border border-[var(--accent-gold)] text-slate-200 font-mono"
-                              placeholder="Enter corroborating facts and exhibit links..."
+                              placeholder="Enter your real dates, amounts, and exhibit numbers here..."
+                              autoFocus
                             />
                             <div className="flex justify-end gap-1.5">
                               <button
                                 type="button"
                                 onClick={() => setEditingElemId(null)}
-                                className="px-2 py-1 text-[10px] bg-slate-800 text-slate-400 card-geom"
+                                className="px-2.5 py-1 text-[10px] bg-slate-800 text-slate-400 card-geom hover:bg-slate-700"
                               >
                                 Cancel
                               </button>
                               <button
                                 type="button"
                                 onClick={() => handleSaveElemNotes(elem.id)}
-                                className="px-2.5 py-1 text-[10px] bg-emerald-500 text-slate-950 font-bold card-geom flex items-center gap-1"
+                                className="px-3 py-1 text-[10px] bg-emerald-500 text-slate-950 font-bold card-geom flex items-center gap-1 hover:opacity-90"
                               >
                                 <Check className="w-3 h-3" />
                                 Save Notes
@@ -489,7 +560,8 @@ export const ClaimKitchen: React.FC = () => {
                             onClick={() => {
                               sound.playClick();
                               setEditingElemId(elem.id);
-                              setEditingNotesText(elem.userEvidenceNotes || '');
+                              // If it's the default placeholder, provide clean starting text or select it
+                              setEditingNotesText(elem.userEvidenceNotes?.includes('[e.g.') ? '' : (elem.userEvidenceNotes || ''));
                             }}
                             className="text-[11px] font-mono text-slate-300 bg-black/40 hover:bg-black/60 p-2.5 card-geom border border-amber-500/25 hover:border-[var(--accent-gold)] mt-2 flex justify-between items-start cursor-pointer transition-all group/edit"
                             title="Click to edit corroborating evidence notes"
@@ -501,12 +573,12 @@ export const ClaimKitchen: React.FC = () => {
                                 </span>
                                 {(elem.userEvidenceNotes?.includes('[e.g.') || !elem.userEvidenceNotes) && (
                                   <span className="text-[9px] bg-amber-500/15 text-[var(--accent-gold)] px-1.5 py-0.2 rounded font-mono font-bold border border-amber-500/30">
-                                    Example Placeholder
+                                    Example Placeholder — Tap to Edit
                                   </span>
                                 )}
                               </div>
                               <p className="text-slate-200 leading-relaxed text-xs">
-                                {elem.userEvidenceNotes || 'No facts or evidence notes recorded yet.'}
+                                {elem.userEvidenceNotes || 'No facts or evidence notes recorded yet. Tap to add details.'}
                               </p>
                             </div>
                             <div className="flex items-center gap-1 text-[var(--accent-gold)] shrink-0 ml-2 pt-0.5 opacity-80 group-hover/edit:opacity-100">

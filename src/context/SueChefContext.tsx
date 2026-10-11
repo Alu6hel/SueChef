@@ -4,6 +4,7 @@ import {
   CornerGeometry, 
   WorkstationId, 
   CountryCode,
+  SupportedLanguage,
   FontSizeScale,
   CaseFile, 
   EvidenceItem, 
@@ -19,6 +20,7 @@ import { sound } from '../services/soundEngine';
 import { syncCaseWithParties, deriveCaseTitle, cleanPartyName } from '../services/caseUtils';
 import { getCountryInfo } from '../services/countries';
 import { EnforcementEngine } from '../services/enforcementEngine';
+import { I18nService } from '../services/i18n';
 
 interface SueChefContextType {
   theme: ThemeId;
@@ -27,6 +29,9 @@ interface SueChefContextType {
   setCornerGeometry: (geometry: CornerGeometry) => void;
   country: CountryCode;
   setCountry: (country: CountryCode) => void;
+  language: SupportedLanguage;
+  setLanguage: (lang: SupportedLanguage) => void;
+  t: (key: string, fallback?: string) => string;
   fontSizeScale: FontSizeScale;
   setFontSizeScale: (scale: FontSizeScale) => void;
   activeWorkstation: WorkstationId;
@@ -95,6 +100,21 @@ export const SueChefProvider: React.FC<{ children: ReactNode }> = ({ children })
   const [country, setCountryState] = useState<CountryCode>(() => {
     return (localStorage.getItem('suechef_country') as CountryCode) || 'US';
   });
+
+  const [language, setLanguageState] = useState<SupportedLanguage>(() => {
+    I18nService.init();
+    return I18nService.getLanguage();
+  });
+
+  const setLanguage = (newLang: SupportedLanguage) => {
+    sound.playClick();
+    setLanguageState(newLang);
+    I18nService.setLanguage(newLang);
+  };
+
+  const t = (key: string, fallback?: string): string => {
+    return I18nService.t(key, fallback);
+  };
 
   const [fontSizeScale, setFontSizeScaleState] = useState<FontSizeScale>(() => {
     return (localStorage.getItem('suechef_font_scale') as FontSizeScale) || 'normal';
@@ -564,7 +584,10 @@ export const SueChefProvider: React.FC<{ children: ReactNode }> = ({ children })
         isReferralModalOpen,
         setIsReferralModalOpen,
         exportEncryptedVault,
-        importEncryptedVault
+        importEncryptedVault,
+        language,
+        setLanguage,
+        t
       }}
     >
       {children}

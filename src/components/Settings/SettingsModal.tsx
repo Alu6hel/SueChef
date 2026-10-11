@@ -21,8 +21,11 @@ import {
   ShieldCheck, 
   Sparkles,
   MapPin,
-  FileCheck
+  FileCheck,
+  Languages
 } from 'lucide-react';
+import { SUPPORTED_LANGUAGES } from '../../services/i18n';
+import { SupportedLanguage } from '../../types';
 
 export const SettingsModal: React.FC = () => {
   const {
@@ -30,6 +33,9 @@ export const SettingsModal: React.FC = () => {
     setIsSettingsOpen,
     country,
     setCountry,
+    language,
+    setLanguage,
+    t,
     fontSizeScale,
     setFontSizeScale,
     theme,
@@ -119,8 +125,50 @@ export const SettingsModal: React.FC = () => {
 
         {/* Modal Body (Scrollable) */}
         <div className="p-6 overflow-y-auto space-y-6 flex-1 text-[var(--text-main)]">
-          {/* Section 1: Country & Jurisdiction */}
+          {/* Section 0: Display Language */}
           <div className="space-y-3">
+            <div className="flex items-center gap-2 text-xs font-mono font-bold uppercase text-[var(--accent-gold)]">
+              <Languages className="w-4 h-4" />
+              <span>{t('selectLanguage', 'Display Language')}</span>
+            </div>
+            <p className="text-xs text-[var(--text-muted)]">
+              {t('languageSubtitle', 'Select your preferred language for the interface and legal guides')}
+            </p>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2.5">
+              {SUPPORTED_LANGUAGES.map(lang => (
+                <button
+                  key={lang.code}
+                  type="button"
+                  onClick={() => {
+                    sound.playClick();
+                    setLanguage(lang.code);
+                  }}
+                  className={`p-3 border custom-geometry text-left transition-all flex items-center justify-between ${
+                    language === lang.code
+                      ? 'bg-[var(--badge-bg)] border-[var(--accent-gold)] ring-1 ring-[var(--accent-gold)]'
+                      : 'bg-[var(--bg-secondary)] border-[var(--border-color)] hover:bg-[var(--bg-hover)]'
+                  }`}
+                >
+                  <div className="flex items-center gap-2.5">
+                    <span className="text-xl">{lang.flag}</span>
+                    <div>
+                      <div className="text-xs font-bold font-serif text-[var(--text-main)]">{lang.nativeName}</div>
+                      <div className="text-[10px] text-[var(--text-muted)] font-mono">{lang.name}</div>
+                    </div>
+                  </div>
+                  {language === lang.code && (
+                    <span className="text-[10px] font-mono font-bold text-[var(--accent-gold)] px-1.5 py-0.5 bg-[var(--bg-card)] border border-[var(--accent-gold)]/40 rounded">
+                      ✓ Active
+                    </span>
+                  )}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Section 1: Country & Jurisdiction */}
+          <div className="space-y-3 border-t border-[var(--border-color)]/60 pt-4">
             <div className="flex items-center gap-2 text-xs font-mono font-bold uppercase text-[var(--accent-gold)]">
               <Globe className="w-4 h-4" />
               <span>1. Country Jurisdiction & Applicable Laws</span>

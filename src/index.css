@@ -207,3 +207,62 @@ body {
 ::-webkit-scrollbar-thumb:hover {
   background: var(--accent-gold);
 }
+
+/* ----------------------------------------------------
+   LEGAL RUBBER STAMP ANIMATIONS & BADGES
+---------------------------------------------------- */
+@keyframes rubberStampImpact {
+  0% {
+    opacity: 0;
+    transform: scale(2.8) rotate(-18deg);
+  }
+  45% {
+    opacity: 0.9;
+    transform: scale(0.92) rotate(-3deg);
+  }
+  70% {
+    transform: scale(1.06) rotate(-7deg);
+  }
+  100% {
+    opacity: 0.98;
+    transform: scale(1) rotate(-5deg);
+  }
+}
+
+.animate-rubber-stamp {
+  animation: rubberStampImpact 0.45s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
+
+.rubber-stamp-badge {
+  display: inline-block;
+  padding: 0.35rem 0.85rem;
+  text-transform: uppercase;
+  font-weight: 900;
+  font-family: monospace;
+  letter-spacing: 0.16em;
+  border: 3px double;
+  border-radius: 4px;
+  user-select: none;
+}
+
+.rubber-stamp-red {
+  color: #EF4444;
+  border-color: #EF4444;
+  background-color: rgba(239, 68, 68, 0.08);
+  box-shadow: 0 0 16px rgba(239, 68, 68, 0.25);
+}
+
+.rubber-stamp-gold {
+  color: #D4AF37;
+  border-color: #D4AF37;
+  background-color: rgba(212, 175, 55, 0.09);
+  box-shadow: 0 0 16px rgba(212, 175, 55, 0.28);
+}
+
+.rubber-stamp-green {
+  color: #10B981;
+  border-color: #10B981;
+  background-color: rgba(16, 185, 129, 0.08);
+  box-shadow: 0 0 16px rgba(16, 185, 129, 0.25);
+}
+

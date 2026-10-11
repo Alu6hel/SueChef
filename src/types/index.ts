@@ -11,6 +11,16 @@ export type FontSizeScale = 'normal' | 'large' | 'xlarge';
 
 export type CountryCode = 'US' | 'GB' | 'CA' | 'AU' | 'NG' | 'DE' | 'IN' | 'KE' | 'ZA' | 'PH' | 'SG' | 'GLOBAL';
 
+export type SupportedLanguage = 'en' | 'hi' | 'es' | 'de' | 'fr' | 'ja' | 'zh';
+
+export interface LanguageInfo {
+  code: SupportedLanguage;
+  name: string;
+  nativeName: string;
+  flag: string;
+  region: string;
+}
+
 export type WorkstationId = 
   | 'home'              // 0. Executive Homepage & Case Overview
   | 'claim-kitchen'     // 1. Build Your Case (Claim Kitchen)
