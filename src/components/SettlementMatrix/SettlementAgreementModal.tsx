@@ -3,6 +3,7 @@ import { FileText, Printer, Copy, Check, X, ShieldCheck, Scale, AlertCircle } fr
 import { useSueChef } from '../../context/SueChefContext';
 import { sound } from '../../services/soundEngine';
 import { getCountryInfo } from '../../services/countries';
+import { TwoTierLegalClause } from '../common/TwoTierLegalClause';
 
 interface SettlementAgreementModalProps {
   isOpen: boolean;
@@ -15,6 +16,7 @@ export const SettlementAgreementModal: React.FC<SettlementAgreementModalProps> =
   const [copied, setCopied] = useState(false);
   const [includeConfidentiality, setIncludeConfidentiality] = useState(true);
   const [includeAccelerationClause, setIncludeAccelerationClause] = useState(true);
+  const [showRawContract, setShowRawContract] = useState(true);
 
   if (!isOpen) return null;
 
@@ -184,10 +186,81 @@ Date: __________________________________     Date: _____________________________
           </label>
         </div>
 
-        {/* Contract Preview */}
-        <div className="bg-slate-900/90 border border-white/10 p-5 rounded font-mono text-xs text-slate-200 overflow-x-auto max-h-[460px] overflow-y-auto whitespace-pre leading-relaxed select-text shadow-inner">
-          {agreementText}
+        {/* Two-Tier Plain-Language Contract Breakdowns */}
+        <div className="space-y-3 no-print">
+          <TwoTierLegalClause
+            title="Mutual General Release & Civil Code § 1542 Unknown Claims Waiver"
+            statutoryCitation="California Civil Code § 1542 & General Contract Common Law"
+            summary="Signing this agreement permanently extinguishes all lawsuits and claims between both parties regarding this dispute. Once the settlement funds clear your bank account, neither party can ever sue the other again — even for damages or facts discovered in the future!"
+            keyRights={[
+              'Permanent Bar: You cannot sue for additional damages later, even if losses turn out to be higher',
+              'Mutual Protection: The opposing party is also barred from filing retaliatory cross-complaints',
+              'Condition Precedent: Dismissal with prejudice is only filed AFTER funds clear your bank account'
+            ]}
+            callouts={[
+              {
+                type: 'liability',
+                label: 'Permanent Waiver',
+                detail: 'Extends to Unknown, Unsuspected & Future Damages'
+              },
+              {
+                type: 'recovery',
+                label: 'Payment Prerequisite',
+                detail: `Release takes effect only after ${countryInfo.currencySymbol}${settlementAmount.toLocaleString()} is received`
+              }
+            ]}
+            rawLegalText={`CALIFORNIA CIVIL CODE SECTION 1542:\n"A general release does not extend to claims that the creditor or releasing party does not know or suspect to exist in his or her favor at the time of executing the release and that, if known by him or her, would have materially affected his or her settlement with the debtor or released party."\nThe Parties hereby expressly and knowingly waive all rights under Section 1542.`}
+            defaultExpanded={false}
+          />
+
+          {includeAccelerationClause && (
+            <TwoTierLegalClause
+              title="Default Acceleration & Stipulated Judgment Clause"
+              statutoryCitation="California CCP § 664.6 & Uniform Default Enforcement"
+              summary="Protects you if the defendant signs the contract but fails to wire the money. If they miss the deadline by even 1 day and fail to cure within 72 hours, you do not have to start a new trial — the court immediately enters judgment against them for 135% of the debt plus attorney fees!"
+              keyRights={[
+                'Strict Deadline: Time is strictly of the essence (no informal grace periods)',
+                '3-Day Cure Notice: Written warning triggers automatic default liability',
+                'Accelerated Penalty: Immediately adds a 20% liquidated damages penalty'
+              ]}
+              callouts={[
+                {
+                  type: 'penalty',
+                  label: 'Default Multiplier',
+                  detail: 'Accelerates to 135% of Balance + Incurred Attorney Fees'
+                },
+                {
+                  type: 'deadline',
+                  label: 'Payment Deadline',
+                  detail: `${paymentDays} Calendar Days to Clear Bank Escrow`
+                }
+              ]}
+              rawLegalText={`DEFAULT ACCELERATION (CCP § 664.6): In the event Defendant fails to pay within ${paymentDays} days, Claimant shall provide a 3-day written notice of default. If Defendant fails to cure within 3 days, this Agreement shall be deemed in material default, and Claimant shall be entitled to immediate entry of Stipulated Judgment for ${countryInfo.currencySymbol}${(settlementAmount * 1.35).toFixed(2)} plus a 20% penalty, court costs, and post-judgment interest at 10% per annum without further notice or hearing.`}
+              defaultExpanded={false}
+            />
+          )}
         </div>
+
+        {/* Contract Preview Header & Toggle */}
+        <div className="flex items-center justify-between border-b border-white/10 pb-2 pt-2 no-print">
+          <span className="text-xs font-mono font-bold text-[var(--accent-gold)] uppercase tracking-wider">
+            Formal Legal Contract Text ({agreementText.split('\n').length} Lines)
+          </span>
+          <button
+            type="button"
+            onClick={() => setShowRawContract(!showRawContract)}
+            className="text-[11px] font-mono text-slate-300 hover:text-white underline"
+          >
+            {showRawContract ? 'Collapse Contract Drawer' : 'Expand Full Contract Text'}
+          </button>
+        </div>
+
+        {/* Contract Preview */}
+        {showRawContract && (
+          <div className="bg-slate-900/90 border border-white/10 p-5 rounded font-mono text-xs text-slate-200 overflow-x-auto max-h-[420px] overflow-y-auto whitespace-pre leading-relaxed select-text shadow-inner">
+            {agreementText}
+          </div>
+        )}
       </div>
     </div>
   );

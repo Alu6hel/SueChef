@@ -3,6 +3,7 @@ import { useSueChef } from '../../context/SueChefContext';
 import { CryptoDbService } from '../../services/cryptoDb';
 import { sound } from '../../services/soundEngine';
 import { cleanPartyName } from '../../services/caseUtils';
+import { ClientOcrEngine } from '../../services/clientOcrEngine';
 import { 
   Camera, 
   Upload, 
@@ -13,7 +14,9 @@ import {
   ShieldCheck, 
   Layers, 
   Crop, 
-  Maximize2 
+  Maximize2,
+  FileText,
+  Cpu
 } from 'lucide-react';
 
 interface DocumentScannerModalProps {
@@ -33,6 +36,9 @@ export const DocumentScannerModal: React.FC<DocumentScannerModalProps> = ({ isOp
   const [contrastLevel, setContrastLevel] = useState<number>(140);
   const [sha256Hash, setSha256Hash] = useState<string>('');
   const [isProcessing, setIsProcessing] = useState<boolean>(false);
+  const [extractedOcrText, setExtractedOcrText] = useState<string>('');
+  const [isExtractingOcr, setIsExtractingOcr] = useState<boolean>(false);
+  const [ocrEngineBadge, setOcrEngineBadge] = useState<string>('');
 
   const p = activeCase.parties.find(x => x.role === 'plaintiff');
   const pName = p ? cleanPartyName(p.name) : 'Plaintiff';
@@ -112,6 +118,23 @@ export const DocumentScannerModal: React.FC<DocumentScannerModalProps> = ({ isOp
     redrawCanvas();
   }, [imageSrc, filterMode, rotation, contrastLevel]);
 
+  const handleExtractOcr = async () => {
+    if (!canvasRef.current && !imageSrc) return;
+    sound.playDocketStamp();
+    setIsExtractingOcr(true);
+    try {
+      const dataUrl = canvasRef.current ? canvasRef.current.toDataURL('image/png') : imageSrc!;
+      const result = await ClientOcrEngine.processDocument(dataUrl, docTitle);
+      setExtractedOcrText(result.rawText);
+      setOcrEngineBadge(result.engineUsed === 'tesseract-wasm' ? 'Tesseract.js WASM' : 'Smart Heuristic Fallback');
+      sound.playSuccessChime();
+    } catch (err) {
+      console.error('OCR failed:', err);
+    } finally {
+      setIsExtractingOcr(false);
+    }
+  };
+
   const handleSaveToEvidence = async () => {
     if (!canvasRef.current) return;
     sound.playSuccessChime();
@@ -142,7 +165,7 @@ export const DocumentScannerModal: React.FC<DocumentScannerModalProps> = ({ isOp
       exhibitTag: `EXHIBIT ${String.fromCharCode(65 + activeCase.evidenceList.length)}`,
       linkedParagraphIds: [],
       dataUrl,
-      notes: `Scanned & perspective enhanced document. High-contrast threshold: ${contrastLevel}. SHA-256 fingerprint verified.`
+      notes: `Scanned & perspective enhanced document. High-contrast threshold: ${contrastLevel}. SHA-256 fingerprint verified.${extractedOcrText ? `\n\nOCR Extracted Text:\n${extractedOcrText.slice(0, 500)}` : ''}`
     });
 
     setIsProcessing(false);
@@ -238,13 +261,24 @@ export const DocumentScannerModal: React.FC<DocumentScannerModalProps> = ({ isOp
                 </div>
               )}
 
-              <button
-                onClick={() => { sound.playClick(); setRotation((rotation + 90) % 360); }}
-                className="px-2.5 py-1 bg-[var(--bg-card)] border border-[var(--border-color)] text-[var(--text-main)] hover:border-[var(--accent-gold)] text-[10px] custom-geometry flex items-center gap-1"
-              >
-                <RotateCw className="w-3 h-3 text-[var(--accent-gold)]" />
-                <span>Rotate 90°</span>
-              </button>
+              <div className="flex items-center gap-1.5">
+                <button
+                  onClick={() => { sound.playClick(); setRotation((rotation + 90) % 360); }}
+                  className="px-2.5 py-1 bg-[var(--bg-card)] border border-[var(--border-color)] text-[var(--text-main)] hover:border-[var(--accent-gold)] text-[10px] custom-geometry flex items-center gap-1"
+                >
+                  <RotateCw className="w-3 h-3 text-[var(--accent-gold)]" />
+                  <span>Rotate 90°</span>
+                </button>
+
+                <button
+                  onClick={handleExtractOcr}
+                  disabled={isExtractingOcr}
+                  className="px-2.5 py-1 bg-[var(--accent-gold)]/20 border border-[var(--accent-gold)] text-[var(--accent-gold)] hover:bg-[var(--accent-gold)] hover:text-slate-950 font-bold text-[10px] custom-geometry flex items-center gap-1 transition-all"
+                >
+                  <FileText className="w-3 h-3" />
+                  <span>{isExtractingOcr ? 'Extracting OCR...' : 'Extract Text (OCR)'}</span>
+                </button>
+              </div>
             </div>
           )}
 
@@ -263,6 +297,27 @@ export const DocumentScannerModal: React.FC<DocumentScannerModalProps> = ({ isOp
               </div>
             )}
           </div>
+
+          {/* Extracted OCR Text Box */}
+          {extractedOcrText && (
+            <div className="p-3 bg-[var(--bg-card)] border border-[var(--accent-gold)] custom-geometry space-y-1.5 animate-in fade-in">
+              <div className="flex items-center justify-between text-[11px] font-mono">
+                <span className="flex items-center gap-1 font-bold text-[var(--accent-gold)]">
+                  <Sparkles className="w-3.5 h-3.5" />
+                  <span>Extracted Document Text</span>
+                </span>
+                <span className="text-[10px] text-emerald-400 bg-emerald-950/60 px-2 py-0.5 border border-emerald-500/30 rounded">
+                  {ocrEngineBadge}
+                </span>
+              </div>
+              <textarea
+                rows={4}
+                value={extractedOcrText}
+                onChange={(e) => setExtractedOcrText(e.target.value)}
+                className="w-full bg-[var(--bg-secondary)] border border-[var(--border-color)] p-2 text-xs font-mono text-[var(--text-main)] rounded outline-none"
+              />
+            </div>
+          )}
         </div>
 
         {/* Footer */}

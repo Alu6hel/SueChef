@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useSueChef } from '../../context/SueChefContext';
 import { CountryCode, ThemeId, CornerGeometry, FontSizeScale } from '../../types';
 import { SUPPORTED_COUNTRIES } from '../../services/countries';
@@ -22,10 +22,15 @@ import {
   Sparkles,
   MapPin,
   FileCheck,
-  Languages
+  Languages,
+  Cpu,
+  Key,
+  ExternalLink,
+  CheckCircle2
 } from 'lucide-react';
 import { SUPPORTED_LANGUAGES } from '../../services/i18n';
 import { SupportedLanguage } from '../../types';
+import { OnDeviceAiService, AiStatus } from '../../services/onDeviceAiService';
 
 export const SettingsModal: React.FC = () => {
   const {
@@ -52,6 +57,29 @@ export const SettingsModal: React.FC = () => {
     importCaseBundle,
     panicWipe
   } = useSueChef();
+
+  const [aiStatus, setAiStatus] = useState<AiStatus | null>(null);
+  const [geminiApiKey, setGeminiApiKey] = useState<string>(() => OnDeviceAiService.getApiKey());
+  const [keySavedMessage, setKeySavedMessage] = useState(false);
+
+  useEffect(() => {
+    OnDeviceAiService.getAiStatus().then(status => setAiStatus(status));
+  }, [geminiApiKey]);
+
+  const handleSaveApiKey = () => {
+    sound.playDocketStamp();
+    OnDeviceAiService.setApiKey(geminiApiKey);
+    setKeySavedMessage(true);
+    setTimeout(() => setKeySavedMessage(false), 3000);
+  };
+
+  const handleClearApiKey = () => {
+    sound.playClick();
+    setGeminiApiKey('');
+    OnDeviceAiService.setApiKey('');
+    setKeySavedMessage(true);
+    setTimeout(() => setKeySavedMessage(false), 3000);
+  };
 
   if (!isSettingsOpen) return null;
 
@@ -363,11 +391,89 @@ export const SettingsModal: React.FC = () => {
             </div>
           </div>
 
-          {/* Section 5: Data Privacy, Backups & Emergency Wipe */}
+          {/* Section 5: On-Device AI & Intelligence Privacy */}
+          <div className="space-y-3 pt-2 border-t border-[var(--border-color)]">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2 text-xs font-mono font-bold uppercase text-[var(--accent-gold)]">
+                <Cpu className="w-4 h-4" />
+                <span>5. On-Device AI &amp; Intelligence Privacy</span>
+              </div>
+              <span className={`px-2 py-0.5 text-[10px] font-mono font-bold uppercase custom-geometry ${
+                aiStatus?.mode === 'nano'
+                  ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30'
+                  : aiStatus?.mode === 'gemini-api'
+                  ? 'bg-cyan-500/20 text-cyan-400 border border-cyan-500/30'
+                  : 'bg-[var(--accent-gold)]/20 text-[var(--accent-gold)] border border-[var(--accent-gold)]/30'
+              }`}>
+                {aiStatus?.name || 'Local Legal Engine'}
+              </span>
+            </div>
+
+            <p className="text-xs text-[var(--text-muted)] leading-relaxed">
+              SueChef operates <strong className="text-[var(--text-main)]">100% free and serverless</strong>. All claim evaluation, OCR extraction, and speech processing run directly on this device. You can optionally link a free Google AI Studio key (1,500 free queries/day) for advanced freeform claim extraction.
+            </p>
+
+            <div className="p-3 bg-[var(--bg-secondary)] border border-[var(--border-color)] custom-geometry space-y-2.5">
+              <div className="flex items-center justify-between">
+                <label className="text-xs font-mono font-bold text-[var(--text-main)] flex items-center gap-1.5">
+                  <Key className="w-3.5 h-3.5 text-[var(--accent-gold)]" />
+                  <span>Google AI Studio Key (Optional / BYOK)</span>
+                </label>
+                <a
+                  href="https://aistudio.google.com/app/apikey"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-[10px] font-mono text-[var(--accent-gold)] hover:underline flex items-center gap-1"
+                >
+                  <span>Get Free Key</span>
+                  <ExternalLink className="w-3 h-3" />
+                </a>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <input
+                  type="password"
+                  value={geminiApiKey}
+                  onChange={(e) => setGeminiApiKey(e.target.value)}
+                  placeholder="AIzaSy... (Stored in encrypted local device storage only)"
+                  className="flex-1 bg-[var(--bg-card)] border border-[var(--border-color)] px-3 py-1.5 text-xs text-[var(--text-main)] font-mono custom-geometry focus:outline-none focus:border-[var(--accent-gold)]"
+                />
+                <button
+                  type="button"
+                  onClick={handleSaveApiKey}
+                  className="px-3 py-1.5 bg-[var(--accent-gold)] text-slate-950 text-xs font-bold font-mono custom-geometry hover:opacity-90"
+                >
+                  Save
+                </button>
+                {geminiApiKey && (
+                  <button
+                    type="button"
+                    onClick={handleClearApiKey}
+                    className="px-2.5 py-1.5 bg-rose-500/20 text-rose-300 border border-rose-500/40 text-xs font-mono custom-geometry hover:bg-rose-500/30"
+                  >
+                    Clear
+                  </button>
+                )}
+              </div>
+
+              {keySavedMessage && (
+                <div className="text-[11px] font-mono text-emerald-400 flex items-center gap-1.5 pt-1">
+                  <CheckCircle2 className="w-3.5 h-3.5" />
+                  <span>AI configuration saved to secure local storage.</span>
+                </div>
+              )}
+
+              <div className="text-[10px] text-[var(--text-muted)] font-mono">
+                {aiStatus?.details}
+              </div>
+            </div>
+          </div>
+
+          {/* Section 6: Data Privacy, Backups & Emergency Wipe */}
           <div className="space-y-3 pt-2 border-t border-[var(--border-color)]">
             <div className="flex items-center gap-2 text-xs font-mono font-bold uppercase text-[var(--accent-gold)]">
               <ShieldCheck className="w-4 h-4" />
-              <span>5. Encrypted Backup & Data Purge</span>
+              <span>6. Encrypted Backup & Data Purge</span>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">

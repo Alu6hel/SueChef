@@ -1,9 +1,10 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useSueChef } from '../../context/SueChefContext';
 import { CryptoDbService } from '../../services/cryptoDb';
 import { sound } from '../../services/soundEngine';
 import { cleanPartyName } from '../../services/caseUtils';
 import { getConsentRuleForJurisdiction } from '../../services/wiretapConsentLaws';
+import { SpeechRecognitionService } from '../../services/speechRecognitionService';
 import { AudioTranscriptItem } from '../../types';
 import { 
   Mic, 
@@ -19,9 +20,10 @@ import {
   FileText, 
   X, 
   Clock, 
-  Sparkles,
+  Sparkles, 
   ExternalLink,
-  Tag
+  Tag,
+  Radio
 } from 'lucide-react';
 
 interface AudioTranscriberModalProps {
@@ -30,9 +32,10 @@ interface AudioTranscriberModalProps {
 }
 
 export const AudioTranscriberModal: React.FC<AudioTranscriberModalProps> = ({ isOpen, onClose }) => {
-  const { activeCase, addEvidence } = useSueChef();
+  const { activeCase, addEvidence, language } = useSueChef();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const audioRef = useRef<HTMLAudioElement>(null);
+  const stopListeningRef = useRef<(() => void) | null>(null);
 
   const [audioSrc, setAudioSrc] = useState<string | null>(null);
   const [fileName, setFileName] = useState<string>('');
@@ -40,6 +43,7 @@ export const AudioTranscriberModal: React.FC<AudioTranscriberModalProps> = ({ is
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
   const [currentTime, setCurrentTime] = useState<number>(0);
   const [duration, setDuration] = useState<number>(0);
+  const [isDictating, setIsDictating] = useState<boolean>(false);
 
   const p = activeCase.parties.find(x => x.role === 'plaintiff');
   const d = activeCase.parties.find(x => x.role === 'defendant');
@@ -73,6 +77,40 @@ export const AudioTranscriberModal: React.FC<AudioTranscriberModalProps> = ({ is
   const [newSpeaker, setNewSpeaker] = useState<string>(pName);
   const [newText, setNewText] = useState<string>('');
   const [newIsAdmission, setNewIsAdmission] = useState<boolean>(false);
+  useEffect(() => {
+    return () => {
+      if (stopListeningRef.current) {
+        stopListeningRef.current();
+      }
+    };
+  }, []);
+
+  const toggleLiveDictation = () => {
+    sound.playClick();
+    if (isDictating) {
+      if (stopListeningRef.current) {
+        stopListeningRef.current();
+      }
+      setIsDictating(false);
+    } else {
+      const stopFn = SpeechRecognitionService.startListening({
+        language,
+        continuous: true,
+        interimResults: true,
+        onTranscript: (transcript) => {
+          setNewText(prev => (prev ? `${prev} ${transcript}` : transcript));
+        },
+        onError: (err) => {
+          console.warn('Speech recognition error:', err);
+          setIsDictating(false);
+        },
+        onStateChange: (listening) => {
+          setIsDictating(listening);
+        }
+      });
+      stopListeningRef.current = stopFn;
+    }
+  };
 
   if (!isOpen) return null;
 
@@ -401,11 +439,24 @@ export const AudioTranscriberModal: React.FC<AudioTranscriberModalProps> = ({ is
               <div className="flex gap-2">
                 <input
                   type="text"
-                  placeholder="Type spoken sentence or testimony statement..."
+                  placeholder="Type spoken sentence or dictate via Live Mic..."
                   value={newText}
                   onChange={e => setNewText(e.target.value)}
                   className="flex-1 bg-[var(--bg-card)] border border-[var(--border-color)] px-3 py-1.5 text-xs text-[var(--text-main)] custom-geometry font-sans"
                 />
+                <button
+                  type="button"
+                  onClick={toggleLiveDictation}
+                  className={`px-3 py-1.5 border text-xs font-mono font-bold custom-geometry flex items-center gap-1.5 transition-all ${
+                    isDictating
+                      ? 'bg-rose-950/80 border-rose-500 text-rose-300 animate-pulse'
+                      : 'bg-[var(--bg-secondary)] border-[var(--border-color)] text-[var(--accent-gold)] hover:border-[var(--accent-gold)]'
+                  }`}
+                  title="Toggle Real-Time Microphone Voice Dictation"
+                >
+                  <Mic className="w-3.5 h-3.5" />
+                  <span>{isDictating ? 'Listening...' : 'Live Mic'}</span>
+                </button>
                 <button
                   type="submit"
                   className="px-3 py-1.5 bg-[var(--accent-gold)] text-slate-950 font-mono text-xs font-bold custom-geometry flex items-center gap-1 flex-shrink-0"

@@ -3,6 +3,7 @@ import { useSueChef } from '../../context/SueChefContext';
 import { CryptoDbService } from '../../services/cryptoDb';
 import { sound } from '../../services/soundEngine';
 import { cleanPartyName } from '../../services/caseUtils';
+import { ClientOcrEngine } from '../../services/clientOcrEngine';
 import { EvidenceItem } from '../../types';
 import { 
   Camera, 
@@ -16,7 +17,8 @@ import {
   ShieldCheck, 
   FileText,
   Sparkles,
-  ArrowRight
+  ArrowRight,
+  Cpu
 } from 'lucide-react';
 
 interface ReceiptOcrModalProps {
@@ -33,6 +35,9 @@ export const ReceiptOcrModal: React.FC<ReceiptOcrModalProps> = ({ isOpen, onClos
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [isProcessing, setIsProcessing] = useState<boolean>(false);
   const [sha256Hash, setSha256Hash] = useState<string>('');
+  const [ocrEngineUsed, setOcrEngineUsed] = useState<string>('');
+  const [ocrConfidence, setOcrConfidence] = useState<number>(0);
+  const [extractedRawText, setExtractedRawText] = useState<string>('');
   
   // Extracted OCR fields
   const [extractedTitle, setExtractedTitle] = useState<string>('');
@@ -52,30 +57,30 @@ export const ReceiptOcrModal: React.FC<ReceiptOcrModalProps> = ({ isOpen, onClos
     sound.playDocketStamp();
     setIsProcessing(true);
 
-    // 1. Compute real SHA-256 hash
     try {
-      const buffer = await file.arrayBuffer();
-      const hash = await CryptoDbService.computeSha256(buffer);
-      setSha256Hash(hash);
+      const ocrResult = await ClientOcrEngine.processDocument(file, file.name);
+      setSha256Hash(ocrResult.sha256Hash);
+      setExtractedTitle(ocrResult.suggestedTitle);
+      setExtractedAmount(ocrResult.totalAmount !== undefined ? ocrResult.totalAmount.toFixed(2) : '350.00');
+      setExtractedDate(ocrResult.date || new Date().toISOString().split('T')[0]);
+      setExtractedCategory(ocrResult.suggestedCategory);
+      setExtractedNotes(ocrResult.suggestedNotes);
+      setExtractedRawText(ocrResult.rawText);
+      setOcrEngineUsed(ocrResult.engineUsed === 'tesseract-wasm' ? 'Tesseract.js WASM (100% Client-Side Neural)' : 'Offline Vision Pattern Heuristic');
+      setOcrConfidence(ocrResult.confidenceScore);
+
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        setPreviewUrl(e.target?.result as string);
+      };
+      reader.readAsDataURL(file);
+
+      sound.playSuccessChime();
     } catch (err) {
-      console.error('Error calculating hash:', err);
+      console.error('Error processing document OCR:', err);
+    } finally {
+      setIsProcessing(false);
     }
-
-    // 2. Load into canvas and preview
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      const dataUrl = e.target?.result as string;
-      setPreviewUrl(dataUrl);
-
-      // Perform OCR pattern analysis
-      // For real pro-se receipts: parse filename, simulated image text patterns, or user metadata
-      setTimeout(() => {
-        analyzeReceiptMetadata(file.name, file.size);
-        setIsProcessing(false);
-        sound.playSuccessChime();
-      }, 450);
-    };
-    reader.readAsDataURL(file);
   };
 
   const analyzeReceiptMetadata = (fileName: string, _fileSize: number) => {
@@ -296,10 +301,26 @@ export const ReceiptOcrModal: React.FC<ReceiptOcrModalProps> = ({ isOpen, onClos
                 </div>
               </div>
 
-              {/* Hash Display */}
-              <div className="p-2.5 bg-[var(--bg-secondary)] border border-[var(--border-color)] rounded text-[10px] font-mono break-all text-[var(--text-muted)]">
-                <span className="text-slate-400 font-bold">Tamper-Proof Fingerprint: </span>
-                {sha256Hash}
+              {/* Hash & Engine Display */}
+              <div className="p-2.5 bg-[var(--bg-secondary)] border border-[var(--border-color)] rounded text-[10px] font-mono break-all text-[var(--text-muted)] space-y-1">
+                <div>
+                  <span className="text-slate-400 font-bold">Tamper-Proof Fingerprint: </span>
+                  {sha256Hash}
+                </div>
+                {ocrEngineUsed && (
+                  <div className="flex flex-wrap items-center gap-2 pt-1 border-t border-[var(--border-color)]/50">
+                    <span className="flex items-center gap-1 text-[var(--accent-gold)]">
+                      <Cpu className="w-3 h-3" />
+                      <span className="font-bold">Engine:</span> {ocrEngineUsed}
+                    </span>
+                    <span className="text-emerald-400">
+                      • Confidence: {ocrConfidence}%
+                    </span>
+                    <span className="text-slate-400">
+                      • 100% Free / Zero Cloud Server
+                    </span>
+                  </div>
+                )}
               </div>
 
               {/* Form Grid */}

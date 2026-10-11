@@ -46,6 +46,8 @@ import { HostileCrossGauntlet } from './HostileCrossGauntlet';
 import { CourtroomMap } from './CourtroomMap';
 import { SpeechAnalyticsCoach } from './SpeechAnalyticsCoach';
 import { CourtroomCheatSheetModal } from './CourtroomCheatSheetModal';
+import { TwoTierLegalClause } from '../common/TwoTierLegalClause';
+import { SpeechRecognitionService } from '../../services/speechRecognitionService';
 
 const SAMPLE_SCENARIOS: ObjectionScenario[] = [
   {
@@ -154,59 +156,125 @@ const SAMPLE_SCENARIOS: ObjectionScenario[] = [
   }
 ];
 
-const FRE_RULES = [
+export interface TwoTierFRERule {
+  rule: string;
+  title: string;
+  summary: string;
+  proSeTip: string;
+  objectionScript: string;
+  keyRights: string[];
+  rawRule: string;
+}
+
+const FRE_RULES: TwoTierFRERule[] = [
   {
     rule: 'FRE 401 / 402',
-    title: 'Test for Relevant Evidence',
-    summary: 'Evidence is relevant if it has any tendency to make a fact more or less probable than it would be without the evidence.',
-    proSeTip: 'If opposing counsel objects to relevance, explain to the Judge in one sentence exactly which cause of action or damage element this fact proves.'
+    title: 'Relevance: Threshold for Admissible Evidence',
+    summary: 'Evidence is relevant if it has any tendency to make a consequential factual element more or less probable than it would be without the evidence.',
+    proSeTip: 'If opposing counsel objects to relevance, tell the judge in one sentence: "Your Honor, this goes directly to establishing our damage amount / breach of agreement under Count One."',
+    objectionScript: 'Objection, Your Honor: Irrelevant under FRE 402. This matter has zero tendency to prove or disprove any element of the pending causes of action.',
+    keyRights: [
+      'Low threshold: any logical connection to a disputed fact is admissible',
+      'Irrelevant evidence is strictly inadmissible and must be excluded',
+      'Proponent must identify the specific claim or defense fact being proven'
+    ],
+    rawRule: 'Federal Rule of Evidence 401. Evidence is relevant if: (a) it has any tendency to make a fact more or less probable than it would be without the evidence; and (b) the fact is of consequence in determining the action. Rule 402. Relevant evidence is admissible unless constitution, statute, or these rules provide otherwise. Irrelevant evidence is not admissible.'
   },
   {
     rule: 'FRE 403',
-    title: 'Excluding Relevant Evidence for Prejudice or Confusion',
-    summary: 'The court may exclude relevant evidence if its probative value is substantially outweighed by a danger of unfair prejudice, confusing the issues, or wasting time.',
-    proSeTip: 'Object under FRE 403 if the other side tries to introduce irrelevant personal insults or past unrelated disputes.'
+    title: 'Exclusion for Unfair Prejudice, Confusion, or Delay',
+    summary: 'The court may exclude relevant evidence if its probative value is substantially outweighed by a danger of unfair prejudice, confusing the issues, misleading the factfinder, or wasting time.',
+    proSeTip: 'Stand up and object under FRE 403 immediately if the other side brings up personal character attacks, unrelated bankruptcies, or cumulative duplicate arguments.',
+    objectionScript: 'Objection, Your Honor: Under FRE 403, the probative value is substantially outweighed by the danger of unfair prejudice and confusing the issues.',
+    keyRights: [
+      'Stops opponent from smearing your character with unrelated past events',
+      'Prevents jury or judge from being inflamed by inflammatory or non-probative accusations',
+      'Excludes needlessly cumulative exhibits and repetitive testimony'
+    ],
+    rawRule: 'Federal Rule of Evidence 403. The court may exclude relevant evidence if its probative value is substantially outweighed by a danger of one or more of the following: unfair prejudice, confusing the issues, misleading the jury, undue delay, wasting time, or needlessly presenting cumulative evidence.'
   },
   {
     rule: 'FRE 602',
-    title: 'Need for Personal Knowledge',
-    summary: 'A witness may testify to a matter only if evidence supports that the witness has personal firsthand knowledge.',
-    proSeTip: 'Object immediately if the other side testifies about what someone else thought or was feeling.'
+    title: 'Need for Personal Knowledge (Firsthand Observation)',
+    summary: 'A witness may testify to a matter only if evidence is introduced sufficient to support a finding that the witness has firsthand personal knowledge of the matter.',
+    proSeTip: 'Object under FRE 602 if the opponent testifies: "I believe the tenant intended to break the pipe" or reports on events they did not physically observe.',
+    objectionScript: 'Objection, Your Honor: Lack of personal knowledge under FRE 602. The witness was not present and has no firsthand perception of this event.',
+    keyRights: [
+      'Witnesses cannot speculate about what other people saw, thought, or intended',
+      'Witness testimony is confined to what they directly saw, heard, or experienced',
+      'Speculative testimony must be stricken from the record on prompt objection'
+    ],
+    rawRule: 'Federal Rule of Evidence 602. A witness may testify to a matter only if evidence is introduced sufficient to support a finding that the witness has personal knowledge of the matter. Evidence to prove personal knowledge may consist of the witness’s own testimony. This rule does not apply to a witness’s expert testimony under Rule 703.'
   },
   {
     rule: 'FRE 611(c)',
-    title: 'Leading Questions on Direct vs Cross',
-    summary: 'Leading questions should not be used on direct examination except as necessary. Leading questions ARE permitted and encouraged on cross-examination.',
-    proSeTip: 'On Direct: ask open questions. On Cross: ask only leading yes/no trap questions.'
+    title: 'Leading Questions on Direct vs. Cross-Examination',
+    summary: 'Leading questions (suggesting the desired answer) should not be used on direct examination of your own witnesses, but ARE permitted and required on cross-examination of adverse parties.',
+    proSeTip: 'When examining opposing party: ask ONLY tight leading questions: "Isn\'t it true that you received the email on July 10th? Yes or no?"',
+    objectionScript: 'Objection, Your Honor: Leading the witness on direct examination under FRE 611(c). Counsel is testifying for their own witness.',
+    keyRights: [
+      'On direct: witnesses must tell their story in their own words via open questions',
+      'On cross: you are legally entitled to lock the opponent into yes/no answers',
+      'Prevents opposing counsel from feeding words into friendly witness testimony'
+    ],
+    rawRule: 'Federal Rule of Evidence 611(c). Leading questions should not be used on direct examination except as necessary to develop the witness’s testimony. Ordinarily, the court should allow leading questions: (1) on cross-examination; and (2) when a party calls a hostile witness, an adverse party, or a witness identified with an adverse party.'
   },
   {
     rule: 'FRE 801(d)(2)',
-    title: 'Opposing Party Statement / Admission',
-    summary: 'An out-of-court statement offered against an opposing party made by the party or their employee/agent is NOT hearsay.',
-    proSeTip: 'Defendant’s text messages, emails, voicemails, and employee statements can ALWAYS be read into evidence under this rule!'
+    title: 'Opposing Party Statement / Admission (Not Hearsay)',
+    summary: 'An out-of-court statement offered against an opposing party that was made by the party, their agent, or authorized representative is legally NOT hearsay.',
+    proSeTip: 'Whenever the opponent says "Hearsay!", respond: "Your Honor, this is an Opposing Party Admission under FRE 801(d)(2). The Defendant wrote this text message directly to me."',
+    objectionScript: 'Your Honor, this statement is NOT hearsay under FRE 801(d)(2)(A). It is an opposing party admission made directly by the Defendant.',
+    keyRights: [
+      'Every email, text message, letter, and verbal statement by the defendant is admissible',
+      'Property manager and corporate employee statements bind the defendant under subsection (D)',
+      'Hearsay objections to your opponent\'s own communications must be overruled'
+    ],
+    rawRule: 'Federal Rule of Evidence 801(d)(2). An Opposing Party’s Statement. A statement that meets the following conditions is not hearsay: The statement is offered against an opposing party and: (A) was made by the party in an individual or representative capacity; (C) was made by a person whom the party authorized to make a statement on the subject; or (D) was made by the party’s agent or employee on a matter within the scope of that relationship and while it existed.'
   },
   {
     rule: 'FRE 803(6)',
-    title: 'Records of a Regularly Conducted Activity (Business Records)',
-    summary: 'Business records made at or near the time by someone with knowledge kept in the regular course of business are admissible exceptions to hearsay.',
-    proSeTip: 'Use this rule to admit repair invoices, bank statements, lease ledgers, and certified contractor inspection estimates.'
+    title: 'Records of Regularly Conducted Activity (Business Records)',
+    summary: 'Records of an act, event, condition, or opinion made at or near the time by someone with knowledge, kept in the course of regularly conducted activity, are admissible exceptions to hearsay.',
+    proSeTip: 'Use FRE 803(6) to admit bank statements, accounting ledgers, contractor invoices, and hospital records without needing the original author in court.',
+    objectionScript: 'Your Honor, this document qualifies as an admissible business record under FRE 803(6). It was prepared contemporaneously in the ordinary course of business.',
+    keyRights: [
+      'Admit third-party bank statements, merchant receipts, and contractor bills',
+      'Eliminates need to subpoena out-of-state accountants or billing clerks',
+      'Requires foundation that records were kept in the regular course of business'
+    ],
+    rawRule: 'Federal Rule of Evidence 803(6). Records of a Regularly Conducted Activity. A record of an act, event, condition, opinion, or diagnosis if: (A) the record was made at or near the time by—or from information transmitted by—someone with knowledge; (B) the record was kept in the course of a regularly conducted activity of a business, organization, occupation, or calling; (C) making the record was a regular practice of that activity; and (D) all these conditions are shown by the testimony of the custodian or another qualified witness.'
   },
   {
     rule: 'FRE 901 / 902',
-    title: 'Authenticating Electronic Evidence',
-    summary: 'Proponent must establish that evidence is genuine through testimony or self-authenticating digital signatures and hashes.',
-    proSeTip: 'Testify how you took the screenshot or downloaded the file to satisfy FRE 901.'
+    title: 'Authenticating Electronic & Physical Exhibits',
+    summary: 'To satisfy the requirement of authenticating an item of evidence, the proponent must produce evidence sufficient to support a finding that the item is what the proponent claims it is.',
+    proSeTip: 'Authenticating a phone screenshot takes 10 seconds: "Your Honor, Exhibit C is a true and correct screenshot of text messages between my phone and the Defendant taken on June 15th."',
+    objectionScript: 'Objection, Your Honor: Lack of foundation and authentication under FRE 901. There is no testimony establishing this screenshot originated from my client.',
+    keyRights: [
+      'Witness must testify to personal knowledge that exhibit is genuine and unaltered',
+      'Self-authenticating documents under FRE 902 (certified records, newspapers) require no extrinsic witness',
+      'Tamper-proof digital hashes (SHA-256) provide conclusive authentication foundation'
+    ],
+    rawRule: 'Federal Rule of Evidence 901(a). In General. To satisfy the requirement of authenticating or identifying an item of evidence, the proponent must produce evidence sufficient to support a finding that the item is what the proponent claims it is. Rule 902. Evidence That Is Self-Authenticating. The following items of evidence are self-authenticating; they require no extrinsic evidence of authenticity in order to be admitted...'
   },
   {
     rule: 'FRE 1002 / 1003',
     title: 'Best Evidence Rule & Admissibility of Duplicates',
-    summary: 'An original writing, recording, or photograph is required, but duplicates are fully admissible unless genuine authenticity is questioned.',
-    proSeTip: 'Printed PDFs and digital screenshots are fully admissible duplicates under FRE 1003.'
+    summary: 'An original writing, recording, or photograph is required to prove its content, but duplicate photocopies, PDFs, and digital printouts are fully admissible to the same extent as the original.',
+    proSeTip: 'If opposing counsel objects that you brought a printout rather than the physical parchment or original phone, cite FRE 1003: duplicates are admissible as matter of law.',
+    objectionScript: 'Objection, Your Honor: Best Evidence Rule under FRE 1002. The witness is testifying about the contents of a written lease without producing the document.',
+    keyRights: [
+      'Digital printouts and PDF copies have the exact same evidentiary standing as original contracts',
+      'Opponent cannot exclude a clear photocopy unless they raise a genuine dispute as to authenticity',
+      'Witness cannot summarize what a written contract says without producing the agreement'
+    ],
+    rawRule: 'Federal Rule of Evidence 1002. Requirement of the Original. An original writing, recording, or photograph is required in order to prove its content unless these rules or a federal statute provides otherwise. Rule 1003. Admissibility of Duplicates. A duplicate is admissible to the same extent as the original unless a genuine question is raised about the original’s authenticity or the circumstances make it unfair to admit the duplicate.'
   }
 ];
 
 export const TrialPrep: React.FC = () => {
-  const { activeCase, updateActiveCase, totalDamages } = useSueChef();
+  const { activeCase, updateActiveCase, totalDamages, language } = useSueChef();
   const [activeTab, setActiveTab] = useState<'mock_hearing' | 'cross_exam' | 'courtroom_map' | 'simulator' | 'fre' | 'witnesses' | 'speech'>('mock_hearing');
 
   // Mock Hearing State
@@ -221,6 +289,18 @@ export const TrialPrep: React.FC = () => {
   const [isSpeakingJudge, setIsSpeakingJudge] = useState(false);
   const [isDictating, setIsDictating] = useState(false);
   const [showCheatSheet, setShowCheatSheet] = useState(false);
+
+  // Prompter Speech Dictation State
+  const [isPrompterListening, setIsPrompterListening] = useState(false);
+  const prompterStopRef = useRef<(() => void) | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (prompterStopRef.current) prompterStopRef.current();
+      SpeechRecognitionService.stopListening();
+      SpeechRecognitionService.stopSpeaking();
+    };
+  }, []);
 
   const handleSpeakJudge = (questionText: string) => {
     sound.playClick();
@@ -237,28 +317,47 @@ export const TrialPrep: React.FC = () => {
 
   const handleStartDictation = () => {
     sound.playClick();
-    const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
-    if (!SpeechRecognition) {
-      alert('Speech recognition is not supported in this browser. Please type your response directly.');
+    if (isDictating) {
+      SpeechRecognitionService.stopListening();
+      setIsDictating(false);
       return;
     }
-    try {
-      const recognition = new SpeechRecognition();
-      recognition.continuous = false;
-      recognition.interimResults = false;
-      recognition.lang = 'en-US';
-      recognition.onstart = () => setIsDictating(true);
-      recognition.onresult = (e: any) => {
-        const transcript = e.results[0][0].transcript;
+    SpeechRecognitionService.startListening({
+      language,
+      continuous: false,
+      interimResults: false,
+      onTranscript: (transcript) => {
         setUserHearingAnswer(prev => prev ? `${prev} ${transcript}` : transcript);
         setIsDictating(false);
-      };
-      recognition.onerror = () => setIsDictating(false);
-      recognition.onend = () => setIsDictating(false);
-      recognition.start();
-    } catch (e) {
-      console.warn('Speech recognition error:', e);
-      setIsDictating(false);
+      },
+      onError: (err) => {
+        console.warn('Speech recognition error:', err);
+        setIsDictating(false);
+      },
+      onStateChange: (listening) => setIsDictating(listening)
+    });
+  };
+
+  const handleTogglePrompterDictation = () => {
+    sound.playClick();
+    if (isPrompterListening) {
+      if (prompterStopRef.current) prompterStopRef.current();
+      setIsPrompterListening(false);
+    } else {
+      const stopFn = SpeechRecognitionService.startListening({
+        language,
+        continuous: true,
+        interimResults: true,
+        onTranscript: (transcript) => {
+          handleSpeechTextChange(activeSpeechText ? `${activeSpeechText} ${transcript}` : transcript);
+        },
+        onError: (err) => {
+          console.warn('Prompter dictation error:', err);
+          setIsPrompterListening(false);
+        },
+        onStateChange: (listening) => setIsPrompterListening(listening)
+      });
+      prompterStopRef.current = stopFn;
     }
   };
 
@@ -1002,19 +1101,27 @@ Respectfully submitted, Plaintiff rests.`;
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {filteredFRE.map((item, idx) => (
-              <div key={idx} className="p-4 bg-[var(--bg-card)] border border-[var(--border-color)] custom-geometry space-y-2 hover:border-[var(--accent-gold)] transition-all">
-                <div className="flex items-center justify-between">
-                  <span className="px-2 py-0.5 text-[11px] font-mono font-bold bg-[var(--badge-bg)] text-[var(--accent-gold)] border border-[var(--badge-border)] custom-geometry">
-                    {item.rule}
-                  </span>
-                </div>
-                <h3 className="text-sm font-bold text-[var(--text-main)] font-serif">{item.title}</h3>
-                <p className="text-xs text-[var(--text-muted)] leading-relaxed">{item.summary}</p>
-                <div className="p-2.5 bg-[var(--bg-secondary)] border border-[var(--border-color)]/60 text-[11px] custom-geometry">
-                  <strong className="text-[var(--accent-gold)] font-semibold">Pro Se Courtroom Tip: </strong>
-                  <span className="text-[var(--text-main)]">{item.proSeTip}</span>
-                </div>
-              </div>
+              <TwoTierLegalClause
+                key={idx}
+                title={item.title}
+                statutoryCitation={item.rule}
+                summary={item.summary}
+                keyRights={item.keyRights}
+                callouts={[
+                  {
+                    type: 'info',
+                    label: '10-Sec Courtroom Script',
+                    detail: item.objectionScript
+                  },
+                  {
+                    type: 'liability',
+                    label: 'Pro Se Courtroom Tip',
+                    detail: item.proSeTip
+                  }
+                ]}
+                rawLegalText={item.rawRule}
+                defaultExpanded={false}
+              />
             ))}
           </div>
         </div>
@@ -1268,9 +1375,24 @@ Respectfully submitted, Plaintiff rests.`;
 
           {/* Editable Draft */}
           <div className="p-4 bg-[var(--bg-card)] border border-[var(--border-color)] custom-geometry space-y-2">
-            <label className="text-xs font-bold uppercase tracking-wider text-[var(--text-muted)] font-mono">
-              Edit {prompterMode === 'opening' ? 'Opening Statement' : 'Closing Argument'} Script Draft
-            </label>
+            <div className="flex items-center justify-between">
+              <label className="text-xs font-bold uppercase tracking-wider text-[var(--text-muted)] font-mono">
+                Edit {prompterMode === 'opening' ? 'Opening Statement' : 'Closing Argument'} Script Draft
+              </label>
+              <button
+                type="button"
+                onClick={handleTogglePrompterDictation}
+                className={`px-3 py-1 text-xs font-mono font-bold custom-geometry flex items-center gap-1.5 transition-all border ${
+                  isPrompterListening
+                    ? 'bg-rose-950 border-rose-500 text-rose-300 animate-pulse'
+                    : 'bg-[var(--bg-secondary)] border-[var(--border-color)] text-[var(--accent-gold)] hover:border-[var(--accent-gold)]'
+                }`}
+                title="Practice oral delivery with real-time mic streaming"
+              >
+                <Mic className="w-3.5 h-3.5" />
+                <span>{isPrompterListening ? 'Listening / Rehearsing...' : 'Rehearse via Mic'}</span>
+              </button>
+            </div>
             <textarea
               rows={6}
               value={activeSpeechText}

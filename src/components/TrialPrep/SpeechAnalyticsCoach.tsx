@@ -1,15 +1,32 @@
-import React, { useMemo } from 'react';
-import { Mic, Award, AlertTriangle, CheckCircle2, TrendingUp, Sparkles, Volume2, Clock } from 'lucide-react';
+import React, { useMemo, useState } from 'react';
+import { Mic, Award, AlertTriangle, CheckCircle2, TrendingUp, Sparkles, Volume2, VolumeX, Clock } from 'lucide-react';
 import { MockHearingEngine, SpeechAnalyticsResult } from '../../services/mockHearingEngine';
+import { SpeechRecognitionService } from '../../services/speechRecognitionService';
+import { useSueChef } from '../../context/SueChefContext';
 
 interface SpeechAnalyticsCoachProps {
   speechText: string;
 }
 
 export const SpeechAnalyticsCoach: React.FC<SpeechAnalyticsCoachProps> = ({ speechText }) => {
+  const { language } = useSueChef();
+  const [isSpeaking, setIsSpeaking] = useState(false);
+
   const analytics: SpeechAnalyticsResult = useMemo(() => {
     return MockHearingEngine.analyzeSpeech(speechText);
   }, [speechText]);
+
+  const handleSpeak = () => {
+    if (isSpeaking) {
+      SpeechRecognitionService.stopSpeaking();
+      setIsSpeaking(false);
+    } else {
+      setIsSpeaking(true);
+      SpeechRecognitionService.speakText(speechText, language, () => {
+        setIsSpeaking(false);
+      });
+    }
+  };
 
   if (!speechText.trim()) {
     return (
@@ -37,6 +54,20 @@ export const SpeechAnalyticsCoach: React.FC<SpeechAnalyticsCoachProps> = ({ spee
         </div>
 
         <div className="flex items-center gap-3">
+          <button
+            type="button"
+            onClick={handleSpeak}
+            className={`px-3 py-1.5 card-geom border text-xs font-mono flex items-center gap-1.5 transition-all ${
+              isSpeaking
+                ? 'bg-amber-500 text-slate-950 border-amber-400 font-bold'
+                : 'bg-[var(--bg-secondary)] border-[var(--border-color)] text-[var(--text-main)] hover:border-[var(--accent-gold)]'
+            }`}
+            title="Read out speech to practice cadence"
+          >
+            {isSpeaking ? <VolumeX className="w-3.5 h-3.5" /> : <Volume2 className="w-3.5 h-3.5 text-[var(--accent-gold)]" />}
+            <span>{isSpeaking ? 'Stop Audio' : 'Hear Speech'}</span>
+          </button>
+
           <div className="px-3 py-1 card-geom bg-[var(--bg-secondary)] border border-[var(--border-color)] text-right">
             <div className="text-[9px] font-mono uppercase text-[var(--text-muted)]">Delivery Score</div>
             <div className={`font-mono font-bold text-base ${

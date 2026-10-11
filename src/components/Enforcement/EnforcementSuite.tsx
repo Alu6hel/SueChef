@@ -35,6 +35,7 @@ import {
   ExternalLink,
   HelpCircle
 } from 'lucide-react';
+import { TwoTierLegalClause } from '../common/TwoTierLegalClause';
 
 export const EnforcementSuite: React.FC = () => {
   const { 
@@ -528,7 +529,33 @@ export const EnforcementSuite: React.FC = () => {
 
       {/* TAB 4: WRIT OF EXECUTION GENERATOR */}
       {activeTab === 'writ' && (
-        <div className="bg-[var(--bg-card)] border border-[var(--border-color)] p-5 custom-geometry space-y-4">
+        <div className="space-y-4">
+          <TwoTierLegalClause
+            title="Writ of Execution: Official Levying Officer Seizure Order"
+            statutoryCitation="Form EJ-130 • CCP § 699.510 & State Execution Rules"
+            summary="A Writ of Execution is the primary court order commanding the County Sheriff or Marshal to seize non-exempt bank accounts, vehicles, till cash, or property to satisfy your money judgment."
+            keyRights={[
+              '180-Day Execution Window: Sheriff must levy upon debtor assets within 180 calendar days of clerk issuance',
+              'Multiple Levy Targets: Authorizes bank levies, till taps, keeper levies, and physical vehicle impounds',
+              'Statutory Interest Accrual: Judgment continues accruing legal interest (e.g. 10% per annum) until completely satisfied'
+            ]}
+            callouts={[
+              {
+                type: 'recovery',
+                label: 'Asset Seizure',
+                detail: 'Sheriff Levies on Bank Accounts, Cash Drawers, & Vehicles'
+              },
+              {
+                type: 'deadline',
+                label: '180-Day Window',
+                detail: 'Levy Must Be Executed Within 180 Days of Issuance'
+              }
+            ]}
+            rawLegalText={`CALIFORNIA CODE OF CIVIL PROCEDURE § 699.510:\n(a) After entry of a money judgment, a writ of execution shall be issued by the clerk of the court upon application of the judgment creditor and shall be directed to the levying officer in the county where the levy is to be made...\nCCP § 699.530(b): The levying officer may not levy under a writ of execution after the expiration of 180 days from the date the writ was issued.`}
+            defaultExpanded={false}
+          />
+
+          <div className="bg-[var(--bg-card)] border border-[var(--border-color)] p-5 custom-geometry space-y-4">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-[var(--border-color)] pb-3">
             <div>
               <h3 className="font-serif font-bold text-lg text-[var(--text-main)]">
@@ -562,6 +589,7 @@ export const EnforcementSuite: React.FC = () => {
           <pre className="bg-[var(--bg-secondary)] border border-[var(--border-color)] p-4 text-xs font-mono text-[var(--text-main)] whitespace-pre-wrap leading-relaxed overflow-x-auto max-h-[500px]">
             {EnforcementEngine.generateWritDocument(activeCase, plan)}
           </pre>
+        </div>
         </div>
       )}
 
@@ -618,7 +646,33 @@ export const EnforcementSuite: React.FC = () => {
 
       {/* TAB 6: WAGE GARNISHMENT CALCULATOR */}
       {activeTab === 'garnishment' && (
-        <div className="bg-[var(--bg-card)] border border-[var(--border-color)] p-5 custom-geometry space-y-5">
+        <div className="space-y-4">
+          <TwoTierLegalClause
+            title="Earnings Withholding Order: 25% Payroll Interception"
+            statutoryCitation="Form WG-001 • CCP § 706.050 & 15 U.S.C. § 1673"
+            summary="Wage garnishment legally forces the judgment debtor's employer to withhold up to 25% of disposable weekly earnings directly from each paycheck and remit it to the levying officer until the full judgment balance and interest are paid."
+            keyRights={[
+              'Continuous Deductions: Withholding remains active continuously on every pay cycle until 100% of the judgment is collected',
+              'Federal CCPA Protection: Garnishment cannot exceed 25% of disposable earnings or 30x the federal minimum wage',
+              'Employer Statutory Duty: Employers who refuse to comply become directly liable for the unpaid judgment amount'
+            ]}
+            callouts={[
+              {
+                type: 'recovery',
+                label: '25% Deduction Cap',
+                detail: 'Max 25% of Disposable Earnings Intercepted Each Paycheck'
+              },
+              {
+                type: 'penalty',
+                label: 'Employer Liability',
+                detail: 'Employer Liable for Failure to Withhold Under Writ'
+              }
+            ]}
+            rawLegalText={`CALIFORNIA CODE OF CIVIL PROCEDURE § 706.050:\nExcept as otherwise provided in this chapter, the maximum amount of disposable earnings of an individual judgment debtor for any workweek that is subject to levy under an earnings withholding order shall not exceed the lesser of: (1) Twenty-five percent of the individual's disposable earnings for that week; or (2) The amount by which the individual's disposable earnings for that week exceed 48 times the state minimum wage...\n15 U.S.C. § 1673:\nExcept as provided in subsection (b) and in section 1675 of this title, the maximum part of the aggregate disposable earnings of an individual for any workweek which is subjected to garnishment may not exceed (1) 25 per centum of his disposable earnings for that week...`}
+            defaultExpanded={false}
+          />
+
+          <div className="bg-[var(--bg-card)] border border-[var(--border-color)] p-5 custom-geometry space-y-5">
           <div>
             <h3 className="font-serif font-bold text-lg text-[var(--text-main)]">
               Earnings Withholding &amp; Wage Garnishment Calculator
@@ -670,64 +724,119 @@ export const EnforcementSuite: React.FC = () => {
             ))}
           </div>
         </div>
+        </div>
       )}
 
       {/* TAB 7: REAL PROPERTY LIEN (ABSTRACT OF JUDGMENT) */}
       {activeTab === 'liens' && (
-        <div className="bg-[var(--bg-card)] border border-[var(--border-color)] p-5 custom-geometry space-y-4">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-[var(--border-color)] pb-3">
-            <div>
-              <h3 className="font-serif font-bold text-lg text-[var(--text-main)]">
-                Abstract of Judgment (Real Property Lien Recorder)
-              </h3>
-              <p className="text-xs text-[var(--text-muted)]">
-                Record this document with the County Recorder to place an involuntary lien on all debtor real estate.
-              </p>
-            </div>
-            <button
-              onClick={() => {
-                const doc = EnforcementEngine.generateAbstractOfJudgment(activeCase, plan);
-                copyToClipboard(doc, 'abstract_lien');
-              }}
-              className="px-3 py-1.5 bg-[var(--accent-gold)] text-slate-950 font-mono text-xs font-bold custom-geometry flex items-center gap-1.5"
-            >
-              {copiedKey === 'abstract_lien' ? <CheckCircle2 className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
-              <span>{copiedKey === 'abstract_lien' ? 'Copied Abstract' : 'Copy Abstract of Judgment'}</span>
-            </button>
-          </div>
+        <div className="space-y-4">
+          <TwoTierLegalClause
+            title="Abstract of Judgment: Involuntary Real Estate Cloud on Title"
+            statutoryCitation="Form EJ-001 • CCP § 674 & CCP § 697.310"
+            summary="Recording an Abstract of Judgment with the County Recorder places an automatic statutory cloud and lien against all real estate the debtor owns in that county, ensuring you get paid with interest if they sell or refinance."
+            keyRights={[
+              '10-Year Renewable Duration: Real property lien attaches for 10 years and can be renewed indefinitely before expiration',
+              'Escrow Payoff Requirement: Escrow companies cannot close sales or refinancing without full payoff of your recorded judgment lien',
+              'Future After-Acquired Property: Automatically attaches to any real estate the debtor purchases in that county in the future'
+            ]}
+            callouts={[
+              {
+                type: 'recovery',
+                label: '10-Year Cloud on Title',
+                detail: 'Enforces Full Payoff Through Title Escrow on Any Sale or Refi'
+              },
+              {
+                type: 'deadline',
+                label: '10-Year Renewal',
+                detail: 'Lien Enforceable for 10 Years; Renewable Before Expiration'
+              }
+            ]}
+            rawLegalText={`CALIFORNIA CODE OF CIVIL PROCEDURE § 697.310:\n(a) Except as otherwise provided by statute, a judgment lien on real property is created under this section by recording an abstract of a money judgment with the county recorder.\n(b) Unless the money judgment is satisfied or the judgment lien is released, subject to Section 683.180 (renewal of judgment), a judgment lien created under this section continues until 10 years from the date of entry of the judgment.\nCCP § 674(a): An abstract of a judgment or decree ordering the payment of money and entered in a court of this state shall be certified by the clerk of the court...`}
+            defaultExpanded={false}
+          />
 
-          <pre className="bg-[var(--bg-secondary)] border border-[var(--border-color)] p-4 text-xs font-mono text-[var(--text-main)] whitespace-pre-wrap leading-relaxed overflow-x-auto max-h-[450px]">
-            {EnforcementEngine.generateAbstractOfJudgment(activeCase, plan)}
-          </pre>
+          <div className="bg-[var(--bg-card)] border border-[var(--border-color)] p-5 custom-geometry space-y-4">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-[var(--border-color)] pb-3">
+              <div>
+                <h3 className="font-serif font-bold text-lg text-[var(--text-main)]">
+                  Abstract of Judgment (Real Property Lien Recorder)
+                </h3>
+                <p className="text-xs text-[var(--text-muted)]">
+                  Record this document with the County Recorder to place an involuntary lien on all debtor real estate.
+                </p>
+              </div>
+              <button
+                onClick={() => {
+                  const doc = EnforcementEngine.generateAbstractOfJudgment(activeCase, plan);
+                  copyToClipboard(doc, 'abstract_lien');
+                }}
+                className="px-3 py-1.5 bg-[var(--accent-gold)] text-slate-950 font-mono text-xs font-bold custom-geometry flex items-center gap-1.5"
+              >
+                {copiedKey === 'abstract_lien' ? <CheckCircle2 className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
+                <span>{copiedKey === 'abstract_lien' ? 'Copied Abstract' : 'Copy Abstract of Judgment'}</span>
+              </button>
+            </div>
+
+            <pre className="bg-[var(--bg-secondary)] border border-[var(--border-color)] p-4 text-xs font-mono text-[var(--text-main)] whitespace-pre-wrap leading-relaxed overflow-x-auto max-h-[450px]">
+              {EnforcementEngine.generateAbstractOfJudgment(activeCase, plan)}
+            </pre>
+          </div>
         </div>
       )}
 
       {/* TAB 8: ORDER FOR EXAMINATION OF DEBTOR */}
       {activeTab === 'debtors_exam' && (
-        <div className="bg-[var(--bg-card)] border border-[var(--border-color)] p-5 custom-geometry space-y-4">
-          <div>
-            <h3 className="font-serif font-bold text-lg text-[var(--text-main)]">
-              Order for Examination of Judgment Debtor (Debtor Subpoena)
-            </h3>
-            <p className="text-xs text-[var(--text-muted)]">
-              Compel {dName} to appear in court under penalty of contempt with 12 months of financial records.
-            </p>
-          </div>
+        <div className="space-y-4">
+          <TwoTierLegalClause
+            title="Debtor Examination Order (ORAP): Sworn Asset Deposition"
+            statutoryCitation="Form EJ-125 • CCP § 708.110 & Bench Warrant Remedies"
+            summary="An Order for Examination (OEX / ORAP) compels the debtor to appear in court under oath and answer questions about all bank accounts, employers, vehicles, and hidden assets, under threat of contempt and a judicial arrest bench warrant."
+            keyRights={[
+              'Bench Warrant for Failure to Appear: If debtor fails to appear after personal service, the court may issue a bench warrant for contempt (CCP § 708.170)',
+              '1-Year Automatic Lien: Service of the examination order immediately creates a 1-year statutory lien on all non-exempt personal property of the debtor',
+              'Subpoena Duces Tecum Records: Debtor must bring 12 months of bank statements, tax returns, pay stubs, and vehicle titles'
+            ]}
+            callouts={[
+              {
+                type: 'penalty',
+                label: 'Bench Warrant',
+                detail: 'Failure to Appear Triggers Judicial Contempt & Arrest Warrant'
+              },
+              {
+                type: 'liability',
+                label: '1-Year Property Lien',
+                detail: 'Service Instantly Creates Statutory Lien on All Personal Property'
+              }
+            ]}
+            rawLegalText={`CALIFORNIA CODE OF CIVIL PROCEDURE § 708.110:\n(a) The judgment creditor may apply to the proper court for an order requiring the judgment debtor to appear before the court, or a referee appointed by the court, at a time and place specified in the order, to furnish information to aid in enforcement of the money judgment...\n(d) The judgment creditor shall personally serve a copy of the order on the judgment debtor not less than 10 days before the date set for the examination. Service of the order creates a lien on the personal property of the judgment debtor for a period of one year from the date of the order...\nCCP § 708.170(a): If an order requiring a person to appear for an examination was served by a sheriff, marshal, a person specially appointed, or a registered process server, and the person fails to appear: The court may issue a warrant to have the person brought before the court to answer for the failure to appear and may punish the person for contempt.`}
+            defaultExpanded={false}
+          />
 
-          <div className="space-y-3">
-            {plan.examQuestions.map((q, idx) => (
-              <div key={q.id} className="p-3 bg-[var(--bg-secondary)] border border-[var(--border-color)] custom-geometry space-y-1">
-                <div className="flex items-center justify-between">
-                  <span className="text-[10px] font-mono text-[var(--accent-gold)] uppercase font-bold">
-                    Question #{idx + 1} • {q.category}
-                  </span>
+          <div className="bg-[var(--bg-card)] border border-[var(--border-color)] p-5 custom-geometry space-y-4">
+            <div>
+              <h3 className="font-serif font-bold text-lg text-[var(--text-main)]">
+                Order for Examination of Judgment Debtor (Debtor Subpoena)
+              </h3>
+              <p className="text-xs text-[var(--text-muted)]">
+                Compel {dName} to appear in court under penalty of contempt with 12 months of financial records.
+              </p>
+            </div>
+
+            <div className="space-y-3">
+              {plan.examQuestions.map((q, idx) => (
+                <div key={q.id} className="p-3 bg-[var(--bg-secondary)] border border-[var(--border-color)] custom-geometry space-y-1">
+                  <div className="flex items-center justify-between">
+                    <span className="text-[10px] font-mono text-[var(--accent-gold)] uppercase font-bold">
+                      Question #{idx + 1} • {q.category}
+                    </span>
+                  </div>
+                  <h4 className="font-serif font-bold text-xs text-[var(--text-main)]">"{q.question}"</h4>
+                  <p className="text-[11px] text-[var(--text-muted)] font-mono">
+                    Mandatory Subpoenaed Records: {q.expectedDocuments}
+                  </p>
                 </div>
-                <h4 className="font-serif font-bold text-xs text-[var(--text-main)]">"{q.question}"</h4>
-                <p className="text-[11px] text-[var(--text-muted)] font-mono">
-                  Mandatory Subpoenaed Records: {q.expectedDocuments}
-                </p>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
         </div>
       )}

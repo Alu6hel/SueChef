@@ -26,6 +26,7 @@ import { getCountryInfo } from '../../services/countries';
 import { sound } from '../../services/soundEngine';
 import { OfficialFormsModal } from './OfficialFormsModal';
 import { exportFile, triggerPrint, triggerHaptic } from '../../services/fileExport';
+import { TwoTierLegalClause } from '../common/TwoTierLegalClause';
 
 export const PleadingBuilder: React.FC = () => {
   const { activeCase, updateActiveCase, updateParagraph, country } = useSueChef();
@@ -35,6 +36,7 @@ export const PleadingBuilder: React.FC = () => {
   const [downloadedPacket, setDownloadedPacket] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [showOfficialFormsModal, setShowOfficialFormsModal] = useState(false);
+  const [showRawPleadingPaper, setShowRawPleadingPaper] = useState(true);
   const [selectedFont, setSelectedFont] = useState<'Century Schoolbook' | 'Times New Roman' | 'Courier New' | 'Georgia'>(
     activeCase.pleadings.fontFamily || 'Century Schoolbook'
   );
@@ -523,7 +525,47 @@ export const PleadingBuilder: React.FC = () => {
 
       {/* Main Document Viewer Container */}
       {activeSubTab === 'complaint' && (
-        <div className="max-w-4xl mx-auto pleading-paper-container p-8 md:p-12 text-slate-900 border border-slate-300 rounded-sm shadow-2xl relative font-pleading leading-relaxed">
+        <div className="space-y-6">
+          {/* Two-Tier Plain Language Summary Card */}
+          <TwoTierLegalClause
+            title={`Verified Civil Complaint: ${activeCase.title || 'Civil Damages Action'}`}
+            statutoryCitation={`FRCP Rules 8, 10 • ${activeCase.state || countryInfo.name} Civil Procedure`}
+            summary={`This formal verified complaint initiates your legal action against ${defendant?.name || 'Defendant'}, sets forth the factual narrative under numbered paragraphs, and petitions the court to award ${countryInfo.currencySymbol}${activeCase.claimEvaluation.damages.reduce((s, d) => s + (d.amount || 0), 0).toLocaleString()} in direct damages plus statutory penalties.`}
+            keyRights={[
+              'Burden of Proof: Preponderance of the evidence (51% certainty standard)',
+              'Mandatory Summons Service: Must formally serve defendant within 90 days (FRCP 4(m))',
+              'Answer Deadline: Defendant must file an answer within 21–30 calendar days or face default judgment'
+            ]}
+            callouts={[
+              {
+                type: 'liability',
+                label: 'Burden of Proof',
+                detail: 'Preponderance Standard (More likely true than not)'
+              },
+              {
+                type: 'deadline',
+                label: 'Service Window',
+                detail: '90 Days from Court Filing (FRCP Rule 4(m))'
+              },
+              {
+                type: 'recovery',
+                label: 'Total Demanded',
+                detail: `${countryInfo.currencySymbol}${activeCase.claimEvaluation.damages.reduce((s, d) => s + (d.amount || 0), 0).toLocaleString()} Compensatory Relief`
+              },
+              {
+                type: 'penalty',
+                label: 'Bad-Faith Multipliers',
+                detail: 'Statutory Penalties & Costs Requested'
+              }
+            ]}
+            rawLegalText={`WHEREFORE, Plaintiff prays for judgment against Defendant as follows:\n1. For compensatory general and special damages in the sum of ${countryInfo.currencySymbol}${activeCase.claimEvaluation.damages.reduce((s, d) => s + (d.amount || 0), 0).toFixed(2)};\n2. For statutory bad-faith civil penalties as provided by applicable law;\n3. For allowable costs of suit; and\n4. For such other and further relief as the Court deems just and proper.`}
+            actionButtonLabel={showRawPleadingPaper ? 'Hide 28-Line Paper (Summary View)' : 'Expand Full 28-Line Legal Drafting Paper'}
+            onActionClick={() => setShowRawPleadingPaper(!showRawPleadingPaper)}
+            defaultExpanded={false}
+          />
+
+          {showRawPleadingPaper && (
+            <div className="max-w-4xl mx-auto pleading-paper-container p-8 md:p-12 text-slate-900 border border-slate-300 rounded-sm shadow-2xl relative font-pleading leading-relaxed animate-in fade-in">
           
           {/* 28-Line Pleading Paper Numbered Left Margin */}
           <div className="grid grid-cols-12 gap-6">
@@ -650,13 +692,40 @@ export const PleadingBuilder: React.FC = () => {
                 </div>
               </div>
             </div>
-          </div>
+            </div>
+            </div>
+          )}
         </div>
       )}
 
       {/* Demand Letter View */}
       {activeSubTab === 'demand_letter' && (
         <div className="space-y-4 max-w-4xl mx-auto">
+          {/* Two-Tier Plain Language Summary Card */}
+          <TwoTierLegalClause
+            title="Pre-Litigation Statutory Demand & Opportunity to Cure"
+            statutoryCitation="State Civil Code & Rules of Evidence Rule 408"
+            summary={`Before paying court fees, sending this formal demand letter provides ${defendant?.name || 'Defendant'} formal written notice of the claim, sets a strict ${activeCase.pleadings.demandLetter.responseDeadlineDays || 14}-day deadline to tender payment, and lays the evidentiary foundation to establish bad faith at trial.`}
+            keyRights={[
+              'Written Proof: Certified mail tracking proves opponent received actual notice of the claim',
+              'Statutory Prerequisite: Many consumer and deposit statutes require formal demand before treble damages apply',
+              'Pre-Trial Compromise: Protected under Rule 408 as non-admissible settlement dialogue'
+            ]}
+            callouts={[
+              {
+                type: 'deadline',
+                label: 'Cure Deadline',
+                detail: `${activeCase.pleadings.demandLetter.responseDeadlineDays || 14} Calendar Days to Pay in Full`
+              },
+              {
+                type: 'penalty',
+                label: 'Bad Faith Proof',
+                detail: 'Refusal to Cure Supports Statutory Multipliers'
+              }
+            ]}
+            defaultExpanded={false}
+          />
+
           {/* Demand Letter Controls */}
           <div className="p-4 card-geom bg-[var(--bg-card)] border border-[var(--border-color)] grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
             <div>

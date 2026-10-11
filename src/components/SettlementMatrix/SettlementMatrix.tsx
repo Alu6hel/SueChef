@@ -31,6 +31,7 @@ import {
 import { SettlementAgreementModal } from './SettlementAgreementModal';
 import { NegotiationSimulator } from './NegotiationSimulator';
 import { MediationBriefModal } from './MediationBriefModal';
+import { TwoTierLegalClause } from '../common/TwoTierLegalClause';
 
 export const SettlementMatrix: React.FC = () => {
   const { activeCase, updateActiveCase, country } = useSueChef();
@@ -329,7 +330,34 @@ Tel: ${pl?.phone || 'N/A'} | Email: ${pl?.email || 'N/A'}
       {settlementView === 'simulator' && <NegotiationSimulator />}
 
       {settlementView === 'matrix' && (
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        <div className="space-y-6">
+          {/* Two-Tier Settlement Privilege Summary Card */}
+          <TwoTierLegalClause
+            title="Evidence Rule 408: Complete Settlement Compromise Privilege"
+            statutoryCitation="Federal Rule of Evidence 408 & State Evidence Codes"
+            summary="All compromise offers, concessions, and numbers discussed in pre-trial negotiation are strictly privileged. They CANNOT be introduced at trial by the opponent to prove weakness, admission of fault, or liability."
+            keyRights={[
+              'Safe Bargaining: You can offer to settle for less than your total damages without reducing your formal demand at trial',
+              'Non-Admissible in Court: Neither side can tell the judge: "They offered to settle for $X, so their case is weak"',
+              'Preserves Full Recovery: If negotiations fail, you remain 100% entitled to petition the judge for the full original claim'
+            ]}
+            callouts={[
+              {
+                type: 'info',
+                label: 'Evidence Privilege',
+                detail: 'Offers & Negotiations Excluded Under FRE 408'
+              },
+              {
+                type: 'recovery',
+                label: 'Trial Claim Intact',
+                detail: 'Negotiating Lower Does Not Reduce Court Rights'
+              }
+            ]}
+            rawLegalText={`FEDERAL RULE OF EVIDENCE 408:\n(a) Prohibited Uses. Evidence of the following is not admissible — on behalf of any party — either to prove or disprove the validity or amount of a disputed claim or to impeach by a prior inconsistent statement or contradiction:\n(1) furnishing, promising, or offering — or accepting, promising to accept, or offering to accept — a valuable consideration in compromising or attempting to compromise the claim; and\n(2) conduct or a statement made during compromise negotiations about the claim.`}
+            defaultExpanded={false}
+          />
+
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         {/* Left Column: Sliders & Expected Value (7 Cols) */}
         <div className="lg:col-span-7 space-y-5">
           <div className="p-5 bg-[var(--bg-card)] border border-[var(--border-color)] custom-geometry space-y-4 shadow-sm">
@@ -721,7 +749,8 @@ Tel: ${pl?.phone || 'N/A'} | Email: ${pl?.email || 'N/A'}
           </div>
         </div>
       </div>
-      )}
+    </div>
+  )}
 
       {/* Modal: Add Offer Log */}
       {showAddOfferModal && (

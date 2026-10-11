@@ -20,6 +20,7 @@ import {
   Edit3,
   Sparkles
 } from 'lucide-react';
+import { TwoTierLegalClause } from '../common/TwoTierLegalClause';
 
 export const DiscoveryStudio: React.FC = () => {
   const { activeCase, updateActiveCase } = useSueChef();
@@ -846,9 +847,30 @@ export const DiscoveryStudio: React.FC = () => {
       {/* Tab 1: Interrogatories */}
       {activeTab === 'rog' && (
         <div className="space-y-4">
-          <div className="p-4 bg-primary/5 border border-primary/20 text-xs leading-relaxed text-muted-foreground custom-geometry">
-            <strong className="text-foreground">Pro Se Litigation Strategy:</strong> Interrogatories are written questions propounded under oath (FRCP Rule 33 / State analogues). Limit questions to concise, single-issue facts. Responding parties have 30 calendar days to answer under penalty of perjury.
-          </div>
+          <TwoTierLegalClause
+            title="Written Interrogatories: Lock In Opponent's Testimony Under Oath"
+            statutoryCitation="FRCP Rule 33 & State Discovery Practice"
+            summary="Interrogatories are formal written questions that your opponent must answer in writing, signed under penalty of perjury within 30 days. Locks them into their factual version before trial so they cannot change their story on the witness stand."
+            keyRights={[
+              'Answered Under Penalty of Perjury: Opponent signs an official verification sheet under penalty of perjury',
+              'Trial Impeachment: Any inconsistent testimony given in court can be immediately impeached using their written answers',
+              'Numerical Scope: Standard civil limit permits 25 to 35 interrogatories without court leave'
+            ]}
+            callouts={[
+              {
+                type: 'liability',
+                label: 'Sworn Perjury Oath',
+                detail: 'Opponent Must Verify All Responses Under Oath'
+              },
+              {
+                type: 'deadline',
+                label: 'Response Window',
+                detail: '30 Calendar Days to Serve Verified Written Answers'
+              }
+            ]}
+            rawLegalText={`FEDERAL RULE OF CIVIL PROCEDURE 33:\n(a) In General. (1) Number. Unless otherwise stipulated or ordered by the court, a party may serve on any other party no more than 25 written interrogatories, including all discrete subparts...\n(b) Answers and Objections. (1) Responding Party. The responding party must serve its answers and any objections within 30 days after being served...\n(3) Answering Each. Each interrogatory must, to the extent it is not objected to, be answered separately and fully in writing under oath.\n(5) Signature. The person who makes the answers must sign them, and the attorney who objects must sign any objections.`}
+            defaultExpanded={false}
+          />
 
           <div className="space-y-3">
             {discovery.interrogatories.map((item) => (
@@ -930,9 +952,30 @@ export const DiscoveryStudio: React.FC = () => {
       {/* Tab 2: RFP */}
       {activeTab === 'rfp' && (
         <div className="space-y-4">
-          <div className="p-4 bg-primary/5 border border-primary/20 text-xs leading-relaxed text-muted-foreground custom-geometry">
-            <strong className="text-foreground">Document Production Weaponry:</strong> Requests for Production (FRCP Rule 34 / State analogues) force the opposing party to produce unedited emails, ledgers, internal chats, and original receipts. Failure to produce after 30 days allows filing a Motion to Compel with mandatory fee sanctions.
-          </div>
+          <TwoTierLegalClause
+            title="Requests for Production: Compel Raw Records & ESI"
+            statutoryCitation="FRCP Rule 34 & State Document Discovery Acts"
+            summary="Forces the opposing party to produce all unedited contracts, repair invoices, bank ledgers, text threads, and email chains in their possession, custody, or control. Concealing or deleting requested evidence triggers mandatory spoliation sanctions."
+            keyRights={[
+              'Possession, Custody & Control: Opponent must produce records even if held by their accountant, contractor, or bank',
+              'Spoliation Consequences: If opponent alters or deletes documents after notice, judge instructs that evidence was unfavorable to them',
+              'Motion to Compel: Failure to produce after 30 days entitles you to file for court-ordered production plus monetary sanctions'
+            ]}
+            callouts={[
+              {
+                type: 'liability',
+                label: 'Spoliation Duty',
+                detail: 'Strict Duty to Preserve All Electronic & Paper Files'
+              },
+              {
+                type: 'deadline',
+                label: 'Production Window',
+                detail: '30 Calendar Days to Deliver Originals or Scans'
+              }
+            ]}
+            rawLegalText={`FEDERAL RULE OF CIVIL PROCEDURE 34:\n(a) In General. A party may serve on any other party a request within the scope of Rule 26(b): (1) to produce and permit the requesting party or its representative to inspect, copy, test, or sample the following items in the responding party’s possession, custody, or control: (A) any designated documents or electronically stored information...\n(b) Procedure. (2) Responses and Objections. (A) Time to Respond. The party to whom the request is directed must respond in writing within 30 days after being served...\n(E) Producing the Documents or Electronically Stored Information. Unless otherwise stipulated or ordered: (i) A party must produce documents as they are kept in the usual course of business...`}
+            defaultExpanded={false}
+          />
 
           <div className="space-y-3">
             {discovery.rfps.map((item) => (
@@ -1012,15 +1055,30 @@ export const DiscoveryStudio: React.FC = () => {
       {/* Tab 3: RFA (30-Day Default Trap) */}
       {activeTab === 'rfa' && (
         <div className="space-y-4">
-          <div className="p-4 bg-amber-500/10 border border-amber-500/30 text-xs leading-relaxed text-amber-200 custom-geometry flex items-start gap-3">
-            <AlertTriangle className="w-5 h-5 text-amber-400 shrink-0 mt-0.5" />
-            <div>
-              <strong className="text-amber-300">The 30-Day Admission Trap (FRCP Rule 36 / State Statutes):</strong>
-              <p className="mt-1 text-[11px] text-amber-200/90">
-                Requests for Admission are the single most deadly tool for self-represented litigants. If the defendant forgets or fails to serve verified responses within exactly <strong>30 calendar days</strong> of service, <strong>each and every statement is automatically deemed conclusively admitted by law</strong>. No trial testimony can contradict a deemed admission!
-              </p>
-            </div>
-          </div>
+          <TwoTierLegalClause
+            title="Requests for Admission: The Mandatory 30-Day 'Deemed Admitted' Trap"
+            statutoryCitation="FRCP Rule 36 / California CCP § 2033.280"
+            summary="Requests for Admission require the opponent to admit or deny key factual allegations under oath. If the opponent fails or forgets to serve verified written answers within exactly 30 calendar days, the court automatically deems EVERY requested fact conclusively admitted forever!"
+            keyRights={[
+              'Conclusive Establishment: Facts admitted under Rule 36 are deemed established for trial — no proof or evidence required',
+              'Self-Executing Default: Missed 30-day deadline results in mandatory deemed admissions',
+              'Cost of Proof Sanctions: If opponent denies a fact and you prove it at trial, opponent must pay all attorney fees and expenses'
+            ]}
+            callouts={[
+              {
+                type: 'penalty',
+                label: 'Deemed Admitted Sanction',
+                detail: 'Failure to Respond Within 30 Days Conclusively Admits Liability'
+              },
+              {
+                type: 'recovery',
+                label: 'Cost of Proof Sanction',
+                detail: 'Opponent Pays All Costs If Denials Disproven'
+              }
+            ]}
+            rawLegalText={`FEDERAL RULE OF CIVIL PROCEDURE 36:\n(a) Scope and Procedure. (1) Scope. A party may serve on any other party a written request to admit, for purposes of the pending action only, the truth of any matters within the scope of Rule 26(b)(1)...\n(3) Time to Respond; Effect of Not Responding. A matter is admitted unless, within 30 days after being served, the party to whom the request is directed serves on the requesting party a written answer or objection addressed to the matter and signed by the party or its attorney.\n(b) Effect of an Admission; Withdrawing or Amending It. A matter admitted under this rule is conclusively established unless the court, on motion, permits the admission to be withdrawn or amended.`}
+            defaultExpanded={false}
+          />
 
           <div className="space-y-3">
             {discovery.rfas.map((item) => (
@@ -1105,9 +1163,30 @@ export const DiscoveryStudio: React.FC = () => {
       {/* Tab 4: Subpoenas */}
       {activeTab === 'subpoena' && (
         <div className="space-y-4">
-          <div className="p-4 bg-primary/5 border border-primary/20 text-xs leading-relaxed text-muted-foreground custom-geometry">
-            <strong className="text-foreground">Third-Party Subpoena Duces Tecum (FRCP Rule 45 / State Code):</strong> Command uncooperative banks, telecom carriers (phone call/SMS records), or independent inspection companies to produce certified business records under penalty of judicial contempt.
-          </div>
+          <TwoTierLegalClause
+            title="Third-Party Subpoena Duces Tecum: Compel Records Under Contempt Sanctions"
+            statutoryCitation="FRCP Rule 45 & State Discovery Practice"
+            summary="A Subpoena Duces Tecum is a judicial command served on third parties (e.g. banks, utility companies, cell carriers, building inspectors) ordering them to produce certified business records. Third parties face judicial contempt and fines if they ignore the subpoena."
+            keyRights={[
+              'Certified Business Records: Compels custodian of records to produce authentic records with an Evidence Code declaration',
+              'Contempt of Court: Unexcused failure to obey subjects the non-party to civil contempt proceedings and monetary sanctions',
+              'Subpoena Service Window: Must give reasonable notice (typically 15 to 20 calendar days) prior to the compliance production date'
+            ]}
+            callouts={[
+              {
+                type: 'penalty',
+                label: 'Judicial Contempt',
+                detail: 'Contempt Citation & Sanctions for Disobeying Service'
+              },
+              {
+                type: 'deadline',
+                label: 'Service Window',
+                detail: '15-20 Days Reasonable Notice Before Production'
+              }
+            ]}
+            rawLegalText={`FEDERAL RULE OF CIVIL PROCEDURE 45:\n(a) In General. (1) Form and Contents. Every subpoena must: (i) state the court from which it issued; (ii) state the title of the action and its civil-action number; (iii) command each person to whom it is directed to attend and testify; produce designated documents, electronically stored information, or tangible things in that person's possession, custody, or control...\n(g) Contempt. The court for the district where compliance is required—and also, after a motion is transferred, the issuing court—may hold in contempt a person who, having been served, fails without adequate excuse to obey the subpoena or an order related to it.`}
+            defaultExpanded={false}
+          />
 
           <div className="space-y-3">
             {discovery.subpoenas.map((sub, idx) => (
