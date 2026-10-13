@@ -66,17 +66,20 @@ export const CourtAtmosphereCanvas: React.FC = () => {
       });
     }
 
-    let isVisible = true;
+    let isVisible = !document.hidden;
     const handleVisibility = () => {
-      isVisible = !document.hidden;
+      const nowVisible = !document.hidden;
+      if (nowVisible && !isVisible) {
+        isVisible = true;
+        animationFrameId = requestAnimationFrame(render);
+      } else {
+        isVisible = nowVisible;
+      }
     };
     document.addEventListener('visibilitychange', handleVisibility);
 
     const render = () => {
-      if (!isVisible) {
-        animationFrameId = requestAnimationFrame(render);
-        return;
-      }
+      if (!isVisible) return;
 
       ctx.clearRect(0, 0, width, height);
       const colorPrefix = getParticleColor();

@@ -126,8 +126,21 @@ export const ChambersScalesAnimation: React.FC = () => {
     let currentTilt = 0;
     let tiltVelocity = 0;
     let time = 0;
+    let isVisible = !document.hidden;
+
+    const handleVisibility = () => {
+      const nowVisible = !document.hidden;
+      if (nowVisible && !isVisible) {
+        isVisible = true;
+        animationFrameId = requestAnimationFrame(render);
+      } else {
+        isVisible = nowVisible;
+      }
+    };
+    document.addEventListener('visibilitychange', handleVisibility);
 
     const render = () => {
+      if (!isVisible) return;
       ctx.clearRect(0, 0, width, height);
       time += 0.025;
 
@@ -503,6 +516,7 @@ export const ChambersScalesAnimation: React.FC = () => {
     return () => {
       cancelAnimationFrame(animationFrameId);
       window.removeEventListener('resize', handleResize);
+      document.removeEventListener('visibilitychange', handleVisibility);
       if (resizeObserver) resizeObserver.disconnect();
     };
   }, [theme, plaintiffWeight, defendantWeight, isMinimized]);

@@ -1,30 +1,35 @@
 package com.suechef.app;
 
 import android.app.Activity;
+import android.content.ContentValues;
+import android.content.Context;
+import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
+import android.media.MediaScannerConnection;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.VibrationEffect;
+import android.os.Vibrator;
+import android.print.PrintAttributes;
+import android.print.PrintManager;
+import android.provider.MediaStore;
+import android.util.Base64;
+import android.util.Log;
+import android.view.Window;
+import android.view.WindowManager;
+import android.webkit.JavascriptInterface;
+import android.webkit.ValueCallback;
+import android.webkit.WebChromeClient;
+import android.webkit.WebResourceError;
+import android.webkit.WebResourceRequest;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
-import android.webkit.WebChromeClient;
-import android.webkit.ValueCallback;
-import android.webkit.JavascriptInterface;
-import android.content.Intent;
-import android.content.Context;
-import android.net.Uri;
-import android.view.Window;
-import android.view.WindowManager;
-import android.os.Build;
-import android.os.Vibrator;
-import android.os.VibrationEffect;
-import android.graphics.Color;
-import android.util.Base64;
-import android.util.Log;
+import android.widget.Button;
+import android.widget.FrameLayout;
 import android.widget.Toast;
-import android.print.PrintManager;
-import android.print.PrintAttributes;
-import android.content.ContentValues;
-import android.provider.MediaStore;
-import android.media.MediaScannerConnection;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -32,6 +37,9 @@ import java.io.OutputStream;
 
 public class MainActivity extends Activity {
     private static final String TAG = "SueChef_MainActivity";
+    private static final int BACKGROUND_COLOR = 0xFF0B0D13;
+    private FrameLayout rootLayout;
+    private Button exitButton;
     private WebView webView;
     private ValueCallback<Uri[]> filePathCallback;
     private final static int FILE_CHOOSER_RESULT_CODE = 1001;
@@ -54,25 +62,20 @@ public class MainActivity extends Activity {
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                              WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
+        getWindow().setBackgroundDrawable(new ColorDrawable(BACKGROUND_COLOR));
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            getWindow().setStatusBarColor(Color.parseColor("#0B0D13"));
-            getWindow().setNavigationBarColor(Color.parseColor("#0B0D13"));
+            getWindow().setStatusBarColor(BACKGROUND_COLOR);
+            getWindow().setNavigationBarColor(BACKGROUND_COLOR);
         }
 
         // Enable web contents debugging for inspection
         WebView.setWebContentsDebuggingEnabled(true);
 
-        webView = new WebView(this);
-        webView.setBackgroundColor(Color.parseColor("#0B0D13"));
-
-        android.widget.FrameLayout rootLayout = new android.widget.FrameLayout(this);
-        rootLayout.addView(webView, new android.widget.FrameLayout.LayoutParams(
-            android.widget.FrameLayout.LayoutParams.MATCH_PARENT,
-            android.widget.FrameLayout.LayoutParams.MATCH_PARENT
-        ));
+        rootLayout = new FrameLayout(this);
+        rootLayout.setBackgroundColor(BACKGROUND_COLOR);
 
         // Floating Exit / Return button if user navigates outside local assets
-        final android.widget.Button exitButton = new android.widget.Button(this);
+        exitButton = new Button(this);
         exitButton.setText("✕ Return to SueChef");
         exitButton.setTextSize(13);
         exitButton.setTextColor(Color.WHITE);
@@ -80,23 +83,59 @@ public class MainActivity extends Activity {
         exitButton.setPadding(32, 16, 32, 16);
         exitButton.setVisibility(android.view.View.GONE);
 
-        android.widget.FrameLayout.LayoutParams btnParams = new android.widget.FrameLayout.LayoutParams(
-            android.widget.FrameLayout.LayoutParams.WRAP_CONTENT,
-            android.widget.FrameLayout.LayoutParams.WRAP_CONTENT
+        FrameLayout.LayoutParams btnParams = new FrameLayout.LayoutParams(
+            FrameLayout.LayoutParams.WRAP_CONTENT,
+            FrameLayout.LayoutParams.WRAP_CONTENT
         );
         btnParams.gravity = android.view.Gravity.TOP | android.view.Gravity.END;
         btnParams.setMargins(0, 48, 48, 0);
         exitButton.setLayoutParams(btnParams);
 
         exitButton.setOnClickListener(v -> {
-            webView.stopLoading();
-            webView.loadUrl("file:///android_asset/index.html");
+            if (webView != null) {
+                webView.stopLoading();
+                webView.loadUrl("file:///android_asset/index.html");
+            }
             exitButton.setVisibility(android.view.View.GONE);
         });
 
         rootLayout.addView(exitButton);
         setContentView(rootLayout);
 
+        initAndAttachWebView();
+    }
+
+    private void initAndAttachWebView() {
+        if (webView != null) {
+            try {
+                if (rootLayout != null) {
+                    rootLayout.removeView(webView);
+                }
+                webView.loadUrl("about:blank");
+                webView.stopLoading();
+                webView.clearHistory();
+                webView.destroy();
+            } catch (Exception ignored) {}
+            webView = null;
+        }
+
+        webView = new WebView(this);
+        webView.setBackgroundColor(BACKGROUND_COLOR);
+
+        rootLayout.addView(webView, 0, new FrameLayout.LayoutParams(
+            FrameLayout.LayoutParams.MATCH_PARENT,
+            FrameLayout.LayoutParams.MATCH_PARENT
+        ));
+
+        if (exitButton != null) {
+            exitButton.bringToFront();
+        }
+
+        configureWebView();
+        webView.loadUrl("file:///android_asset/index.html");
+    }
+
+    private void configureWebView() {
         // Security Hardened WebSettings
         WebSettings settings = webView.getSettings();
         settings.setJavaScriptEnabled(true);
@@ -111,6 +150,9 @@ public class MainActivity extends Activity {
         settings.setUseWideViewPort(true);
         settings.setLoadWithOverviewMode(true);
 
+        // Hardware acceleration
+        webView.setLayerType(android.view.View.LAYER_TYPE_HARDWARE, null);
+
         // Register Native JavaScript Interface
         SueChefBridge bridge = new SueChefBridge();
         webView.addJavascriptInterface(bridge, "SueChefNative");
@@ -118,7 +160,20 @@ public class MainActivity extends Activity {
 
         webView.setWebViewClient(new WebViewClient() {
             @Override
+            public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
+                if (request != null && request.getUrl() != null) {
+                    return handleUrl(request.getUrl().toString());
+                }
+                return false;
+            }
+
+            @Override
             public boolean shouldOverrideUrlLoading(WebView view, String url) {
+                return handleUrl(url);
+            }
+
+            private boolean handleUrl(String url) {
+                if (url == null) return false;
                 if (url.startsWith("file:///android_asset/")) {
                     return false;
                 }
@@ -128,7 +183,8 @@ public class MainActivity extends Activity {
                     startActivity(intent);
                     return true;
                 } catch (Exception e) {
-                    return false;
+                    Log.e(TAG, "External intent failed for: " + url, e);
+                    return true;
                 }
             }
 
@@ -143,15 +199,22 @@ public class MainActivity extends Activity {
                 }
             }
 
+            // CRITICAL: Prevent white screen / sudden stop on renderer crash or OS trim
             @Override
             public boolean onRenderProcessGone(WebView view, android.webkit.RenderProcessGoneDetail detail) {
-                Log.w(TAG, "WebView render process gone. Recreating activity.");
-                if (webView != null) {
-                    webView.destroy();
-                    webView = null;
-                }
-                recreate();
+                Log.w(TAG, "WebView render process gone. Recreating in-place.");
+                runOnUiThread(() -> {
+                    initAndAttachWebView();
+                });
                 return true;
+            }
+
+            @Override
+            public void onReceivedError(WebView view, WebResourceRequest request, WebResourceError error) {
+                if (request != null && request.isForMainFrame()) {
+                    Log.w(TAG, "WebView main frame error: " + (error != null ? error.getDescription() : "unknown"));
+                    view.post(() -> view.loadUrl("file:///android_asset/index.html"));
+                }
             }
         });
 
@@ -174,8 +237,6 @@ public class MainActivity extends Activity {
                 return true;
             }
         });
-
-        webView.loadUrl("file:///android_asset/index.html");
     }
 
     public class SueChefBridge {
@@ -399,5 +460,38 @@ public class MainActivity extends Activity {
             return;
         }
         super.onBackPressed();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        if (webView != null) {
+            webView.onPause();
+        }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (webView != null) {
+            webView.onResume();
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        if (webView != null) {
+            try {
+                if (rootLayout != null) {
+                    rootLayout.removeView(webView);
+                }
+                webView.loadUrl("about:blank");
+                webView.stopLoading();
+                webView.clearHistory();
+                webView.destroy();
+            } catch (Exception ignored) {}
+            webView = null;
+        }
+        super.onDestroy();
     }
 }

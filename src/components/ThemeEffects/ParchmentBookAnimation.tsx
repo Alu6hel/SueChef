@@ -67,8 +67,21 @@ export const ParchmentBookAnimation: React.FC = () => {
     let targetAngle = 0;
     let isFlipping = false;
     let flipTime = 0;
+    let isVisible = !document.hidden;
+
+    const handleVisibility = () => {
+      const nowVisible = !document.hidden;
+      if (nowVisible && !isVisible) {
+        isVisible = true;
+        animationFrameId = requestAnimationFrame(render);
+      } else {
+        isVisible = nowVisible;
+      }
+    };
+    document.addEventListener('visibilitychange', handleVisibility);
 
     const render = () => {
+      if (!isVisible) return;
       ctx.clearRect(0, 0, width, height);
 
       // Draw subtle ambient glow
@@ -214,6 +227,7 @@ export const ParchmentBookAnimation: React.FC = () => {
     return () => {
       cancelAnimationFrame(animationFrameId);
       window.removeEventListener('resize', handleResize);
+      document.removeEventListener('visibilitychange', handleVisibility);
       if (resizeObserver) resizeObserver.disconnect();
     };
   }, [theme, pageIndex]);
