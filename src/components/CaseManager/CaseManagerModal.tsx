@@ -24,7 +24,9 @@ export const CaseManagerModal: React.FC = () => {
     activeCase, 
     loadBlueprint, 
     createNewCase,
-    country
+    country,
+    t,
+    format
   } = useSueChef();
   const countryInfo = getCountryInfo(country);
 
@@ -34,6 +36,18 @@ export const CaseManagerModal: React.FC = () => {
   const [newCategory, setNewCategory] = useState('security_deposit');
 
   if (!isCaseManagerOpen) return null;
+
+  const getBpI18nKeys = (id: string) => {
+    switch (id) {
+      case 'template_deposit_ca': return { title: 'bpDepositTitle', desc: 'bpDepositDesc', damages: 'bpDepositDamages' };
+      case 'template_contractor_ca': return { title: 'bpContractorTitle', desc: 'bpContractorDesc', damages: 'bpContractorDamages' };
+      case 'template_freelance_ny': return { title: 'bpFreelanceTitle', desc: 'bpFreelanceDesc', damages: 'bpFreelanceDamages' };
+      case 'template_auto_tx': return { title: 'bpAutoTitle', desc: 'bpAutoDesc', damages: 'bpAutoDamages' };
+      case 'template_consumer_fl': return { title: 'bpConsumerTitle', desc: 'bpConsumerDesc', damages: 'bpConsumerDamages' };
+      case 'template_airline_us_eu': return { title: 'bpAirlineTitle', desc: 'bpAirlineDesc', damages: 'bpAirlineDamages' };
+      default: return null;
+    }
+  };
 
   const handleCreateCustom = (e: React.FormEvent) => {
     e.preventDefault();
@@ -53,9 +67,11 @@ export const CaseManagerModal: React.FC = () => {
               <Briefcase className="w-5 h-5" />
             </div>
             <div>
-              <h2 className="text-lg font-bold font-serif text-foreground">Dispute Matter Switcher &amp; Blueprint Vault</h2>
+              <h2 className="text-lg font-bold font-serif text-foreground">
+                {t('vaultModalTitle', 'Dispute Matter Switcher & Blueprint Vault')}
+              </h2>
               <p className="text-xs text-muted-foreground font-mono">
-                Active Matter: <span className="text-primary font-semibold">{activeCase.title}</span> ({activeCase.caseNumber})
+                {t('vaultActiveMatter', 'Active Matter:')} <span className="text-primary font-semibold">{activeCase.title}</span> ({activeCase.caseNumber})
               </p>
             </div>
           </div>
@@ -79,7 +95,7 @@ export const CaseManagerModal: React.FC = () => {
             }`}
           >
             <Sparkles className="w-4 h-4 text-amber-300" />
-            <span>6 Real-World Dispute Blueprints</span>
+            <span>{t('vaultTabBlueprints', '6 Real-World Dispute Blueprints')}</span>
           </button>
 
           <button
@@ -91,7 +107,7 @@ export const CaseManagerModal: React.FC = () => {
             }`}
           >
             <Plus className="w-4 h-4" />
-            <span>Create Custom Matter from Scratch</span>
+            <span>{t('vaultTabCustom', 'Create Custom Matter from Scratch')}</span>
           </button>
         </div>
 
@@ -101,6 +117,11 @@ export const CaseManagerModal: React.FC = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {DISPUTE_BLUEPRINTS.map((bp) => {
                 const isActive = activeCase.id === bp.caseData.id;
+                const i18nKeys = getBpI18nKeys(bp.id);
+                const title = i18nKeys ? t(i18nKeys.title, bp.title) : bp.title;
+                const desc = i18nKeys ? t(i18nKeys.desc, bp.description) : bp.description;
+                const damages = i18nKeys ? t(i18nKeys.damages, bp.damagesSummary) : bp.damagesSummary;
+
                 return (
                   <div
                     key={bp.id}
@@ -113,25 +134,25 @@ export const CaseManagerModal: React.FC = () => {
                     <div className="space-y-2">
                       <div className="flex items-center justify-between">
                         <span className="px-2 py-0.5 text-[10px] font-mono font-bold bg-primary/20 text-primary border border-primary/30 custom-geometry">
-                          {bp.state} JURISDICTION
+                          {bp.state} {t('vaultJurisdiction', 'JURISDICTION')}
                         </span>
                         <span className="text-xs font-mono font-bold text-emerald-400">
-                          {bp.damagesSummary}
+                          {damages}
                         </span>
                       </div>
 
                       <h3 className="text-sm font-bold text-foreground font-serif leading-snug">
-                        {bp.title}
+                        {title}
                       </h3>
 
                       <p className="text-xs text-muted-foreground leading-relaxed">
-                        {bp.description}
+                        {desc}
                       </p>
                     </div>
 
                     <div className="pt-2 border-t border-border/50 flex items-center justify-between">
                       <span className="text-[11px] font-mono text-muted-foreground">
-                        Estimated Claim: {countryInfo.currencySymbol}{bp.estimatedTotal.toLocaleString()}
+                        {t('vaultEstimatedClaim', 'Estimated Claim:')} {countryInfo.currencySymbol}{bp.estimatedTotal.toLocaleString()}
                       </span>
 
                       <button
@@ -143,7 +164,7 @@ export const CaseManagerModal: React.FC = () => {
                             : 'bg-primary text-primary-foreground hover:bg-primary/90'
                         }`}
                       >
-                        <span>{isActive ? 'Active Workspace' : 'Load Blueprint'}</span>
+                        <span>{isActive ? t('vaultActiveWorkspace', 'Active Workspace') : t('vaultLoadBlueprint', 'Load Blueprint')}</span>
                         {!isActive && <ArrowRight className="w-3.5 h-3.5" />}
                       </button>
                     </div>
@@ -156,7 +177,9 @@ export const CaseManagerModal: React.FC = () => {
           {activeTab === 'new' && (
             <form onSubmit={handleCreateCustom} className="max-w-xl mx-auto space-y-4 py-4">
               <div>
-                <label className="text-xs font-mono uppercase text-muted-foreground">Dispute Matter Title</label>
+                <label className="text-xs font-mono uppercase text-muted-foreground">
+                  {t('vaultCustomTitleLabel', 'Dispute Matter Title')}
+                </label>
                 <input
                   type="text"
                   required
@@ -169,7 +192,9 @@ export const CaseManagerModal: React.FC = () => {
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="text-xs font-mono uppercase text-muted-foreground">Jurisdiction State / Region</label>
+                  <label className="text-xs font-mono uppercase text-muted-foreground">
+                    {t('vaultCustomStateLabel', 'Jurisdiction State / Region')}
+                  </label>
                   <select
                     value={newState}
                     onChange={(e) => setNewState(e.target.value)}
@@ -184,19 +209,21 @@ export const CaseManagerModal: React.FC = () => {
                 </div>
 
                 <div>
-                  <label className="text-xs font-mono uppercase text-muted-foreground">Dispute Category</label>
+                  <label className="text-xs font-mono uppercase text-muted-foreground">
+                    {t('vaultCustomCategoryLabel', 'Dispute Category')}
+                  </label>
                   <select
                     value={newCategory}
                     onChange={(e) => setNewCategory(e.target.value)}
                     className="w-full bg-input/50 border border-border p-2.5 text-xs focus:outline-none focus:border-primary mt-1"
                   >
-                    <option value="security_deposit">Security Deposit Withheld</option>
-                    <option value="contractor_dispute">Contractor Breach / Defects</option>
-                    <option value="freelance_unpaid">Freelance Unpaid Invoices</option>
-                    <option value="auto_accident">Auto Collision / Property Damage</option>
-                    <option value="consumer_fraud">Consumer Fraud / FDUTPA</option>
-                    <option value="wage_theft">Wage Theft / Unpaid Overtime</option>
-                    <option value="breach_of_contract">General Breach of Contract</option>
+                    <option value="security_deposit">{t('catSecurityDeposit', 'Security Deposit Withheld')}</option>
+                    <option value="contractor_dispute">{t('catConsumerFraud', 'Contractor Breach / Defects')}</option>
+                    <option value="freelance_unpaid">{t('catBreachContract', 'Freelance Unpaid Invoices')}</option>
+                    <option value="auto_accident">{t('catPropertyDamage', 'Auto Collision / Property Damage')}</option>
+                    <option value="consumer_fraud">{t('catConsumerFraud', 'Consumer Fraud / FDUTPA')}</option>
+                    <option value="wage_theft">{t('catWageTheft', 'Wage Theft / Unpaid Overtime')}</option>
+                    <option value="breach_of_contract">{t('catBreachContract', 'General Breach of Contract')}</option>
                   </select>
                 </div>
               </div>
@@ -209,7 +236,7 @@ export const CaseManagerModal: React.FC = () => {
                 type="submit"
                 className="w-full py-3 bg-primary text-primary-foreground font-bold text-xs hover:bg-primary/90 transition-all custom-geometry"
               >
-                Initialize New Case Matter
+                {t('vaultCreateMatterBtn', 'Initialize New Case Matter')}
               </button>
             </form>
           )}

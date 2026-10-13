@@ -78,11 +78,62 @@ const DISPUTE_TYPES: DisputeTypeOption[] = [
 ];
 
 export const DisputeIntakeWizard: React.FC = () => {
-  const { createCustomCase, setActiveWorkstation, activeCase, country } = useSueChef();
+  const { createCustomCase, setActiveWorkstation, activeCase, country, t, format } = useSueChef();
   const countryInfo = getCountryInfo(country);
   
   const plaintiff = activeCase.parties.find(p => p.role === 'plaintiff');
   const defendant = activeCase.parties.find(p => p.role === 'defendant');
+
+  const disputeTypes = React.useMemo<DisputeTypeOption[]>(() => [
+    {
+      id: 'security_deposit',
+      title: t('catSecurityDeposit', 'Security Deposit Withheld'),
+      subtitle: t('catSecurityDepositSub', 'Landlord kept deposit or failed statutory deadline'),
+      icon: '🏠',
+      defaultDesc: t('catSecurityDepositDesc', 'Landlord failed to return security deposit within statutory window and failed to provide itemized receipts.'),
+      defaultAmount: 2500
+    },
+    {
+      id: 'breach_of_contract',
+      title: t('catBreachContract', 'Unpaid Invoices / Freelance'),
+      subtitle: t('catBreachContractSub', 'Client or customer failed to pay for completed deliverables'),
+      icon: '💼',
+      defaultDesc: t('catBreachContractDesc', 'Completed agreed professional scope and submitted final invoice, but client refused or ignored payment.'),
+      defaultAmount: 3800
+    },
+    {
+      id: 'consumer_fraud',
+      title: t('catConsumerFraud', 'Defective Contractor / Remodel'),
+      subtitle: t('catConsumerFraudSub', 'Contractor abandoned job, caused leaks, or did shoddy work'),
+      icon: '🔨',
+      defaultDesc: t('catConsumerFraudDesc', 'Contractor performed defective remodeling work failing local building codes and abandoned without curing defects.'),
+      defaultAmount: 6500
+    },
+    {
+      id: 'property_damage',
+      title: t('catPropertyDamage', 'Property / Auto Damage'),
+      subtitle: t('catPropertyDamageSub', 'Vehicle collision, neighbor tree fall, or property damage'),
+      icon: '🚗',
+      defaultDesc: t('catPropertyDamageDesc', 'Defendant negligently caused damage to personal vehicle/property and refused to reimburse verified repair quote.'),
+      defaultAmount: 2200
+    },
+    {
+      id: 'wage_theft',
+      title: t('catWageTheft', 'Unpaid Personal Loan / Debt'),
+      subtitle: t('catWageTheftSub', 'Loaned funds with promise to repay, borrower defaulted'),
+      icon: '🤝',
+      defaultDesc: t('catWageTheftDesc', 'Loaned personal funds under written/electronic repayment agreement; borrower stopped payments and defaulted.'),
+      defaultAmount: 3000
+    },
+    {
+      id: 'negligence',
+      title: t('catNegligence', 'Consumer Refund Denied'),
+      subtitle: t('catNegligenceSub', 'Merchant refused lawful refund or delivered wrong product'),
+      icon: '🛍️',
+      defaultDesc: t('catNegligenceDesc', 'Merchant delivered defective/non-conforming goods and refused lawful statutory refund upon return.'),
+      defaultAmount: 1450
+    }
+  ], [t]);
 
   const [selectedType, setSelectedType] = useState<DisputeCategory>('security_deposit');
   const [claimantName, setClaimantName] = useState(plaintiff?.name || 'You (Claimant)');
@@ -162,19 +213,19 @@ export const DisputeIntakeWizard: React.FC = () => {
           </div>
           <div>
             <h2 className="text-lg md:text-xl font-bold font-serif text-[var(--text-main)] flex items-center gap-2">
-              <span>Instant Dispute Intake Assistant</span>
+              <span>{t('intakeTitle', 'Instant Dispute Intake Assistant')}</span>
               <span className="text-[10px] font-mono px-2 py-0.5 bg-emerald-950/60 text-emerald-400 border border-emerald-500/30 font-bold uppercase rounded">
-                100% Real Legal Math
+                {t('intakeRealMathBadge', '100% Real Legal Math')}
               </span>
             </h2>
             <p className="text-xs text-[var(--text-muted)]">
-              Answer 4 simple questions to automatically calculate statutory damages, verify court dollar limits, and create your ready-to-mail demand letter.
+              {t('intakeSubtitle', 'Answer 4 simple questions to automatically calculate statutory damages, verify court dollar limits, and create your ready-to-mail demand letter.')}
             </p>
           </div>
         </div>
 
         <div className="flex items-center gap-2">
-          <span className="text-xs font-mono text-[var(--text-muted)]">Target State:</span>
+          <span className="text-xs font-mono text-[var(--text-muted)]">{t('intakeTargetState', 'Target State:')}</span>
           <select
             value={stateCode}
             onChange={e => {
@@ -197,10 +248,10 @@ export const DisputeIntakeWizard: React.FC = () => {
         <div className="space-y-2.5">
           <label className="text-xs font-mono uppercase font-bold text-[var(--text-muted)] flex items-center gap-1.5">
             <span className="w-4 h-4 rounded-full bg-[var(--accent-gold)] text-slate-950 text-[10px] font-bold flex items-center justify-center">1</span>
-            Select What Happened:
+            {t('intakeStep1', 'Select What Happened:')}
           </label>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5">
-            {DISPUTE_TYPES.map(type => {
+            {disputeTypes.map(type => {
               const isSelected = selectedType === type.id;
               return (
                 <button
@@ -233,14 +284,14 @@ export const DisputeIntakeWizard: React.FC = () => {
           <div className="space-y-1.5">
             <label className="text-xs font-mono uppercase font-bold text-[var(--text-muted)] flex items-center gap-1.5">
               <User className="w-3.5 h-3.5 text-[var(--accent-gold)]" />
-              Who Owes You? (Opponent)
+              {t('intakeOpponentLabel', 'Who Owes You? (Opponent)')}
             </label>
             <input
               type="text"
               required
               value={opponentName}
               onChange={e => setOpponentName(e.target.value)}
-              placeholder="e.g. Apex Property Mgmt LLC or John Smith"
+              placeholder={t('intakeOpponentPlaceholder', 'e.g. Apex Property Mgmt LLC or John Smith')}
               className="input-geom w-full bg-[var(--bg-secondary)] border border-[var(--border-color)] text-xs text-[var(--text-main)] px-3 py-2.5 focus:border-[var(--accent-gold)]"
             />
           </div>
@@ -248,7 +299,7 @@ export const DisputeIntakeWizard: React.FC = () => {
           <div className="space-y-1.5">
             <label className="text-xs font-mono uppercase font-bold text-[var(--text-muted)] flex items-center gap-1.5">
               <DollarSign className="w-3.5 h-3.5 text-emerald-400" />
-              Principal Amount Owed ({countryInfo.currencySymbol})
+              {t('intakeAmountLabel', 'Principal Amount Owed')} ({countryInfo.currencySymbol})
             </label>
             <input
               type="number"
@@ -265,7 +316,7 @@ export const DisputeIntakeWizard: React.FC = () => {
           <div className="space-y-1.5">
             <label className="text-xs font-mono uppercase font-bold text-[var(--text-muted)] flex items-center gap-1.5">
               <Calendar className="w-3.5 h-3.5 text-amber-400" />
-              Incident / Move-Out Date
+              {t('intakeDateLabel', 'Incident / Move-Out Date')}
             </label>
             <input
               type="date"
@@ -282,16 +333,16 @@ export const DisputeIntakeWizard: React.FC = () => {
           <label className="text-xs font-mono uppercase font-bold text-[var(--text-muted)] flex items-center justify-between">
             <span className="flex items-center gap-1.5">
               <FileText className="w-3.5 h-3.5 text-[var(--accent-gold)]" />
-              Brief Description of What Happened:
+              {t('intakeSummaryLabel', 'Brief Description of What Happened:')}
             </span>
-            <span className="text-[10px] text-[var(--text-muted)] font-normal">Included in Demand Letter &amp; Court Form</span>
+            <span className="text-[10px] text-[var(--text-muted)] font-normal">{t('intakeIncludedInPapers', 'Included in Demand Letter & Court Form')}</span>
           </label>
           <textarea
             rows={2}
             value={disputeSummary}
             onChange={e => setDisputeSummary(e.target.value)}
             className="input-geom w-full bg-[var(--bg-secondary)] border border-[var(--border-color)] text-xs text-[var(--text-main)] px-3 py-2 focus:border-[var(--accent-gold)] leading-relaxed"
-            placeholder="Describe the transaction, the violation, and dates..."
+            placeholder={t('intakeSummaryPlaceholder', 'Describe the transaction, the violation, and dates...')}
           />
         </div>
 
@@ -301,38 +352,38 @@ export const DisputeIntakeWizard: React.FC = () => {
             <div className="flex items-center gap-2">
               <Calculator className="w-4 h-4 text-[var(--accent-gold)]" />
               <span className="font-serif font-bold text-xs sm:text-sm text-[var(--text-main)]">
-                Live State Statutory Damage &amp; Court Eligibility Audit:
+                {t('intakeAuditTitle', 'Live State Statutory Damage & Court Eligibility Audit:')}
               </span>
             </div>
             <span className="text-xs font-mono text-[var(--accent-gold)] font-bold">
-              {jurisdiction.stateName} ({jurisdiction.stateCode}) Law
+              {jurisdiction.stateName} ({jurisdiction.stateCode}) {t('intakeLawLabel', 'Law')}
             </span>
           </div>
 
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
             <div className="p-2 bg-[var(--bg-card)] border border-[var(--border-color)] custom-geometry">
-              <div className="text-[10px] font-mono text-[var(--text-muted)] uppercase">1. Principal Claim</div>
+              <div className="text-[10px] font-mono text-[var(--text-muted)] uppercase">{t('intakePrincipalAmount', '1. Principal Claim')}</div>
               <div className="font-mono font-bold text-sm text-[var(--text-main)] pt-0.5">
                 {countryInfo.currencySymbol}{principalAmount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
               </div>
             </div>
 
             <div className="p-2 bg-[var(--bg-card)] border border-[var(--border-color)] custom-geometry">
-              <div className="text-[10px] font-mono text-emerald-400 uppercase">2. Statutory Penalty</div>
+              <div className="text-[10px] font-mono text-emerald-400 uppercase">{t('intakeStatutoryPenaltyAmt', '2. Statutory Penalty')}</div>
               <div className="font-mono font-bold text-sm text-emerald-400 pt-0.5">
                 {statutoryPenalty > 0 ? `+${countryInfo.currencySymbol}${statutoryPenalty.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} (${penaltyMultiplier}x)` : `${countryInfo.currencySymbol}0.00`}
               </div>
             </div>
 
             <div className="p-2 bg-[var(--bg-card)] border border-[var(--border-color)] custom-geometry">
-              <div className="text-[10px] font-mono text-amber-400 uppercase">3. Daily Interest ({daysElapsed}d)</div>
+              <div className="text-[10px] font-mono text-amber-400 uppercase">3. {t('intakeAccruedInterest', 'Daily Interest')} ({daysElapsed}d)</div>
               <div className="font-mono font-bold text-sm text-amber-400 pt-0.5">
                 +{countryInfo.currencySymbol}{totalInterest.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} ({jurisdiction.statutoryInterestRatePercent || 10}%)
               </div>
             </div>
 
             <div className="p-2 bg-gradient-to-br from-amber-500/10 to-amber-500/5 border border-amber-500/30 custom-geometry">
-              <div className="text-[10px] font-mono text-[var(--accent-gold)] uppercase font-bold">Total Demand Sum</div>
+              <div className="text-[10px] font-mono text-[var(--accent-gold)] uppercase font-bold">{t('intakeCalculatedTotal', 'Total Demand Sum')}</div>
               <div className="font-mono font-black text-sm text-[var(--accent-gold)] pt-0.5">
                 {countryInfo.currencySymbol}{totalCalculatedClaim.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
               </div>
@@ -344,11 +395,11 @@ export const DisputeIntakeWizard: React.FC = () => {
               <span className={`w-2 h-2 rounded-full ${isSmallClaimsEligible ? 'bg-emerald-400' : 'bg-rose-400'}`} />
               <span>
                 {isSmallClaimsEligible 
-                  ? `Eligible for ${jurisdiction.courtName} (Limit: ${countryInfo.currencySymbol}${jurisdiction.smallClaimsLimitIndividual.toLocaleString()})`
-                  : `Exceeds Small Claims Limit (${countryInfo.currencySymbol}${jurisdiction.smallClaimsLimitIndividual.toLocaleString()}) - File in Limited Civil`}
+                  ? format('intakeWithinLimit', { symbol: countryInfo.currencySymbol, limit: jurisdiction.smallClaimsLimitIndividual.toLocaleString() })
+                  : format('intakeExceedsLimit', { symbol: countryInfo.currencySymbol, limit: jurisdiction.smallClaimsLimitIndividual.toLocaleString() })}
               </span>
             </div>
-            <span>Citation: {jurisdiction.securityDepositStatuteCitation}</span>
+            <span>{t('citation', 'Citation')}: {jurisdiction.securityDepositStatuteCitation}</span>
           </div>
         </div>
 
@@ -359,13 +410,13 @@ export const DisputeIntakeWizard: React.FC = () => {
             className="btn-geom w-full sm:w-auto flex-1 py-3.5 px-6 bg-[var(--accent-gold)] text-slate-950 hover:opacity-90 font-bold text-sm flex items-center justify-center gap-2 shadow-lg shadow-amber-500/10 transition-all font-serif"
           >
             <Sparkles className="w-4 h-4 fill-slate-950" />
-            <span>Generate Complete Dispute Package &amp; Demand Letter</span>
+            <span>{t('intakeGenerateBtn', 'Generate Complete Dispute Package & Demand Letter')}</span>
             <ArrowRight className="w-4 h-4" />
           </button>
         </div>
 
         <p className="text-[11px] font-mono text-center text-[var(--text-muted)] border-t border-[var(--border-color)]/60 pt-3">
-          ⚖️ <strong>Legal Notice:</strong> SueChef provides self-help dispute tools and calculations. It is not a law firm and is not a substitute for formal attorney advice.
+          ⚖️ <strong>{t('homeDisclaimerBadge', 'Legal Notice')}:</strong> {t('homeDisclaimerP1', 'SueChef provides self-help dispute tools and calculations. It is not a law firm and is not a substitute for formal attorney advice.')}
         </p>
       </form>
 
@@ -394,36 +445,36 @@ export const DisputeIntakeWizard: React.FC = () => {
               </div>
               <div>
                 <h3 className="font-serif font-bold text-lg text-[var(--text-main)]">
-                  Dispute Case Created &amp; Damages Itemized!
+                  {t('intakeCaseGeneratedSuccess', 'Dispute Case Created & Damages Itemized!')}
                 </h3>
                 <p className="text-xs text-[var(--text-muted)] font-mono">
-                  Case: {claimantName} v. {opponentName} ({jurisdiction.stateCode})
+                  {t('activeCaseFile', 'Case')}: {claimantName} v. {opponentName} ({jurisdiction.stateCode})
                 </p>
               </div>
             </div>
 
             <div className="space-y-3 text-xs leading-relaxed text-[var(--text-muted)]">
               <p>
-                Your dispute file has been securely initialized with <strong className="text-[var(--text-main)]">{countryInfo.currencySymbol}{totalCalculatedClaim.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</strong> in enforceable damages, statutory bad-faith citations, and pre-formatted legal pleadings.
+                {format('intakeSuccessSummary', { amount: `${countryInfo.currencySymbol}${totalCalculatedClaim.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}` })}
               </p>
 
               <div className="p-3 bg-[var(--bg-secondary)] border border-[var(--border-color)] custom-geometry space-y-2">
                 <div className="font-bold text-[var(--text-main)] flex items-center gap-1.5 font-serif text-sm">
                   <FileText className="w-4 h-4 text-[var(--accent-gold)]" />
-                  <span>Recommended Next Action:</span>
+                  <span>{t('intakeRecommendedAction', 'Recommended Next Action:')}</span>
                 </div>
                 <div className="space-y-1 text-xs">
                   <div className="flex items-start gap-2">
                     <span className="text-[var(--accent-gold)] font-bold">1.</span>
-                    <span>Send the <strong>10-Day Pre-Lawsuit Demand Letter</strong> via Certified Mail (resolves ~70% of claims before court).</span>
+                    <span>{t('intakeNextAction1', 'Send the 10-Day Pre-Lawsuit Demand Letter via Certified Mail (resolves ~70% of claims before court).')}</span>
                   </div>
                   <div className="flex items-start gap-2">
                     <span className="text-[var(--accent-gold)] font-bold">2.</span>
-                    <span>Upload your payment receipts or photos in the <strong>Evidence Locker</strong> to generate court-admissible SHA-256 exhibit stickers.</span>
+                    <span>{t('intakeNextAction2', 'Upload your payment receipts or photos in the Evidence Locker to generate court-admissible SHA-256 exhibit stickers.')}</span>
                   </div>
                   <div className="flex items-start gap-2">
                     <span className="text-[var(--accent-gold)] font-bold">3.</span>
-                    <span>Review the <strong>Prima Facie Legal Checklist</strong> in the Claim Kitchen.</span>
+                    <span>{t('intakeNextAction3', 'Review the Prima Facie Legal Checklist in the Claim Kitchen.')}</span>
                   </div>
                 </div>
               </div>
@@ -440,7 +491,7 @@ export const DisputeIntakeWizard: React.FC = () => {
                 className="btn-geom py-3 px-4 bg-[var(--accent-gold)] text-slate-950 font-bold text-xs flex items-center justify-center gap-2 hover:opacity-90 transition-all"
               >
                 <FileText className="w-4 h-4" />
-                <span>View &amp; Print Demand Letter</span>
+                <span>{t('intakeViewDemandBtn', 'View & Print Demand Letter')}</span>
               </button>
 
               <button
@@ -453,7 +504,7 @@ export const DisputeIntakeWizard: React.FC = () => {
                 className="btn-geom py-3 px-4 bg-[var(--bg-secondary)] border border-[var(--border-color)] text-[var(--text-main)] hover:border-[var(--accent-gold)] font-bold text-xs flex items-center justify-center gap-2 transition-all"
               >
                 <Scale className="w-4 h-4 text-[var(--accent-gold)]" />
-                <span>Open Claim Kitchen Ledger</span>
+                <span>{t('intakeOpenKitchenBtn', 'Open Claim Kitchen Ledger')}</span>
               </button>
             </div>
           </div>

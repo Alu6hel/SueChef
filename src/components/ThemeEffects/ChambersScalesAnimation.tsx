@@ -25,7 +25,9 @@ export const ChambersScalesAnimation: React.FC = () => {
     activeCase, 
     updateActiveCase, 
     setActiveWorkstation, 
-    totalDamages 
+    totalDamages,
+    t,
+    format 
   } = useSueChef();
 
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
@@ -554,7 +556,7 @@ export const ChambersScalesAnimation: React.FC = () => {
           <div className="min-w-0">
             <div className="flex items-center gap-1.5 flex-wrap">
               <span className="font-serif font-bold text-xs sm:text-sm text-[var(--text-main)] truncate">
-                Burden of Proof &amp; Evidentiary Equilibrium
+                {t('scaleTitle', 'Burden of Proof & Evidentiary Equilibrium')}
               </span>
               <span className="text-[10px] font-mono px-2 py-0.5 rounded-full font-bold uppercase tracking-wider custom-geometry shadow-sm"
                 style={{
@@ -564,14 +566,14 @@ export const ChambersScalesAnimation: React.FC = () => {
                 }}
               >
                 {plaintiffPercent > 50 
-                  ? `⚖️ Preponderance Met (${plaintiffPercent}%)` 
+                  ? format('scalePreponderanceMet', { percent: plaintiffPercent }, `⚖️ Preponderance Met (${plaintiffPercent}%)`) 
                   : plaintiffPercent === 50 
-                  ? '⚖️ Tie Equilibrium (50%)' 
-                  : `⚠️ Rebuttal Needed (${plaintiffPercent}%)`}
+                  ? t('scaleTieEquilibrium', '⚖️ Tie Equilibrium (50%)') 
+                  : format('scaleRebuttalNeeded', { percent: plaintiffPercent }, `⚠️ Rebuttal Needed (${plaintiffPercent}%)`)}
               </span>
             </div>
             <p className="text-[10px] text-[var(--text-muted)] font-mono hidden sm:block">
-              Civil legal standard: 51%+ preponderance of credible evidence establishes claim viability
+              {t('scaleStandard', 'Civil legal standard: 51%+ preponderance of credible evidence establishes claim viability')}
             </p>
           </div>
         </div>
@@ -582,10 +584,10 @@ export const ChambersScalesAnimation: React.FC = () => {
             type="button"
             onClick={() => openDrawer('plaintiff')}
             className="btn-geom px-2 sm:px-2.5 py-1 text-[11px] bg-[var(--bg-secondary)] border border-[var(--border-color)] text-[var(--accent-gold)] hover:border-[var(--accent-gold)] flex items-center gap-1 font-semibold"
-            title="Inspect all evidence items on the scale"
+            title={t('scaleEvidenceDetails', 'Evidence Details')}
           >
             <Info className="w-3 h-3" />
-            <span className="hidden xs:inline">Evidence Details</span>
+            <span className="hidden xs:inline">{t('scaleEvidenceDetails', 'Evidence Details')}</span>
           </button>
 
           {(plaintiffSimOffset !== 0 || defendantSimOffset !== 0) && (
@@ -593,7 +595,7 @@ export const ChambersScalesAnimation: React.FC = () => {
               type="button"
               onClick={resetWeights}
               className="p-1 text-[var(--text-muted)] hover:text-[var(--text-main)] rounded hover:bg-white/5 transition-colors"
-              title="Reset Simulation to Real Case Baseline"
+              title={t('scaleResetSim', 'Reset Simulation to Real Case Baseline')}
             >
               <RotateCcw className="w-3.5 h-3.5" />
             </button>
@@ -603,7 +605,7 @@ export const ChambersScalesAnimation: React.FC = () => {
             type="button"
             onClick={() => setIsMinimized(prev => !prev)}
             className="p-1 text-[var(--text-muted)] hover:text-[var(--text-main)] rounded hover:bg-white/5 transition-colors"
-            title={isMinimized ? "Expand Scale Animation" : "Collapse Scale"}
+            title={isMinimized ? t('scaleExpand', "Expand Scale Animation") : t('scaleCollapse', "Collapse Scale")}
           >
             {isMinimized ? <ChevronDown className="w-4 h-4" /> : <ChevronUp className="w-4 h-4" />}
           </button>
@@ -615,18 +617,18 @@ export const ChambersScalesAnimation: React.FC = () => {
         <div className="py-2 px-1 flex items-center justify-between text-xs font-mono">
           <div className="flex items-center gap-3">
             <span className="text-emerald-400 font-bold">
-              Plaintiff: {plaintiffWeight} Exhibits &amp; Proofs
+              {format('scalePlaintiffExhibits', { count: plaintiffWeight }, `Plaintiff: ${plaintiffWeight} Exhibits & Proofs`)}
             </span>
             <span className="text-[var(--text-muted)]">vs.</span>
             <span className="text-amber-400 font-bold">
-              Defense: {defendantWeight} Defect Warnings
+              {format('scaleDefenseWarnings', { count: defendantWeight }, `Defense: ${defendantWeight} Defect Warnings`)}
             </span>
           </div>
           <button
             onClick={() => setIsMinimized(false)}
             className="text-[10px] text-[var(--accent-gold)] underline hover:opacity-80"
           >
-            Show Animated Scales
+            {t('scaleShowAnimated', 'Show Animated Scales')}
           </button>
         </div>
       ) : (
@@ -636,7 +638,7 @@ export const ChambersScalesAnimation: React.FC = () => {
           <div 
             className="w-full h-48 sm:h-52 md:h-56 relative flex items-center justify-center cursor-pointer"
             onClick={() => openDrawer('plaintiff')}
-            title="Click to view itemized evidence on scales"
+            title={t('scaleEvidenceDetails', 'Evidence Details')}
           >
             <canvas ref={canvasRef} className="w-full h-full block select-none" />
           </div>
@@ -659,9 +661,9 @@ export const ChambersScalesAnimation: React.FC = () => {
                 type="button"
                 onClick={() => openDrawer('plaintiff')}
                 className="px-3 py-1 text-xs font-mono font-bold text-[var(--accent-gold)] hover:underline flex items-center gap-1.5"
-                title="Click to inspect all evidence items"
+                title={t('scaleEvidenceDetails', 'Evidence Details')}
               >
-                <span>Proof:</span>
+                <span>{t('scaleProofLabel', 'Proof:')}</span>
                 <span className="text-emerald-400 font-bold text-sm">{plaintiffWeight}</span>
               </button>
 
@@ -679,21 +681,25 @@ export const ChambersScalesAnimation: React.FC = () => {
             <div className="text-center font-mono">
               <div className="flex items-center justify-center gap-2">
                 <span className={`text-xs font-bold ${plaintiffPercent >= 51 ? 'text-emerald-400' : plaintiffPercent === 50 ? 'text-amber-400' : 'text-rose-400'}`}>
-                  {plaintiffPercent}% Civil Scale Advantage
+                  {format('scaleCivilAdvantage', { percent: plaintiffPercent }, `${plaintiffPercent}% Civil Scale Advantage`)}
                 </span>
                 {(plaintiffSimOffset !== 0 || defendantSimOffset !== 0) && (
                   <button
                     type="button"
                     onClick={resetWeights}
                     className="text-[10px] text-[var(--text-muted)] hover:text-[var(--accent-gold)] underline"
-                    title="Reset to baseline"
+                    title={t('scaleReset', 'Reset')}
                   >
-                    Reset
+                    {t('scaleReset', 'Reset')}
                   </button>
                 )}
               </div>
               <span className="text-[10px] text-[var(--text-muted)] block">
-                {weightDiff > 0 ? `+${weightDiff} advantage over defense` : weightDiff === 0 ? 'Exact 50/50 deadlock' : `${weightDiff} deficit`}
+                {weightDiff > 0 
+                  ? format('scaleAdvantageDiff', { diff: weightDiff }, `+${weightDiff} advantage over defense`) 
+                  : weightDiff === 0 
+                  ? t('scaleDeadlock', 'Exact 50/50 deadlock') 
+                  : format('scaleDeficit', { diff: Math.abs(weightDiff) }, `${weightDiff} deficit`)}
               </span>
             </div>
 
@@ -713,9 +719,9 @@ export const ChambersScalesAnimation: React.FC = () => {
                 type="button"
                 onClick={() => openDrawer('defendant')}
                 className="px-3 py-1 text-xs font-mono font-bold text-[var(--text-main)] hover:underline flex items-center gap-1.5"
-                title="Click to inspect defense defects"
+                title={t('scaleEvidenceDetails', 'Evidence Details')}
               >
-                <span>Defense:</span>
+                <span>{t('scaleDefenseLabel', 'Defense:')}</span>
                 <span className="text-amber-400 font-bold text-sm">{defendantWeight}</span>
               </button>
 
@@ -735,7 +741,7 @@ export const ChambersScalesAnimation: React.FC = () => {
             <div className="flex items-center gap-2">
               <ShieldCheck className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
               <span>
-                <strong>Plain English Rule:</strong> You only need <strong>51%+ proof</strong> (Preponderance of the Evidence) to win in civil court. Each contract, receipt, or message adds weight to your pan.
+                <strong>{t('scalePlainEnglishRuleTitle', 'Plain English Rule:')}</strong> {t('scalePlainEnglishRuleDesc', 'You only need 51%+ proof (Preponderance of the Evidence) to win in civil court. Each contract, receipt, or message adds weight to your pan.')}
               </span>
             </div>
             <button
@@ -743,7 +749,7 @@ export const ChambersScalesAnimation: React.FC = () => {
               onClick={() => openDrawer('plaintiff')}
               className="text-[10px] font-mono text-[var(--accent-gold)] underline hover:opacity-80 shrink-0"
             >
-              View Evidence Breakdown &rarr;
+              {t('scaleViewBreakdown', 'View Evidence Breakdown →')}
             </button>
           </div>
         </div>
@@ -764,7 +770,7 @@ export const ChambersScalesAnimation: React.FC = () => {
               <div className="flex items-center gap-2">
                 <Scale className="w-4 h-4 text-[var(--accent-gold)]" />
                 <h3 className="font-serif font-bold text-sm sm:text-base text-[var(--text-main)]">
-                  Evidentiary Weights Resting on the Scales
+                  {t('scaleDrawerTitle', 'Evidentiary Weights Resting on the Scales')}
                 </h3>
               </div>
               <button
@@ -786,7 +792,7 @@ export const ChambersScalesAnimation: React.FC = () => {
                 }`}
               >
                 <ShieldCheck className="w-3.5 h-3.5" />
-                <span>Plaintiff Side ({plaintiffWeight})</span>
+                <span>{format('scaleDrawerPlaintiffSide', { count: plaintiffWeight }, `Plaintiff Side (${plaintiffWeight})`)}</span>
               </button>
               <button
                 onClick={() => { sound.playClick(); setActiveDrawerTab('defendant'); }}
@@ -797,7 +803,7 @@ export const ChambersScalesAnimation: React.FC = () => {
                 }`}
               >
                 <AlertTriangle className="w-3.5 h-3.5" />
-                <span>Defense Side ({defendantWeight})</span>
+                <span>{format('scaleDrawerDefendantSide', { count: defendantWeight }, `Defense Side (${defendantWeight})`)}</span>
               </button>
             </div>
 
@@ -806,15 +812,15 @@ export const ChambersScalesAnimation: React.FC = () => {
               {activeDrawerTab === 'plaintiff' ? (
                 <div className="space-y-3">
                   <div className="text-[11px] text-[var(--text-muted)] flex items-center justify-between">
-                    <span>Verified documentary evidence &amp; satisfied statutory elements:</span>
-                    <span className="text-emerald-400 font-bold font-mono">+{plaintiffWeight} Total Mass</span>
+                    <span>{t('scaleDrawerPlaintiffDesc', 'Verified documentary evidence & satisfied statutory elements:')}</span>
+                    <span className="text-emerald-400 font-bold font-mono">{format('scaleDrawerTotalMass', { count: plaintiffWeight }, `+${plaintiffWeight} Total Mass`)}</span>
                   </div>
 
                   {/* Exhibits List */}
                   {realExhibits.length > 0 && (
                     <div className="space-y-1.5">
                       <span className="text-[10px] uppercase font-mono text-[var(--accent-gold)] font-bold">
-                        Exhibit Locker Items:
+                        {t('scaleDrawerExhibitsTitle', 'Exhibit Locker Items:')}
                       </span>
                       {realExhibits.map((ev, idx) => (
                         <div 
@@ -831,7 +837,7 @@ export const ChambersScalesAnimation: React.FC = () => {
                               </span>
                             </div>
                             <span className="text-[10px] text-[var(--text-muted)] block font-mono mt-0.5">
-                              Custodian: {ev.custodian} • {ev.category.toUpperCase()}
+                              {format('scaleCustodian', { custodian: ev.custodian, category: ev.category.toUpperCase() }, `Custodian: ${ev.custodian} • ${ev.category.toUpperCase()}`)}
                             </span>
                           </div>
                           <span className="text-[10px] font-mono text-emerald-400 font-bold shrink-0">
@@ -846,7 +852,7 @@ export const ChambersScalesAnimation: React.FC = () => {
                   {satisfiedElements.length > 0 && (
                     <div className="space-y-1.5 pt-1">
                       <span className="text-[10px] uppercase font-mono text-emerald-400 font-bold">
-                        Satisfied Legal Elements (Burden Met):
+                        {t('scaleDrawerSatisfiedTitle', 'Satisfied Legal Elements (Burden Met):')}
                       </span>
                       {satisfiedElements.map(el => (
                         <div 
@@ -857,7 +863,7 @@ export const ChambersScalesAnimation: React.FC = () => {
                           <div>
                             <span className="font-bold text-slate-200">{el.title}</span>
                             <span className="text-[10px] text-[var(--text-muted)] block font-mono">
-                              Statute: {el.legalStandard}
+                              {format('scaleStatute', { statute: el.legalStandard }, `Statute: ${el.legalStandard}`)}
                             </span>
                           </div>
                         </div>
@@ -868,7 +874,7 @@ export const ChambersScalesAnimation: React.FC = () => {
                   {/* Simulation notes if offset > 0 */}
                   {plaintiffSimOffset > 0 && (
                     <div className="p-2 bg-amber-500/10 border border-amber-500/20 rounded text-[11px] text-[var(--accent-gold)] font-mono">
-                      + {plaintiffSimOffset} simulated evidentiary exhibit(s) added via live weight controls.
+                      {format('scaleDrawerSimPlaintiffAdded', { count: plaintiffSimOffset }, `+ ${plaintiffSimOffset} simulated evidentiary exhibit(s) added via live weight controls.`)}
                     </div>
                   )}
 
@@ -882,22 +888,22 @@ export const ChambersScalesAnimation: React.FC = () => {
                       className="btn-geom px-3 py-1.5 bg-[var(--accent-gold)] text-slate-950 font-bold text-xs flex items-center gap-1 hover:opacity-90"
                     >
                       <ExternalLink className="w-3.5 h-3.5" />
-                      <span>Upload Real Exhibits in Evidence Locker</span>
+                      <span>{t('scaleDrawerUploadExhibits', 'Upload Real Exhibits in Evidence Locker')}</span>
                     </button>
                   </div>
                 </div>
               ) : (
                 <div className="space-y-3">
                   <div className="text-[11px] text-[var(--text-muted)] flex items-center justify-between">
-                    <span>Potential defense arguments, notice defects, or statutory offsets:</span>
-                    <span className="text-amber-400 font-bold font-mono">+{defendantWeight} Total Mass</span>
+                    <span>{t('scaleDrawerDefendantDesc', 'Potential defense arguments, notice defects, or statutory offsets:')}</span>
+                    <span className="text-amber-400 font-bold font-mono">{format('scaleDrawerTotalMass', { count: defendantWeight }, `+${defendantWeight} Total Mass`)}</span>
                   </div>
 
                   {/* Defect Warnings List */}
                   {realDefects.length > 0 ? (
                     <div className="space-y-1.5">
                       <span className="text-[10px] uppercase font-mono text-amber-400 font-bold">
-                        Notice Defect Warnings (Opponent Challenges):
+                        {t('scaleDrawerDefectsTitle', 'Notice Defect Warnings (Opponent Challenges):')}
                       </span>
                       {realDefects.map((defect, idx) => (
                         <div 
@@ -913,7 +919,7 @@ export const ChambersScalesAnimation: React.FC = () => {
                     </div>
                   ) : (
                     <div className="p-3 bg-emerald-950/20 border border-emerald-500/20 rounded text-emerald-400">
-                      No procedural defects or missing notice elements identified for this dispute.
+                      {t('scaleDrawerNoDefects', 'No procedural defects or missing notice elements identified for this dispute.')}
                     </div>
                   )}
 
@@ -921,7 +927,7 @@ export const ChambersScalesAnimation: React.FC = () => {
                   {unsatisfiedElements.length > 0 && (
                     <div className="space-y-1.5 pt-1">
                       <span className="text-[10px] uppercase font-mono text-rose-400 font-bold">
-                        Unsatisfied Claim Elements (Defendant Rebuttal Vector):
+                        {t('scaleDrawerUnsatisfiedTitle', 'Unsatisfied Claim Elements (Defendant Rebuttal Vector):')}
                       </span>
                       {unsatisfiedElements.map(el => (
                         <div 
@@ -932,7 +938,7 @@ export const ChambersScalesAnimation: React.FC = () => {
                           <div>
                             <span className="font-bold text-slate-200">{el.title}</span>
                             <span className="text-[10px] text-rose-300 block font-mono">
-                              Required: {el.legalStandard}
+                              {format('scaleRequired', { statute: el.legalStandard }, `Required: ${el.legalStandard}`)}
                             </span>
                           </div>
                         </div>
@@ -942,7 +948,7 @@ export const ChambersScalesAnimation: React.FC = () => {
 
                   {defendantSimOffset > 0 && (
                     <div className="p-2 bg-amber-500/10 border border-amber-500/20 rounded text-[11px] text-[var(--accent-gold)] font-mono">
-                      + {defendantSimOffset} simulated defense counter-claim(s) added via live weight controls.
+                      {format('scaleDrawerSimDefendantAdded', { count: defendantSimOffset }, `+ ${defendantSimOffset} simulated defense counter-claim(s) added via live weight controls.`)}
                     </div>
                   )}
 
@@ -956,7 +962,7 @@ export const ChambersScalesAnimation: React.FC = () => {
                       className="btn-geom px-3 py-1.5 bg-[var(--bg-secondary)] border border-[var(--border-color)] text-[var(--text-main)] font-bold text-xs flex items-center gap-1 hover:border-[var(--accent-gold)]"
                     >
                       <ExternalLink className="w-3.5 h-3.5" />
-                      <span>Review Statutory Elements in Claim Kitchen</span>
+                      <span>{t('scaleDrawerReviewElements', 'Review Statutory Elements in Claim Kitchen')}</span>
                     </button>
                   </div>
                 </div>
@@ -966,14 +972,14 @@ export const ChambersScalesAnimation: React.FC = () => {
             {/* Modal Footer */}
             <div className="bg-[var(--bg-secondary)] border-t border-[var(--border-color)] px-4 py-2.5 flex items-center justify-between text-xs">
               <span className="text-[var(--text-muted)] font-mono text-[10px]">
-                Preponderance: {plaintiffPercent}% vs {100 - plaintiffPercent}%
+                {format('scaleDrawerPreponderanceRatio', { p: plaintiffPercent, d: 100 - plaintiffPercent }, `Preponderance: ${plaintiffPercent}% vs ${100 - plaintiffPercent}%`)}
               </span>
               <button
                 type="button"
                 onClick={() => setShowDrawer(false)}
                 className="btn-geom px-3 py-1 text-xs bg-[var(--bg-card)] border border-[var(--border-color)] text-[var(--text-muted)] hover:text-[var(--text-main)]"
               >
-                Close Drawer
+                {t('scaleDrawerClose', 'Close Drawer')}
               </button>
             </div>
           </div>

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { useSueChef } from '../../context/SueChefContext';
 import { sound } from '../../services/soundEngine';
 import { getCountryInfo } from '../../services/countries';
@@ -28,79 +28,79 @@ interface StageConfig {
   description: string;
 }
 
-const PIPELINE_STAGES: StageConfig[] = [
-  {
-    id: 'intake',
-    label: 'Claim Intake',
-    stepNumber: 1,
-    icon: Scale,
-    workstation: 'claim-kitchen',
-    workstationLabel: 'Claim Kitchen',
-    description: 'Document facts, itemize losses & verify legal elements.'
-  },
-  {
-    id: 'demand_sent',
-    label: '14-Day Demand',
-    stepNumber: 2,
-    icon: FileText,
-    workstation: 'pleading-builder',
-    workstationLabel: 'Pleadings & Demand',
-    description: 'Certified pre-lawsuit notice with statutory deadline.'
-  },
-  {
-    id: 'filed',
-    label: 'Court Filed',
-    stepNumber: 3,
-    icon: Clock,
-    workstation: 'sol-watcher',
-    workstationLabel: 'SOL & Dockets',
-    description: 'Complaint submitted to clerk; docket number assigned.'
-  },
-  {
-    id: 'served',
-    label: 'Defendant Served',
-    stepNumber: 4,
-    icon: Send,
-    workstation: 'service-tracker',
-    workstationLabel: 'Process Tracker',
-    description: 'Personal delivery executed; proof of service filed.'
-  },
-  {
-    id: 'hearing_prep',
-    label: 'Hearing Prep',
-    stepNumber: 5,
-    icon: Gavel,
-    workstation: 'trial-prep',
-    workstationLabel: 'Trial Prep',
-    description: 'Practice objections, judge questioning & cross-exam.'
-  },
-  {
-    id: 'judgment_enforcing',
-    label: 'Enforcement',
-    stepNumber: 6,
-    icon: Coins,
-    workstation: 'enforcement',
-    workstationLabel: 'Enforcement Suite',
-    description: 'Writs of execution, bank levies & wage garnishments.'
-  },
-  {
-    id: 'resolved',
-    label: 'Case Resolved',
-    stepNumber: 7,
-    icon: CheckCircle2,
-    workstation: 'settlement-matrix',
-    workstationLabel: 'Settlement Matrix',
-    description: 'Full settlement executed or judgment collected.'
-  }
-];
-
 export const PipelineKanban: React.FC = () => {
-  const { activeCase, setPipelineStage, setActiveWorkstation, totalDamages, country } = useSueChef();
+  const { activeCase, setPipelineStage, setActiveWorkstation, totalDamages, country, t } = useSueChef();
   const countryInfo = getCountryInfo(country);
 
+  const pipelineStages: StageConfig[] = useMemo(() => [
+    {
+      id: 'intake',
+      label: t('stageIntake', 'Claim Intake'),
+      stepNumber: 1,
+      icon: Scale,
+      workstation: 'claim-kitchen',
+      workstationLabel: t('navBuildCase', 'Claim Kitchen'),
+      description: t('stageIntakeDesc', 'Document facts, itemize losses & verify legal elements.')
+    },
+    {
+      id: 'demand_sent',
+      label: t('stageDemandSent', '14-Day Demand'),
+      stepNumber: 2,
+      icon: FileText,
+      workstation: 'pleading-builder',
+      workstationLabel: t('navCourtPapers', 'Pleadings & Demand'),
+      description: t('stageDemandSentDesc', 'Certified pre-lawsuit notice with statutory deadline.')
+    },
+    {
+      id: 'filed',
+      label: t('stageFiled', 'Court Filed'),
+      stepNumber: 3,
+      icon: Clock,
+      workstation: 'sol-watcher',
+      workstationLabel: t('navSolDocket', 'SOL & Dockets'),
+      description: t('stageFiledDesc', 'Complaint submitted to clerk; docket number assigned.')
+    },
+    {
+      id: 'served',
+      label: t('stageServed', 'Defendant Served'),
+      stepNumber: 4,
+      icon: Send,
+      workstation: 'service-tracker',
+      workstationLabel: t('navServiceProof', 'Process Tracker'),
+      description: t('stageServedDesc', 'Personal delivery executed; proof of service filed.')
+    },
+    {
+      id: 'hearing_prep',
+      label: t('stageHearingPrep', 'Hearing Prep'),
+      stepNumber: 5,
+      icon: Gavel,
+      workstation: 'trial-prep',
+      workstationLabel: t('navTrialPrep', 'Trial Prep'),
+      description: t('stageHearingPrepDesc', 'Practice objections, judge questioning & cross-exam.')
+    },
+    {
+      id: 'judgment_enforcing',
+      label: t('stageEnforcement', 'Enforcement'),
+      stepNumber: 6,
+      icon: Coins,
+      workstation: 'enforcement',
+      workstationLabel: t('wsEnforcementTitle', 'Enforcement Suite'),
+      description: t('stageEnforcementDesc', 'Writs of execution, bank levies & wage garnishments.')
+    },
+    {
+      id: 'resolved',
+      label: t('stageResolved', 'Case Resolved'),
+      stepNumber: 7,
+      icon: CheckCircle2,
+      workstation: 'settlement-matrix',
+      workstationLabel: t('wsSettlementTitle', 'Settlement Matrix'),
+      description: t('stageResolvedDesc', 'Full settlement executed or judgment collected.')
+    }
+  ], [t]);
+
   const currentStageId: StageId = activeCase.pipelineStage || 'intake';
-  const currentStageIndex = PIPELINE_STAGES.findIndex(s => s.id === currentStageId);
-  const currentStage = PIPELINE_STAGES[currentStageIndex] || PIPELINE_STAGES[0];
+  const currentStageIndex = pipelineStages.findIndex(s => s.id === currentStageId);
+  const currentStage = pipelineStages[currentStageIndex] || pipelineStages[0];
 
   const handleStageSelect = (stageId: StageId) => {
     sound.hapticPulse();
@@ -109,10 +109,10 @@ export const PipelineKanban: React.FC = () => {
   };
 
   const handleAdvance = () => {
-    if (currentStageIndex < PIPELINE_STAGES.length - 1) {
+    if (currentStageIndex < pipelineStages.length - 1) {
       sound.hapticHeavy();
       sound.playSuccessChime();
-      const nextStage = PIPELINE_STAGES[currentStageIndex + 1];
+      const nextStage = pipelineStages[currentStageIndex + 1];
       setPipelineStage(nextStage.id);
     }
   };
@@ -126,24 +126,24 @@ export const PipelineKanban: React.FC = () => {
         <div>
           <div className="flex items-center gap-2">
             <span className="text-xs font-mono font-bold px-2 py-0.5 rounded bg-[var(--accent-gold)] text-slate-950 uppercase">
-              Litigation Pipeline
+              {t('stepTracker', 'Litigation Pipeline')}
             </span>
             <h2 className="font-serif font-bold text-lg text-[var(--text-main)]">
-              Dispute Lifecycle &amp; Kanban Tracker
+              {t('pipelineTitle', 'Dispute Lifecycle & Kanban Tracker')}
             </h2>
           </div>
           <p className="text-xs text-[var(--text-muted)] font-mono mt-0.5">
-            Track case progress from initial claim intake through post-judgment bank levies
+            {t('pipelineDesc', 'Track case progress from initial claim intake through post-judgment bank levies')}
           </p>
         </div>
 
         <div className="flex items-center gap-2">
-          {currentStageIndex < PIPELINE_STAGES.length - 1 && (
+          {currentStageIndex < pipelineStages.length - 1 && (
             <button
               onClick={handleAdvance}
-              className="btn-geom flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold bg-[var(--accent-gold)] text-slate-950 hover:opacity-90 transition-all shadow-sm"
+              className="btn-geom flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold bg-[var(--accent-gold)] text-slate-950 hover:opacity-90 transition-all shadow-sm cursor-pointer"
             >
-              <span>Advance to Next Stage</span>
+              <span>{t('pipelineAdvanceStage', 'Advance to Next Stage')}</span>
               <ArrowRight className="w-3.5 h-3.5" />
             </button>
           )}
@@ -152,7 +152,7 @@ export const PipelineKanban: React.FC = () => {
 
       {/* 7-Stage Horizontal Pipeline Bar */}
       <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-2">
-        {PIPELINE_STAGES.map((st, idx) => {
+        {pipelineStages.map((st, idx) => {
           const isCurrent = st.id === currentStageId;
           const isPassed = idx < currentStageIndex;
           const Icon = st.icon;
@@ -161,7 +161,7 @@ export const PipelineKanban: React.FC = () => {
             <button
               key={st.id}
               onClick={() => handleStageSelect(st.id)}
-              className={`p-3 card-geom border text-left transition-all relative ${
+              className={`p-3 card-geom border text-left transition-all relative cursor-pointer ${
                 isCurrent
                   ? 'border-[var(--accent-gold)] bg-amber-950/40 text-[var(--accent-gold)] shadow-lg scale-[1.02]'
                   : isPassed
@@ -195,10 +195,10 @@ export const PipelineKanban: React.FC = () => {
         <div className="space-y-1">
           <div className="text-[10px] font-mono uppercase text-[var(--text-muted)] flex items-center gap-1.5">
             <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping inline-block" />
-            <span>Currently Active Step: {currentStage.stepNumber} of 7 &bull; {currentStage.label}</span>
+            <span>{t('pipelineCurrentStage', 'Current Lifecycle Stage')}: {currentStage.stepNumber} / {pipelineStages.length} &bull; {currentStage.label}</span>
           </div>
           <div className="font-serif font-bold text-sm text-[var(--text-main)]">
-            Matter: "{activeCase.title}" &bull; Claim: {countryInfo.currencySymbol}{totalDamages.toLocaleString()} vs {defendant?.name || 'Defendant'}
+            {t('homeDisputeMatter', 'Matter:')} "{activeCase.title}" &bull; {countryInfo.currencySymbol}{totalDamages.toLocaleString()} vs {defendant?.name || 'Defendant'}
           </div>
           <p className="text-xs text-[var(--text-muted)]">
             {currentStage.description}
@@ -210,12 +210,13 @@ export const PipelineKanban: React.FC = () => {
             sound.playClick();
             setActiveWorkstation(currentStage.workstation);
           }}
-          className="btn-geom px-4 py-2 text-xs font-bold bg-[var(--accent-gold)] text-slate-950 hover:opacity-90 transition-all flex items-center gap-1.5 shrink-0 shadow-md"
+          className="btn-geom px-4 py-2 text-xs font-bold bg-[var(--accent-gold)] text-slate-950 hover:opacity-90 transition-all flex items-center gap-1.5 shrink-0 shadow-md cursor-pointer"
         >
-          <span>Open {currentStage.workstationLabel}</span>
+          <span>{t('pipelineOpenWorkstation', 'Open')} {currentStage.workstationLabel}</span>
           <ArrowRight className="w-3.5 h-3.5" />
         </button>
       </div>
     </div>
   );
 };
+

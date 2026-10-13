@@ -32,6 +32,7 @@ interface SueChefContextType {
   language: SupportedLanguage;
   setLanguage: (lang: SupportedLanguage) => void;
   t: (key: string, fallback?: string) => string;
+  format: (key: string, params: Record<string, string | number>, fallback?: string) => string;
   fontSizeScale: FontSizeScale;
   setFontSizeScale: (scale: FontSizeScale) => void;
   activeWorkstation: WorkstationId;
@@ -114,6 +115,10 @@ export const SueChefProvider: React.FC<{ children: ReactNode }> = ({ children })
 
   const t = (key: string, fallback?: string): string => {
     return I18nService.t(key, fallback);
+  };
+
+  const format = (key: string, params: Record<string, string | number>, fallback?: string): string => {
+    return I18nService.format(key, params, fallback);
   };
 
   const [fontSizeScale, setFontSizeScaleState] = useState<FontSizeScale>(() => {
@@ -587,7 +592,8 @@ export const SueChefProvider: React.FC<{ children: ReactNode }> = ({ children })
         importEncryptedVault,
         language,
         setLanguage,
-        t
+        t,
+        format
       }}
     >
       {children}

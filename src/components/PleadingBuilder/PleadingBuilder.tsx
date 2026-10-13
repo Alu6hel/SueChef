@@ -29,7 +29,7 @@ import { exportFile, triggerPrint, triggerHaptic } from '../../services/fileExpo
 import { TwoTierLegalClause } from '../common/TwoTierLegalClause';
 
 export const PleadingBuilder: React.FC = () => {
-  const { activeCase, updateActiveCase, updateParagraph, country } = useSueChef();
+  const { activeCase, updateActiveCase, updateParagraph, country, t, format } = useSueChef();
   const countryInfo = getCountryInfo(country);
   const [activeSubTab, setActiveSubTab] = useState<'complaint' | 'demand_letter' | 'verification' | 'court_packet'>('complaint');
   const [copied, setCopied] = useState(false);
@@ -401,9 +401,9 @@ export const PleadingBuilder: React.FC = () => {
             }`}
           >
             <ShieldCheck className="w-3.5 h-3.5" />
-            <span>Master Filing Packet (5-in-1)</span>
+            <span>{t('pleadingCourtPacket', 'Master Filing Packet (5-in-1)')}</span>
             <span className="text-[9px] px-1.5 py-0.2 bg-emerald-950 text-emerald-300 rounded font-mono font-bold">
-              COURT READY
+              {t('masterFilingPacketBadge', 'COURT READY')}
             </span>
           </button>
           <button
@@ -417,7 +417,7 @@ export const PleadingBuilder: React.FC = () => {
                 : 'bg-[var(--bg-card)] text-[var(--text-muted)] border-[var(--border-color)] hover:text-[var(--text-main)]'
             }`}
           >
-            Court Complaint (28-Line)
+            {t('pleadingComplaint', 'Court Complaint (28-Line)')}
           </button>
           <button
             onClick={() => {
@@ -430,7 +430,7 @@ export const PleadingBuilder: React.FC = () => {
                 : 'bg-[var(--bg-card)] text-[var(--text-muted)] border-[var(--border-color)] hover:text-[var(--text-main)]'
             }`}
           >
-            10-Day Demand Letter
+            {t('pleadingDemandLetter', '10-Day Demand Letter')}
           </button>
           <button
             onClick={() => {
@@ -443,7 +443,7 @@ export const PleadingBuilder: React.FC = () => {
                 : 'bg-[var(--bg-card)] text-[var(--text-muted)] border-[var(--border-color)] hover:text-[var(--text-main)]'
             }`}
           >
-            Verification Affidavit
+            {t('pleadingVerification', 'Verification Affidavit')}
           </button>
 
           <button
@@ -454,7 +454,7 @@ export const PleadingBuilder: React.FC = () => {
             className="tab-geom px-3 py-1.5 text-xs font-semibold border border-amber-500/50 bg-amber-500/10 text-amber-300 hover:bg-amber-500/20 transition-all flex items-center gap-1.5 shadow-sm"
           >
             <Landmark className="w-3.5 h-3.5 text-amber-300" />
-            <span>Official Court Forms (SC-100 / N1)</span>
+            <span>{t('officialCourtFormsBtn', 'Official Court Forms (SC-100 / N1)')}</span>
           </button>
         </div>
       </div>
@@ -539,27 +539,27 @@ export const PleadingBuilder: React.FC = () => {
             callouts={[
               {
                 type: 'liability',
-                label: 'Burden of Proof',
-                detail: 'Preponderance Standard (More likely true than not)'
+                label: t('burdenOfProof', 'Burden of Proof'),
+                detail: t('preponderanceStandard', 'Preponderance Standard (More likely true than not)')
               },
               {
                 type: 'deadline',
-                label: 'Service Window',
-                detail: '90 Days from Court Filing (FRCP Rule 4(m))'
+                label: t('serviceWindow', 'Service Window'),
+                detail: t('serviceWindowDesc', '90 Days from Court Filing (FRCP Rule 4(m))')
               },
               {
                 type: 'recovery',
-                label: 'Total Demanded',
-                detail: `${countryInfo.currencySymbol}${activeCase.claimEvaluation.damages.reduce((s, d) => s + (d.amount || 0), 0).toLocaleString()} Compensatory Relief`
+                label: t('intakeCalculatedTotal', 'Total Demanded'),
+                detail: `${countryInfo.currencySymbol}${activeCase.claimEvaluation.damages.reduce((s, d) => s + (d.amount || 0), 0).toLocaleString()} ${t('compensatoryRelief', 'Compensatory Relief')}`
               },
               {
                 type: 'penalty',
-                label: 'Bad-Faith Multipliers',
-                detail: 'Statutory Penalties & Costs Requested'
+                label: t('badFaithMultipliers', 'Bad-Faith Multipliers'),
+                detail: t('statutoryPenaltiesRequested', 'Statutory Penalties & Costs Requested')
               }
             ]}
             rawLegalText={`WHEREFORE, Plaintiff prays for judgment against Defendant as follows:\n1. For compensatory general and special damages in the sum of ${countryInfo.currencySymbol}${activeCase.claimEvaluation.damages.reduce((s, d) => s + (d.amount || 0), 0).toFixed(2)};\n2. For statutory bad-faith civil penalties as provided by applicable law;\n3. For allowable costs of suit; and\n4. For such other and further relief as the Court deems just and proper.`}
-            actionButtonLabel={showRawPleadingPaper ? 'Hide 28-Line Paper (Summary View)' : 'Expand Full 28-Line Legal Drafting Paper'}
+            actionButtonLabel={showRawPleadingPaper ? t('hide28LinePaper', 'Hide 28-Line Paper (Summary View)') : t('show28LinePaper', 'Expand Full 28-Line Legal Drafting Paper')}
             onActionClick={() => setShowRawPleadingPaper(!showRawPleadingPaper)}
             defaultExpanded={false}
           />

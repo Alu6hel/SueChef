@@ -39,7 +39,9 @@ export const ClaimKitchen: React.FC = () => {
     totalDamages, 
     setActiveWorkstation, 
     setIsPartiesModalOpen,
-    country 
+    country,
+    t,
+    format
   } = useSueChef();
   const countryInfo = getCountryInfo(country);
   const [newDamageDesc, setNewDamageDesc] = useState('');
@@ -56,13 +58,13 @@ export const ClaimKitchen: React.FC = () => {
   const [editingNotesText, setEditingNotesText] = useState('');
   const [expandedStandards, setExpandedStandards] = useState<Record<string, boolean>>({});
 
-  const noteTemplates = [
-    { label: '📝 Signed Contract', text: 'Executed written agreement establishing valid obligation.' },
-    { label: '💳 Wire / Bank Receipt', text: 'Bank wire / payment confirmation proving transfer of funds.' },
-    { label: '📸 Condition Photos', text: 'Time-stamped photos demonstrating property condition upon surrender.' },
-    { label: '✉️ Written Notice', text: 'Formal statutory cure notice delivered via certified mail.' },
-    { label: '🗑️ Clear Sample', text: '' },
-  ];
+  const noteTemplates = React.useMemo(() => [
+    { label: t('noteTemplateSignedContract', '📝 Signed Contract'), text: t('noteTemplateSignedContractText', 'Executed written agreement establishing valid obligation.') },
+    { label: t('noteTemplateWireReceipt', '💳 Wire / Bank Receipt'), text: t('noteTemplateWireReceiptText', 'Bank wire / payment confirmation proving transfer of funds.') },
+    { label: t('noteTemplatePhotos', '📸 Condition Photos'), text: t('noteTemplatePhotosText', 'Time-stamped photos demonstrating property condition upon surrender.') },
+    { label: t('noteTemplateNotice', '✉️ Written Notice'), text: t('noteTemplateNoticeText', 'Formal statutory cure notice delivered via certified mail.') },
+    { label: t('noteTemplateClear', '🗑️ Clear Sample'), text: '' },
+  ], [t]);
 
   const toggleStandardExpanded = (id: string) => {
     sound.playClick();
@@ -233,10 +235,10 @@ export const ClaimKitchen: React.FC = () => {
             </div>
             <div>
               <h1 className="font-serif font-bold text-2xl text-[var(--text-main)]">
-                The Claim Kitchen
+                {t('claimKitchenTitle', 'The Claim Kitchen')}
               </h1>
               <p className="text-xs text-[var(--text-muted)] font-mono">
-                Dispute Strength Evaluator, Plain-English Legal Requirements & Damages Calculator
+                {t('claimKitchenSubtitle', 'Dispute Strength Evaluator, Plain-English Legal Requirements & Damages Calculator')}
               </p>
             </div>
           </div>
@@ -246,7 +248,7 @@ export const ClaimKitchen: React.FC = () => {
         <div className="flex items-center gap-4 card-geom bg-[var(--bg-card)] border border-[var(--border-color)] p-3">
           <div className="text-right">
             <span className="text-[10px] uppercase font-mono text-[var(--text-muted)] font-semibold">
-              Merit Strength Score
+              {t('meritStrengthScore', 'Merit Strength Score')}
             </span>
             <div className="text-2xl font-bold font-mono text-[var(--accent-gold)] flex items-center justify-end gap-1">
               <span>{meritScore}</span>

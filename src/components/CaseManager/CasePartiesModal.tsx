@@ -26,35 +26,37 @@ export const CasePartiesModal: React.FC = () => {
     isPartiesModalOpen, 
     setIsPartiesModalOpen, 
     activeCase, 
-    updatePartiesAndTitle 
+    updatePartiesAndTitle,
+    t,
+    format
   } = useSueChef();
 
   // Extract plaintiff and defendant from activeCase
   const plaintiff = activeCase.parties.find(p => p.role === 'plaintiff') || {
     id: 'p_1',
-    name: '[e.g., Jane Doe (Your Name)]',
-    entityType: 'individual',
-    role: 'plaintiff',
-    address: '[e.g., 742 Evergreen Terrace]',
-    city: '[e.g., Springfield]',
+    name: t('samplePlaintiffName', '[e.g., Jane Doe (Your Name)]'),
+    entityType: 'individual' as const,
+    role: 'plaintiff' as const,
+    address: t('sampleAddressPlaceholder', '[e.g., 742 Evergreen Terrace]'),
+    city: t('sampleCityPlaceholder', '[e.g., Springfield]'),
     state: activeCase.state || 'CA',
-    zip: '[e.g., 62704]',
-    phone: '[e.g., (555) 019-2834]',
-    email: '[e.g., jane.doe@example.com]',
+    zip: t('sampleZipPlaceholder', '[e.g., 62704]'),
+    phone: t('samplePhonePlaceholder', '[e.g., (555) 019-2834]'),
+    email: t('sampleEmailPlaceholder', '[e.g., jane.doe@example.com]'),
     isPlaceholder: true
   };
 
   const defendant = activeCase.parties.find(p => p.role === 'defendant') || {
     id: 'd_1',
-    name: '[e.g., Apex Property Management LLC]',
-    entityType: 'llc',
-    role: 'defendant',
-    address: '[e.g., 100 Commercial Blvd, Suite 200]',
-    city: '[e.g., Los Angeles]',
+    name: t('sampleDefendantName', '[e.g., Apex Property Management LLC]'),
+    entityType: 'llc' as const,
+    role: 'defendant' as const,
+    address: t('sampleOpponentAddressPlaceholder', '[e.g., 100 Commercial Blvd, Suite 200]'),
+    city: t('sampleOpponentCityPlaceholder', '[e.g., Los Angeles]'),
     state: activeCase.state || 'CA',
-    zip: '[e.g., 90001]',
-    phone: '[e.g., (555) 321-7654]',
-    email: '[e.g., notices@apexpm.com]',
+    zip: t('sampleOpponentZipPlaceholder', '[e.g., 90001]'),
+    phone: t('sampleOpponentPhonePlaceholder', '[e.g., (555) 321-7654]'),
+    email: t('sampleOpponentEmailPlaceholder', '[e.g., notices@apexpm.com]'),
     registeredAgent: '[e.g., Legal Department / CT Corporation]',
     isPlaceholder: true
   };
@@ -141,7 +143,11 @@ export const CasePartiesModal: React.FC = () => {
   // Clear placeholders helper to give user a clean slate
   const handleClearPlaceholders = () => {
     sound.playClick();
-    const clean = (val: string) => (val.startsWith('[') && val.endsWith(']') ? '' : val);
+    const clean = (val: string) => {
+      if (!val) return '';
+      if (val.startsWith('[') && val.endsWith(']')) return '';
+      return val.replace(/\[[^\]]*\]/g, '').trim();
+    };
     const newP = clean(pName);
     const newD = clean(dName);
     setPName(newP);
@@ -165,8 +171,8 @@ export const CasePartiesModal: React.FC = () => {
   };
 
   const handleSave = () => {
-    const finalPName = pName.trim() || 'Plaintiff (You)';
-    const finalDName = dName.trim() || 'Defendant (Opposing Party)';
+    const finalPName = pName.trim() || t('partiesTabPlaintiff', 'Plaintiff (You)');
+    const finalDName = dName.trim() || t('partiesTabDefendant', 'Defendant (Opposing Party)');
     const finalTitle = isCustomTitle && caseTitle.trim() ? caseTitle.trim() : deriveCaseTitle(finalPName, finalDName);
 
     // Atomically commit both parties, all addresses, and title
@@ -218,10 +224,10 @@ export const CasePartiesModal: React.FC = () => {
             </div>
             <div>
               <h2 className="font-serif font-bold text-base sm:text-lg text-[var(--text-main)] leading-tight">
-                Dispute Parties & Case Details
+                {t('partiesModalTitle', 'Dispute Parties & Case Details')}
               </h2>
               <p className="text-[11px] text-[var(--text-muted)] font-mono">
-                Edit the real names and addresses for your court papers
+                {t('partiesModalSubtitle', 'Edit the real names and addresses for your court papers')}
               </p>
             </div>
           </div>
@@ -238,17 +244,17 @@ export const CasePartiesModal: React.FC = () => {
           <div className="flex items-center gap-2 text-[var(--accent-gold)]">
             <Sparkles className="w-4 h-4 shrink-0" />
             <span className="font-medium">
-              Every field has clear <span className="font-mono bg-black/40 px-1 py-0.5 rounded text-[11px]">[e.g., example]</span> placeholders.
+              {t('partiesBannerText', 'Every field has clear [e.g., example] placeholders.')}
             </span>
           </div>
           <button
             type="button"
             onClick={handleClearPlaceholders}
             className="text-[11px] font-mono font-bold text-[var(--text-main)] hover:text-[var(--accent-gold)] underline flex items-center gap-1"
-            title="Clear all example bracketed text"
+            title={t('partiesClearBtn', 'Clear Example Placeholders')}
           >
             <Trash2 className="w-3 h-3" />
-            <span>Clear Example Placeholders</span>
+            <span>{t('partiesClearBtn', 'Clear Example Placeholders')}</span>
           </button>
         </div>
 
@@ -263,7 +269,7 @@ export const CasePartiesModal: React.FC = () => {
             }`}
           >
             <User className="w-3.5 h-3.5" />
-            <span>1. You (Plaintiff)</span>
+            <span className="truncate">{t('partiesTabPlaintiff', '1. You (Plaintiff)')}</span>
           </button>
           <button
             onClick={() => { sound.playClick(); setActiveTab('defendant'); }}
@@ -274,7 +280,7 @@ export const CasePartiesModal: React.FC = () => {
             }`}
           >
             <Building2 className="w-3.5 h-3.5" />
-            <span>2. Opponent (Defendant)</span>
+            <span className="truncate">{t('partiesTabDefendant', '2. Opponent (Defendant)')}</span>
           </button>
           <button
             onClick={() => { sound.playClick(); setActiveTab('title'); }}
@@ -285,7 +291,7 @@ export const CasePartiesModal: React.FC = () => {
             }`}
           >
             <Briefcase className="w-3.5 h-3.5" />
-            <span>3. Case Title</span>
+            <span className="truncate">{t('partiesTabTitle', '3. Case Title')}</span>
           </button>
         </div>
 
@@ -297,62 +303,62 @@ export const CasePartiesModal: React.FC = () => {
               {/* Live Caption Pill */}
               <div className="p-2.5 bg-black/40 border border-emerald-500/20 rounded-lg flex items-center justify-between text-xs font-mono">
                 <div className="flex items-center gap-2 min-w-0">
-                  <span className="text-[10px] text-emerald-400 uppercase font-bold shrink-0">Matter Caption:</span>
+                  <span className="text-[10px] text-emerald-400 uppercase font-bold shrink-0">{t('partiesMatterCaption', 'Matter Caption:')}</span>
                   <span className="font-bold text-[var(--text-main)] font-serif truncate">{caseTitle}</span>
                 </div>
-                <span className="text-[10px] text-[var(--text-muted)] shrink-0 hidden xs:inline">Auto-syncs live</span>
+                <span className="text-[10px] text-[var(--text-muted)] shrink-0 hidden xs:inline">{t('partiesAutoSync', 'Auto-syncs live')}</span>
               </div>
 
               <div className="p-3 bg-[var(--bg-secondary)] border border-[var(--border-color)] rounded-lg text-xs text-[var(--text-muted)] flex items-start gap-2">
                 <User className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
                 <div>
-                  <strong className="text-[var(--text-main)]">Plaintiff / Claimant Information:</strong> This is you (the person or business bringing the claim). This information will appear on the header of all court filings, demand letters, and declarations.
+                  <strong className="text-[var(--text-main)]">{t('partiesPlaintiffInfoTitle', 'Plaintiff / Claimant Information:')}</strong> {t('partiesPlaintiffInfoDesc', 'This is you (the person or business bringing the claim). This information will appear on the header of all court filings, demand letters, and declarations.')}
                 </div>
               </div>
 
               <div className="space-y-3">
                 <div>
                   <label className="block text-xs font-bold text-[var(--text-main)] mb-1">
-                    Your Full Legal Name or Registered Business Name *
+                    {t('partiesFullNameLabel', 'Your Full Legal Name or Registered Business Name *')}
                   </label>
                   <input
                     type="text"
                     value={pName}
                     onChange={e => handlePNameChange(e.target.value)}
-                    placeholder="[e.g., Jordan Smith or Jane Doe]"
+                    placeholder={t('samplePlaintiffName', '[e.g., Jordan Smith or Jane Doe]')}
                     className="w-full input-geom p-2.5 text-sm bg-[var(--bg-secondary)] border border-[var(--border-color)] focus:border-[var(--accent-gold)] text-[var(--text-main)]"
                   />
                   <span className="text-[10px] text-[var(--text-muted)] mt-1 block">
-                    Use your exact name as shown on government ID or lease.
+                    {t('partiesNameHelper', 'Use your exact name as shown on government ID or lease.')}
                   </span>
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div>
                     <label className="block text-xs font-bold text-[var(--text-main)] mb-1">
-                      Entity Type
+                      {t('partiesEntityTypeLabel', 'Entity Type')}
                     </label>
                     <select
                       value={pType}
                       onChange={e => setPType(e.target.value as Party['entityType'])}
                       className="w-full input-geom p-2.5 text-xs bg-[var(--bg-secondary)] border border-[var(--border-color)] text-[var(--text-main)]"
                     >
-                      <option value="individual">Individual (Human Person)</option>
-                      <option value="sole_proprietorship">Sole Proprietorship / DBA</option>
-                      <option value="llc">Limited Liability Company (LLC)</option>
-                      <option value="corporation">Corporation (Inc / Corp)</option>
+                      <option value="individual">{t('entityIndividual', 'Individual (Human Person)')}</option>
+                      <option value="sole_proprietorship">{t('entitySoleProp', 'Sole Proprietorship / DBA')}</option>
+                      <option value="llc">{t('entityLlc', 'Limited Liability Company (LLC)')}</option>
+                      <option value="corporation">{t('entityCorp', 'Corporation (Inc / Corp)')}</option>
                     </select>
                   </div>
 
                   <div>
                     <label className="block text-xs font-bold text-[var(--text-main)] mb-1">
-                      Phone Number
+                      {t('partiesPhoneLabel', 'Phone Number')}
                     </label>
                     <input
                       type="text"
                       value={pPhone}
                       onChange={e => setPPhone(e.target.value)}
-                      placeholder="[e.g., (555) 019-2834]"
+                      placeholder={t('samplePhonePlaceholder', '[e.g., (555) 019-2834]')}
                       className="w-full input-geom p-2.5 text-xs bg-[var(--bg-secondary)] border border-[var(--border-color)] text-[var(--text-main)]"
                     />
                   </div>
@@ -360,13 +366,13 @@ export const CasePartiesModal: React.FC = () => {
 
                 <div>
                   <label className="block text-xs font-bold text-[var(--text-main)] mb-1">
-                    Street Address (Mailing Address for Court Notices)
+                    {t('partiesAddressLabel', 'Street Address (Mailing Address for Court Notices)')}
                   </label>
                   <input
                     type="text"
                     value={pAddress}
                     onChange={e => setPAddress(e.target.value)}
-                    placeholder="[e.g., 450 University Avenue, Apt 3B]"
+                    placeholder={t('sampleAddressPlaceholder', '[e.g., 450 University Avenue, Apt 3B]')}
                     className="w-full input-geom p-2.5 text-xs bg-[var(--bg-secondary)] border border-[var(--border-color)] text-[var(--text-main)]"
                   />
                 </div>
@@ -374,19 +380,19 @@ export const CasePartiesModal: React.FC = () => {
                 <div className="grid grid-cols-3 gap-2 sm:gap-3">
                   <div className="col-span-1">
                     <label className="block text-xs font-bold text-[var(--text-main)] mb-1">
-                      City
+                      {t('partiesCityLabel', 'City')}
                     </label>
                     <input
                       type="text"
                       value={pCity}
                       onChange={e => setPCity(e.target.value)}
-                      placeholder="[e.g., Palo Alto]"
+                      placeholder={t('sampleCityPlaceholder', '[e.g., Palo Alto]')}
                       className="w-full input-geom p-2.5 text-xs bg-[var(--bg-secondary)] border border-[var(--border-color)] text-[var(--text-main)]"
                     />
                   </div>
                   <div>
                     <label className="block text-xs font-bold text-[var(--text-main)] mb-1">
-                      State / Province
+                      {t('partiesStateLabel', 'State / Province')}
                     </label>
                     <input
                       type="text"
@@ -398,13 +404,13 @@ export const CasePartiesModal: React.FC = () => {
                   </div>
                   <div>
                     <label className="block text-xs font-bold text-[var(--text-main)] mb-1">
-                      Zip / Postal Code
+                      {t('partiesZipLabel', 'Zip / Postal Code')}
                     </label>
                     <input
                       type="text"
                       value={pZip}
                       onChange={e => setPZip(e.target.value)}
-                      placeholder="[e.g., 94301]"
+                      placeholder={t('sampleZipPlaceholder', '[e.g., 94301]')}
                       className="w-full input-geom p-2.5 text-xs bg-[var(--bg-secondary)] border border-[var(--border-color)] text-[var(--text-main)]"
                     />
                   </div>
@@ -412,13 +418,13 @@ export const CasePartiesModal: React.FC = () => {
 
                 <div>
                   <label className="block text-xs font-bold text-[var(--text-main)] mb-1">
-                    Email Address
+                    {t('partiesEmailLabel', 'Email Address')}
                   </label>
                   <input
                     type="email"
                     value={pEmail}
                     onChange={e => setPEmail(e.target.value)}
-                    placeholder="[e.g., your.email@example.com]"
+                    placeholder={t('sampleEmailPlaceholder', '[e.g., your.email@example.com]')}
                     className="w-full input-geom p-2.5 text-xs bg-[var(--bg-secondary)] border border-[var(--border-color)] text-[var(--text-main)]"
                   />
                 </div>
@@ -432,62 +438,62 @@ export const CasePartiesModal: React.FC = () => {
               {/* Live Caption Pill */}
               <div className="p-2.5 bg-black/40 border border-amber-500/20 rounded-lg flex items-center justify-between text-xs font-mono">
                 <div className="flex items-center gap-2 min-w-0">
-                  <span className="text-[10px] text-amber-400 uppercase font-bold shrink-0">Matter Caption:</span>
+                  <span className="text-[10px] text-amber-400 uppercase font-bold shrink-0">{t('partiesMatterCaption', 'Matter Caption:')}</span>
                   <span className="font-bold text-[var(--text-main)] font-serif truncate">{caseTitle}</span>
                 </div>
-                <span className="text-[10px] text-[var(--text-muted)] shrink-0 hidden xs:inline">Auto-syncs live</span>
+                <span className="text-[10px] text-[var(--text-muted)] shrink-0 hidden xs:inline">{t('partiesAutoSync', 'Auto-syncs live')}</span>
               </div>
 
               <div className="p-3 bg-[var(--bg-secondary)] border border-[var(--border-color)] rounded-lg text-xs text-[var(--text-muted)] flex items-start gap-2">
                 <Building2 className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
                 <div>
-                  <strong className="text-[var(--text-main)]">Defendant / Opposing Party Information:</strong> This is the party who caused you damages or withheld your money (e.g. landlord, contractor, auto mechanic, or merchant).
+                  <strong className="text-[var(--text-main)]">{t('partiesDefendantInfoTitle', 'Defendant / Opposing Party Information:')}</strong> {t('partiesDefendantInfoDesc', 'This is the party who caused you damages or withheld your money (e.g. landlord, contractor, auto mechanic, or merchant).')}
                 </div>
               </div>
 
               <div className="space-y-3">
                 <div>
                   <label className="block text-xs font-bold text-[var(--text-main)] mb-1">
-                    Defendant Name (Person or Corporate Legal Entity) *
+                    {t('partiesOpponentNameLabel', 'Defendant Name (Person or Corporate Legal Entity) *')}
                   </label>
                   <input
                     type="text"
                     value={dName}
                     onChange={e => handleDNameChange(e.target.value)}
-                    placeholder="[e.g., Vanguard Property Management LLC or Apex Property Holdings]"
+                    placeholder={t('sampleDefendantName', '[e.g., Vanguard Property Management LLC or Apex Property Holdings]')}
                     className="w-full input-geom p-2.5 text-sm bg-[var(--bg-secondary)] border border-[var(--border-color)] focus:border-[var(--accent-gold)] text-[var(--text-main)]"
                   />
                   <span className="text-[10px] text-[var(--text-muted)] mt-1 block">
-                    For businesses, search your state Secretary of State registry for the exact legal corporate entity name.
+                    {t('partiesOpponentNameHelper', 'For businesses, search your state Secretary of State registry for the exact legal corporate entity name.')}
                   </span>
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div>
                     <label className="block text-xs font-bold text-[var(--text-main)] mb-1">
-                      Entity Type
+                      {t('partiesEntityTypeLabel', 'Entity Type')}
                     </label>
                     <select
                       value={dType}
                       onChange={e => setDType(e.target.value as Party['entityType'])}
                       className="w-full input-geom p-2.5 text-xs bg-[var(--bg-secondary)] border border-[var(--border-color)] text-[var(--text-main)]"
                     >
-                      <option value="llc">Limited Liability Company (LLC)</option>
-                      <option value="corporation">Corporation (Inc / Corp)</option>
-                      <option value="individual">Individual (Landlord / Person)</option>
-                      <option value="sole_proprietorship">Sole Proprietorship / DBA</option>
+                      <option value="llc">{t('entityLlc', 'Limited Liability Company (LLC)')}</option>
+                      <option value="corporation">{t('entityCorp', 'Corporation (Inc / Corp)')}</option>
+                      <option value="individual">{t('entityIndividual', 'Individual (Human Person)')}</option>
+                      <option value="sole_proprietorship">{t('entitySoleProp', 'Sole Proprietorship / DBA')}</option>
                     </select>
                   </div>
 
                   <div>
                     <label className="block text-xs font-bold text-[var(--text-main)] mb-1">
-                      Phone Number (Optional)
+                      {t('partiesPhoneLabel', 'Phone Number')}
                     </label>
                     <input
                       type="text"
                       value={dPhone}
                       onChange={e => setDPhone(e.target.value)}
-                      placeholder="[e.g., (408) 555-8840]"
+                      placeholder={t('sampleOpponentPhonePlaceholder', '[e.g., (408) 555-8840]')}
                       className="w-full input-geom p-2.5 text-xs bg-[var(--bg-secondary)] border border-[var(--border-color)] text-[var(--text-main)]"
                     />
                   </div>
@@ -495,13 +501,13 @@ export const CasePartiesModal: React.FC = () => {
 
                 <div>
                   <label className="block text-xs font-bold text-[var(--text-main)] mb-1">
-                    Service of Process Address (Business Office or Registered Agent)
+                    {t('partiesAddressLabel', 'Service of Process Address (Business Office or Registered Agent)')}
                   </label>
                   <input
                     type="text"
                     value={dAddress}
                     onChange={e => setDAddress(e.target.value)}
-                    placeholder="[e.g., 1200 Silicon Valley Blvd, Suite 400]"
+                    placeholder={t('sampleOpponentAddressPlaceholder', '[e.g., 1200 Silicon Valley Blvd, Suite 400]')}
                     className="w-full input-geom p-2.5 text-xs bg-[var(--bg-secondary)] border border-[var(--border-color)] text-[var(--text-main)]"
                   />
                 </div>
@@ -509,19 +515,19 @@ export const CasePartiesModal: React.FC = () => {
                 <div className="grid grid-cols-3 gap-2 sm:gap-3">
                   <div className="col-span-1">
                     <label className="block text-xs font-bold text-[var(--text-main)] mb-1">
-                      City
+                      {t('partiesCityLabel', 'City')}
                     </label>
                     <input
                       type="text"
                       value={dCity}
                       onChange={e => setDCity(e.target.value)}
-                      placeholder="[e.g., San Jose]"
+                      placeholder={t('sampleOpponentCityPlaceholder', '[e.g., San Jose]')}
                       className="w-full input-geom p-2.5 text-xs bg-[var(--bg-secondary)] border border-[var(--border-color)] text-[var(--text-main)]"
                     />
                   </div>
                   <div>
                     <label className="block text-xs font-bold text-[var(--text-main)] mb-1">
-                      State / Province
+                      {t('partiesStateLabel', 'State / Province')}
                     </label>
                     <input
                       type="text"
@@ -533,13 +539,13 @@ export const CasePartiesModal: React.FC = () => {
                   </div>
                   <div>
                     <label className="block text-xs font-bold text-[var(--text-main)] mb-1">
-                      Zip Code
+                      {t('partiesZipLabel', 'Zip / Postal Code')}
                     </label>
                     <input
                       type="text"
                       value={dZip}
                       onChange={e => setDZip(e.target.value)}
-                      placeholder="[e.g., 95110]"
+                      placeholder={t('sampleOpponentZipPlaceholder', '[e.g., 95110]')}
                       className="w-full input-geom p-2.5 text-xs bg-[var(--bg-secondary)] border border-[var(--border-color)] text-[var(--text-main)]"
                     />
                   </div>
@@ -547,7 +553,7 @@ export const CasePartiesModal: React.FC = () => {
 
                 <div>
                   <label className="block text-xs font-bold text-[var(--text-main)] mb-1">
-                    Registered Agent for Service of Process (If Corporation or LLC)
+                    {t('partiesRegisteredAgentLabel', 'Registered Agent for Service of Process (If Corporation or LLC)')}
                   </label>
                   <input
                     type="text"
@@ -560,13 +566,13 @@ export const CasePartiesModal: React.FC = () => {
 
                 <div>
                   <label className="block text-xs font-bold text-[var(--text-main)] mb-1">
-                    Email Address (For pre-litigation demand letters)
+                    {t('partiesEmailLabel', 'Email Address (For pre-litigation demand letters)')}
                   </label>
                   <input
                     type="email"
                     value={dEmail}
                     onChange={e => setDEmail(e.target.value)}
-                    placeholder="[e.g., manager@propertyco.com]"
+                    placeholder={t('sampleOpponentEmailPlaceholder', '[e.g., manager@propertyco.com]')}
                     className="w-full input-geom p-2.5 text-xs bg-[var(--bg-secondary)] border border-[var(--border-color)] text-[var(--text-main)]"
                   />
                 </div>
@@ -580,13 +586,13 @@ export const CasePartiesModal: React.FC = () => {
               <div className="p-3 bg-[var(--bg-secondary)] border border-[var(--border-color)] rounded-lg text-xs text-[var(--text-muted)] flex items-start gap-2">
                 <Scale className="w-4 h-4 text-[var(--accent-gold)] shrink-0 mt-0.5" />
                 <div>
-                  <strong className="text-[var(--text-main)]">Case Matter Caption:</strong> The standard legal dispute title displayed at the top of pleadings, docket listings, and demand correspondence.
+                  <strong className="text-[var(--text-main)]">{t('partiesCaseTitleInfoTitle', 'Case Matter Caption:')}</strong> {t('partiesCaseTitleInfoDesc', 'The standard legal dispute title displayed at the top of pleadings, docket listings, and demand correspondence.')}
                 </div>
               </div>
 
               <div>
                 <label className="block text-xs font-bold text-[var(--text-main)] mb-1">
-                  Matter Title / Case Caption
+                  {t('partiesCustomTitleLabel', 'Matter Title / Case Caption')}
                 </label>
                 <div className="flex gap-2">
                   <input
@@ -596,16 +602,16 @@ export const CasePartiesModal: React.FC = () => {
                       setCaseTitle(e.target.value);
                       setIsCustomTitle(true);
                     }}
-                    placeholder="[e.g., Wilder v. Apex Property Holdings LLC]"
+                    placeholder={t('partiesCustomTitlePlaceholder', '[e.g., Wilder v. Apex Property Holdings LLC]')}
                     className="flex-1 input-geom p-2.5 text-sm bg-[var(--bg-secondary)] border border-[var(--border-color)] focus:border-[var(--accent-gold)] text-[var(--text-main)] font-serif"
                   />
                   <button
                     type="button"
                     onClick={handleAutoTitle}
                     className="btn-geom px-3 py-2 bg-[var(--bg-secondary)] border border-[var(--border-color)] text-xs text-[var(--accent-gold)] hover:border-[var(--accent-gold)] whitespace-nowrap"
-                    title="Generate title from Plaintiff and Defendant names"
+                    title={t('partiesResetTitleBtn', 'Auto Generate')}
                   >
-                    Auto Generate
+                    {t('partiesResetTitleBtn', 'Auto Generate')}
                   </button>
                 </div>
               </div>
@@ -628,10 +634,10 @@ export const CasePartiesModal: React.FC = () => {
           <div className="text-xs text-[var(--text-muted)] hidden sm:block">
             {showSavedToast ? (
               <span className="text-emerald-400 font-bold flex items-center gap-1">
-                <Check className="w-3.5 h-3.5" /> Changes Saved!
+                <Check className="w-3.5 h-3.5" /> {t('partiesSavedToast', 'Changes Saved!')}
               </span>
             ) : (
-              <span>100% Offline &amp; Private</span>
+              <span>{t('offlineVaultSubtitle', '100% Offline & Private')}</span>
             )}
           </div>
 
@@ -641,7 +647,7 @@ export const CasePartiesModal: React.FC = () => {
               onClick={() => { sound.playClick(); setIsPartiesModalOpen(false); }}
               className="btn-geom px-4 py-2 text-xs bg-[var(--bg-card)] border border-[var(--border-color)] text-[var(--text-muted)] hover:text-[var(--text-main)]"
             >
-              Cancel
+              {t('cancel', 'Cancel')}
             </button>
 
             {activeTab === 'plaintiff' && (
@@ -650,7 +656,7 @@ export const CasePartiesModal: React.FC = () => {
                 onClick={() => { sound.playClick(); setActiveTab('defendant'); }}
                 className="btn-geom px-4 py-2 text-xs bg-[var(--bg-card)] border border-[var(--border-color)] text-[var(--accent-gold)] hover:border-[var(--accent-gold)] flex items-center gap-1 font-bold"
               >
-                <span>Next: Opponent</span>
+                <span>{t('partiesNextOpponentBtn', 'Next: Opponent')}</span>
                 <ArrowRight className="w-3.5 h-3.5" />
               </button>
             )}
@@ -661,7 +667,7 @@ export const CasePartiesModal: React.FC = () => {
                 onClick={() => { sound.playClick(); setActiveTab('title'); }}
                 className="btn-geom px-4 py-2 text-xs bg-[var(--bg-card)] border border-[var(--border-color)] text-[var(--accent-gold)] hover:border-[var(--accent-gold)] flex items-center gap-1 font-bold"
               >
-                <span>Next: Title</span>
+                <span>{t('partiesNextTitleBtn', 'Next: Title')}</span>
                 <ArrowRight className="w-3.5 h-3.5" />
               </button>
             )}
@@ -672,7 +678,7 @@ export const CasePartiesModal: React.FC = () => {
               className="btn-geom px-5 py-2 text-xs bg-[var(--accent-gold)] text-slate-950 font-extrabold hover:opacity-90 shadow-md flex items-center gap-1.5"
             >
               <Check className="w-4 h-4 text-slate-950" />
-              <span>Save Details</span>
+              <span>{t('partiesSaveDetailsBtn', 'Save Details')}</span>
             </button>
           </div>
         </div>

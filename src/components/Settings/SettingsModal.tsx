@@ -131,10 +131,10 @@ export const SettingsModal: React.FC = () => {
             <AluLogo size="md" showLabel={true} />
             <div className="pl-2 border-l border-[var(--border-color)]">
               <h2 className="text-base font-bold font-serif text-[var(--text-main)]">
-                Application Settings & Jurisdiction
+                {t('settingsTitle', 'Application Settings & Jurisdiction')}
               </h2>
               <p className="text-xs text-[var(--text-muted)] font-mono">
-                Configure country laws, typography size & privacy
+                {t('settingsSubtitle', 'Configure country laws, typography size & privacy')}
               </p>
             </div>
           </div>
@@ -510,7 +510,7 @@ export const SettingsModal: React.FC = () => {
                 className="w-full flex items-center justify-center gap-2 p-3 bg-rose-950/40 border border-rose-600/40 text-rose-300 hover:bg-rose-900/60 custom-geometry text-xs font-bold transition-all"
               >
                 <AlertTriangle className="w-4 h-4 text-rose-400" />
-                <span>Panic Purge: Erase All Local Data & Reset</span>
+                <span>{t('panicPurge', 'Panic Purge: Erase All Local Data & Reset')}</span>
               </button>
             </div>
           </div>
@@ -528,7 +528,7 @@ export const SettingsModal: React.FC = () => {
             }}
             className="px-5 py-2 bg-[var(--accent-gold)] text-slate-950 text-xs font-bold custom-geometry hover:opacity-90 transition-all shadow-sm"
           >
-            Save & Close
+            {t('saveClose', 'Save & Close')}
           </button>
         </div>
       </div>

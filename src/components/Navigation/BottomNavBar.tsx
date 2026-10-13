@@ -30,32 +30,33 @@ export const BottomNavBar: React.FC = () => {
     setIsPartiesModalOpen,
     setIsSettingsOpen,
     setIsTourOpen,
-    activeCase
+    activeCase,
+    t
   } = useSueChef();
 
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
   // Main 5 navigation items (Audiomack-inspired bottom layout)
   const navItems: { id: WorkstationId; label: string; icon: React.ComponentType<{ className?: string }> }[] = [
-    { id: 'home', label: 'Home', icon: Home },
-    { id: 'claim-kitchen', label: 'Build Case', icon: Scale },
-    { id: 'evidence-locker', label: 'Evidence', icon: ShieldCheck },
-    { id: 'pleading-builder', label: 'Papers', icon: FileText },
-    { id: 'second-opinion', label: 'Strategy', icon: Lightbulb },
+    { id: 'home', label: t('navHome', 'Home'), icon: Home },
+    { id: 'claim-kitchen', label: t('navBuildCase', 'Build Case'), icon: Scale },
+    { id: 'evidence-locker', label: t('navEvidence', 'Evidence'), icon: ShieldCheck },
+    { id: 'pleading-builder', label: t('navCourtPapers', 'Papers'), icon: FileText },
+    { id: 'second-opinion', label: t('navCaseStrategy', 'Strategy'), icon: Lightbulb },
   ];
 
   // Secondary tools in the drawer
   const moreTools: { id: WorkstationId; label: string; desc: string; icon: React.ComponentType<{ className?: string }>; badge?: string }[] = [
-    { id: 'enforcement', label: 'Judgment & Collections', desc: 'Writs, bank levies, wage garnishments & liens', icon: Landmark, badge: 'Crucial' },
-    { id: 'settlement-matrix', label: 'Demand & Settle', desc: 'Rule 408 negotiation brackets & offers', icon: Calculator },
-    { id: 'legal-services', label: 'Free Legal Aid & Courts', desc: '131+ pro bono clinics & self-help portals', icon: Building, badge: 'Verified' },
-    { id: 'discovery-studio', label: 'Request Evidence', desc: 'Formal discovery interrogatories & document demands', icon: FolderSearch },
-    { id: 'trial-prep', label: 'Court Hearing Prep', desc: 'Practice mock trial & evidentiary objections', icon: Gavel },
-    { id: 'sol-watcher', label: 'Statute of Limitations', desc: 'Filing deadlines docket & tolling dates', icon: Clock },
-    { id: 'service-tracker', label: 'Service of Process', desc: 'Affidavits of service & summons tracking', icon: UserCheck },
-    { id: 'legalese-decoder', label: 'Plain-English Decoder', desc: 'Translate dense legal jargon into plain facts', icon: Layers },
-    { id: 'attorney-dossier', label: 'Opposing Counsel', desc: 'Opponent settlement patterns & strategies', icon: FileText },
-    { id: 'security-vault', label: 'Privacy & Offline Vault', desc: 'Local encryption & tamper-evident export', icon: ShieldCheck },
+    { id: 'enforcement', label: t('wsEnforcementTitle', 'Judgment & Collections'), desc: t('wsEnforcementDesc', 'Writs, bank levies, wage garnishments & liens'), icon: Landmark, badge: t('wsEnforcementBadge', 'Crucial') },
+    { id: 'settlement-matrix', label: t('wsSettlementTitle', 'Demand & Settle'), desc: t('wsSettlementDesc', 'Rule 408 negotiation brackets & offers'), icon: Calculator },
+    { id: 'legal-services', label: t('wsLegalAidTitle', 'Free Legal Aid & Courts'), desc: t('wsLegalAidDesc', '131+ pro bono clinics & self-help portals'), icon: Building, badge: t('wsLegalAidBadge', 'Verified') },
+    { id: 'discovery-studio', label: t('wsDiscoveryTitle', 'Request Evidence'), desc: t('wsDiscoveryDesc', 'Formal discovery interrogatories & document demands'), icon: FolderSearch },
+    { id: 'trial-prep', label: t('wsTrialPrepTitle', 'Court Hearing Prep'), desc: t('wsTrialPrepDesc', 'Practice mock trial & evidentiary objections'), icon: Gavel },
+    { id: 'sol-watcher', label: t('wsSolWatcherTitle', 'Statute of Limitations'), desc: t('wsSolWatcherDesc', 'Filing deadlines docket & tolling dates'), icon: Clock },
+    { id: 'service-tracker', label: t('wsServiceTrackerTitle', 'Service of Process'), desc: t('wsServiceTrackerDesc', 'Affidavits of service & summons tracking'), icon: UserCheck },
+    { id: 'legalese-decoder', label: t('wsLegaleseDecoderTitle', 'Plain-English Decoder'), desc: t('wsLegaleseDecoderDesc', 'Translate dense legal jargon into plain facts'), icon: Layers },
+    { id: 'attorney-dossier', label: t('wsAttorneyDossierTitle', 'Opposing Counsel'), desc: t('wsAttorneyDossierDesc', 'Opponent settlement patterns & strategies'), icon: FileText },
+    { id: 'security-vault', label: t('wsSecurityVaultTitle', 'Privacy & Offline Vault'), desc: t('wsSecurityVaultDesc', 'Local encryption & tamper-evident export'), icon: ShieldCheck },
   ];
 
   const handleNavClick = (id: WorkstationId) => {
@@ -84,10 +85,10 @@ export const BottomNavBar: React.FC = () => {
                 </div>
                 <div>
                   <h3 className="font-serif font-bold text-sm text-[var(--text-main)]">
-                    All Litigation Workstations
+                    {t('drawerTitle', 'All Litigation Workstations')}
                   </h3>
                   <p className="text-[10px] font-mono text-[var(--text-muted)]">
-                    SueChef Everyday Legal Dispute Toolbox
+                    {t('drawerSubtitle', 'SueChef Everyday Legal Dispute Toolbox')}
                   </p>
                 </div>
               </div>
@@ -110,7 +111,7 @@ export const BottomNavBar: React.FC = () => {
                 className="btn-geom px-2.5 py-1.5 bg-[var(--accent-gold)] text-slate-950 text-xs font-bold flex items-center gap-1.5 shadow-sm"
               >
                 <Users className="w-3.5 h-3.5" />
-                <span>Edit Case Parties</span>
+                <span>{t('drawerEditParties', 'Edit Case Parties')}</span>
               </button>
 
               <div className="flex items-center gap-2">
@@ -123,7 +124,7 @@ export const BottomNavBar: React.FC = () => {
                   className="px-2.5 py-1.5 bg-[var(--bg-secondary)] border border-[var(--border-color)] text-xs text-[var(--text-muted)] hover:text-[var(--text-main)] rounded flex items-center gap-1 font-mono"
                 >
                   <Sparkles className="w-3 h-3 text-[var(--accent-gold)]" />
-                  <span>Tour</span>
+                  <span>{t('drawerTour', 'Tour')}</span>
                 </button>
                 <button
                   onClick={() => {
@@ -134,7 +135,7 @@ export const BottomNavBar: React.FC = () => {
                   className="px-2.5 py-1.5 bg-[var(--bg-secondary)] border border-[var(--border-color)] text-xs text-[var(--text-muted)] hover:text-[var(--text-main)] rounded flex items-center gap-1 font-mono"
                 >
                   <Settings className="w-3 h-3 text-[var(--accent-gold)]" />
-                  <span>Settings</span>
+                  <span>{t('drawerSettings', 'Settings')}</span>
                 </button>
               </div>
             </div>
@@ -190,12 +191,12 @@ export const BottomNavBar: React.FC = () => {
                   className="w-5 h-5 object-contain shrink-0 drop-shadow-[0_1px_4px_rgba(245,158,11,0.3)]" 
                 />
                 <div className="text-[10px] leading-tight font-mono">
-                  <div className="font-bold text-[var(--text-main)]">Alumungandr Master Charter © 2026</div>
-                  <div className="text-[var(--text-muted)]">100% Client-Side Privacy • Zero Cloud Upload</div>
+                  <div className="font-bold text-[var(--text-main)]">{t('drawerMasterCharter', 'Alumungandr Master Charter © 2026')}</div>
+                  <div className="text-[var(--text-muted)]">{t('drawerClientPrivacy', '100% Client-Side Privacy • Zero Cloud Upload')}</div>
                 </div>
               </div>
               <span className="text-[9px] font-mono uppercase px-2 py-0.5 rounded bg-emerald-950/60 text-emerald-400 border border-emerald-500/30 font-bold shrink-0">
-                VERIFIED LOCAL
+                {t('drawerVerifiedLocal', 'VERIFIED LOCAL')}
               </span>
             </div>
           </div>
@@ -212,7 +213,7 @@ export const BottomNavBar: React.FC = () => {
               <button
                 key={item.id}
                 onClick={() => handleNavClick(item.id)}
-                className={`relative flex flex-col items-center justify-center py-1 px-2.5 rounded-xl transition-all select-none group ${
+                className={`relative flex flex-col items-center justify-center py-1 px-1.5 sm:px-2.5 rounded-xl transition-all select-none group max-w-[70px] ${
                   isActive 
                     ? 'text-amber-400 font-bold scale-105' 
                     : 'text-slate-400 hover:text-slate-200'
@@ -229,7 +230,7 @@ export const BottomNavBar: React.FC = () => {
                   <Icon className={`w-5 h-5 transition-transform ${isActive ? 'scale-110 text-amber-400' : 'text-slate-400 group-hover:text-slate-200'}`} />
                 </div>
                 
-                <span className={`text-[10px] tracking-tight leading-tight mt-0.5 ${
+                <span className={`text-[10px] tracking-tight leading-tight mt-0.5 truncate w-full text-center ${
                   isActive ? 'text-amber-400 font-extrabold' : 'text-slate-400'
                 }`}>
                   {item.label}
@@ -244,7 +245,7 @@ export const BottomNavBar: React.FC = () => {
               sound.playClick();
               setIsDrawerOpen(prev => !prev);
             }}
-            className={`relative flex flex-col items-center justify-center py-1 px-2.5 rounded-xl transition-all select-none group ${
+            className={`relative flex flex-col items-center justify-center py-1 px-1.5 sm:px-2.5 rounded-xl transition-all select-none group max-w-[70px] ${
               isDrawerOpen ? 'text-amber-400 font-bold' : 'text-slate-400 hover:text-slate-200'
             }`}
           >
@@ -253,8 +254,8 @@ export const BottomNavBar: React.FC = () => {
             }`}>
               <Grid className="w-5 h-5 text-slate-400 group-hover:text-slate-200" />
             </div>
-            <span className="text-[10px] tracking-tight leading-tight mt-0.5 text-slate-400">
-              More
+            <span className="text-[10px] tracking-tight leading-tight mt-0.5 text-slate-400 truncate w-full text-center">
+              {t('navMore', 'More')}
             </span>
           </button>
         </div>

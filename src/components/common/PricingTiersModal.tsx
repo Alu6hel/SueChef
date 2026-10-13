@@ -16,8 +16,7 @@ import {
 } from 'lucide-react';
 
 export const PricingTiersModal: React.FC = () => {
-  const { isPricingModalOpen, setIsPricingModalOpen, activeCase } = useSueChef();
-  const [selectedBilling, setSelectedBilling] = useState<'monthly' | 'case' | 'annual'>('case');
+  const { isPricingModalOpen, setIsPricingModalOpen, activeCase, t } = useSueChef();
   const [activatedTier, setActivatedTier] = useState<string>(() => {
     return localStorage.getItem('suechef_license_tier') || 'pro';
   });
@@ -45,10 +44,10 @@ export const PricingTiersModal: React.FC = () => {
             </div>
             <div>
               <span className="text-[10px] font-mono font-bold tracking-wider uppercase text-[var(--accent-gold)] block">
-                COMMERCIAL EDITIONS & LICENSING
+                {t('pricingHeaderBadge', 'COMMERCIAL EDITIONS & LICENSING')}
               </span>
               <h2 className="text-lg sm:text-xl font-serif font-bold text-[var(--text-main)]">
-                SueChef Professional Litigation Tiers
+                {t('pricingHeaderTitle', 'SueChef Professional Litigation Tiers')}
               </h2>
             </div>
           </div>
@@ -58,7 +57,7 @@ export const PricingTiersModal: React.FC = () => {
               setIsPricingModalOpen(false);
             }}
             className="p-1.5 text-[var(--text-muted)] hover:text-[var(--text-main)] hover:bg-[var(--bg-hover)] transition-all"
-            title="Close Pricing"
+            title={t('pricingClose', 'Close Pricing')}
           >
             <X className="w-5 h-5" />
           </button>
@@ -68,10 +67,10 @@ export const PricingTiersModal: React.FC = () => {
         <div className="p-4 sm:p-6 overflow-y-auto space-y-6">
           <div className="text-center max-w-xl mx-auto space-y-2">
             <h3 className="text-base sm:text-lg font-serif font-bold text-[var(--text-main)]">
-              Fair, Transparent Pricing for Pro Se Litigants & Businesses
+              {t('pricingSubtitle', 'Fair, Transparent Pricing for Pro Se Litigants & Businesses')}
             </h3>
             <p className="text-xs text-[var(--text-muted)]">
-              100% offline-ready. Keep all work locally encrypted on your device. No hidden recurring lock-ins.
+              {t('pricingSubdesc', '100% offline-ready. Keep all work locally encrypted on your device. No hidden recurring lock-ins.')}
             </p>
           </div>
 
@@ -83,29 +82,29 @@ export const PricingTiersModal: React.FC = () => {
             }`}>
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
-                  <span className="text-xs font-mono font-bold uppercase text-[var(--text-muted)]">Free Tier</span>
+                  <span className="text-xs font-mono font-bold uppercase text-[var(--text-muted)]">{t('pricingFreeTitle', 'Free Tier')}</span>
                   <Scale className="w-4 h-4 text-[var(--text-muted)]" />
                 </div>
                 <div>
-                  <div className="text-2xl font-bold font-serif">$0</div>
-                  <span className="text-[11px] text-[var(--text-muted)]">Always Free / Educational</span>
+                  <div className="text-2xl font-bold font-serif">{t('pricingFreePrice', '$0')}</div>
+                  <span className="text-[11px] text-[var(--text-muted)]">{t('pricingFreeSub', 'Always Free / Educational')}</span>
                 </div>
                 <ul className="space-y-2.5 text-xs text-[var(--text-main)]">
                   <li className="flex items-start gap-2">
                     <Check className="w-3.5 h-3.5 text-emerald-400 mt-0.5 shrink-0" />
-                    <span>Legalese decoder & legal dictionary</span>
+                    <span>{t('pricingFreeF1', 'Legalese decoder & legal dictionary')}</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <Check className="w-3.5 h-3.5 text-emerald-400 mt-0.5 shrink-0" />
-                    <span>Basic civil dispute checklist</span>
+                    <span>{t('pricingFreeF2', 'Basic civil dispute checklist')}</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <Check className="w-3.5 h-3.5 text-emerald-400 mt-0.5 shrink-0" />
-                    <span>50-State small claims statutory limits</span>
+                    <span>{t('pricingFreeF3', '50-State small claims statutory limits')}</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <Check className="w-3.5 h-3.5 text-emerald-400 mt-0.5 shrink-0" />
-                    <span>Basic fee waiver guidance</span>
+                    <span>{t('pricingFreeF4', 'Basic fee waiver guidance')}</span>
                   </li>
                 </ul>
               </div>
@@ -119,7 +118,7 @@ export const PricingTiersModal: React.FC = () => {
                     : 'bg-transparent text-[var(--text-main)] border-[var(--border-color)] hover:border-[var(--accent-gold)]'
                 }`}
               >
-                {activatedTier === 'free' ? 'Current Tier' : 'Select Free'}
+                {activatedTier === 'free' ? t('pricingFreeCurrent', 'Current Tier') : t('pricingFreeSelect', 'Select Free')}
               </button>
             </div>
 
@@ -128,38 +127,40 @@ export const PricingTiersModal: React.FC = () => {
               activatedTier === 'pro' ? 'border-[var(--accent-gold)] bg-amber-500/10' : 'border-[var(--accent-gold)]/60 bg-[var(--bg-secondary)]'
             }`}>
               <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-0.5 bg-[var(--accent-gold)] text-slate-950 text-[10px] font-mono font-bold uppercase tracking-wider shadow">
-                Most Popular for Court
+                {t('pricingProPopular', 'Most Popular for Court')}
               </div>
 
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
-                  <span className="text-xs font-mono font-bold uppercase text-[var(--accent-gold)]">Pro Litigant</span>
+                  <span className="text-xs font-mono font-bold uppercase text-[var(--accent-gold)]">{t('pricingProTitle', 'Pro Litigant')}</span>
                   <Sparkles className="w-4 h-4 text-[var(--accent-gold)]" />
                 </div>
                 <div>
-                  <div className="text-2xl font-bold font-serif text-[var(--accent-gold)]">$49 <span className="text-xs text-[var(--text-muted)] font-normal">/case or $19.99/mo</span></div>
-                  <span className="text-[11px] text-[var(--text-muted)]">Complete Legal Court Arsenal</span>
+                  <div className="text-2xl font-bold font-serif text-[var(--accent-gold)]">
+                    {t('pricingProPrice', '$49')} <span className="text-xs text-[var(--text-muted)] font-normal">{t('pricingProPriceUnit', '/case or $19.99/mo')}</span>
+                  </div>
+                  <span className="text-[11px] text-[var(--text-muted)]">{t('pricingProSub', 'Complete Legal Court Arsenal')}</span>
                 </div>
                 <ul className="space-y-2.5 text-xs text-[var(--text-main)]">
                   <li className="flex items-start gap-2">
                     <Check className="w-3.5 h-3.5 text-emerald-400 mt-0.5 shrink-0" />
-                    <span><strong>Full 28-Line Pleading Generator</strong> (California & Federal format)</span>
+                    <span>{t('pricingProF1', 'Full 28-Line Pleading Generator (California & Federal format)')}</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <Check className="w-3.5 h-3.5 text-emerald-400 mt-0.5 shrink-0" />
-                    <span><strong>Formal Demand Letters</strong> with pre-judgment statutory interest</span>
+                    <span>{t('pricingProF2', 'Formal Demand Letters with pre-judgment statutory interest')}</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <Check className="w-3.5 h-3.5 text-emerald-400 mt-0.5 shrink-0" />
-                    <span><strong>SHA-256 Evidence Hashing</strong> & FRE 901 chain-of-custody stamping</span>
+                    <span>{t('pricingProF3', 'SHA-256 Evidence Hashing & FRE 901 chain-of-custody stamping')}</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <Check className="w-3.5 h-3.5 text-emerald-400 mt-0.5 shrink-0" />
-                    <span><strong>Master Attorney Dossier</strong> export & print</span>
+                    <span>{t('pricingProF4', 'Master Attorney Dossier export & print')}</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <Check className="w-3.5 h-3.5 text-emerald-400 mt-0.5 shrink-0" />
-                    <span>Interactive Mock Hearing objection simulator</span>
+                    <span>{t('pricingProF5', 'Interactive Mock Hearing objection simulator')}</span>
                   </li>
                 </ul>
               </div>
@@ -173,7 +174,7 @@ export const PricingTiersModal: React.FC = () => {
                     : 'bg-[var(--accent-gold)] text-slate-950 hover:opacity-90'
                 }`}
               >
-                {activatedTier === 'pro' ? '✓ Pro Tier Active' : 'Activate Pro Litigant'}
+                {activatedTier === 'pro' ? t('pricingProCurrent', '✓ Pro Tier Active') : t('pricingProSelect', 'Activate Pro Litigant')}
               </button>
             </div>
 
@@ -183,33 +184,35 @@ export const PricingTiersModal: React.FC = () => {
             }`}>
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
-                  <span className="text-xs font-mono font-bold uppercase text-[var(--text-muted)]">Business / Landlord</span>
+                  <span className="text-xs font-mono font-bold uppercase text-[var(--text-muted)]">{t('pricingBizTitle', 'Business / Landlord')}</span>
                   <Building2 className="w-4 h-4 text-[var(--accent-gold)]" />
                 </div>
                 <div>
-                  <div className="text-2xl font-bold font-serif">$99 – $199 <span className="text-xs text-[var(--text-muted)] font-normal">/yr</span></div>
-                  <span className="text-[11px] text-[var(--text-muted)]">Multi-Case Organization</span>
+                  <div className="text-2xl font-bold font-serif">
+                    {t('pricingBizPrice', '$99 – $199')} <span className="text-xs text-[var(--text-muted)] font-normal">{t('pricingBizPriceUnit', '/yr')}</span>
+                  </div>
+                  <span className="text-[11px] text-[var(--text-muted)]">{t('pricingBizSub', 'Multi-Case Organization')}</span>
                 </div>
                 <ul className="space-y-2.5 text-xs text-[var(--text-main)]">
                   <li className="flex items-start gap-2">
                     <Check className="w-3.5 h-3.5 text-emerald-400 mt-0.5 shrink-0" />
-                    <span><strong>Unlimited Multi-Case Dashboard</strong></span>
+                    <span>{t('pricingBizF1', 'Unlimited Multi-Case Dashboard')}</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <Check className="w-3.5 h-3.5 text-emerald-400 mt-0.5 shrink-0" />
-                    <span>Security deposit recovery & accounting</span>
+                    <span>{t('pricingBizF2', 'Security deposit recovery & accounting')}</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <Check className="w-3.5 h-3.5 text-emerald-400 mt-0.5 shrink-0" />
-                    <span>Unpaid invoice & contractor demand tracking</span>
+                    <span>{t('pricingBizF3', 'Unpaid invoice & contractor demand tracking')}</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <Check className="w-3.5 h-3.5 text-emerald-400 mt-0.5 shrink-0" />
-                    <span>Certified mail tracking log & USPS skip tracing</span>
+                    <span>{t('pricingBizF4', 'Certified mail tracking log & USPS skip tracing')}</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <Check className="w-3.5 h-3.5 text-emerald-400 mt-0.5 shrink-0" />
-                    <span>Zero-Knowledge AES-GCM Encrypted Vault backups</span>
+                    <span>{t('pricingBizF5', 'Zero-Knowledge AES-GCM Encrypted Vault backups')}</span>
                   </li>
                 </ul>
               </div>
@@ -223,7 +226,7 @@ export const PricingTiersModal: React.FC = () => {
                     : 'bg-transparent text-[var(--text-main)] border-[var(--border-color)] hover:border-[var(--accent-gold)]'
                 }`}
               >
-                {activatedTier === 'business' ? '✓ Business Active' : 'Select Business Tier'}
+                {activatedTier === 'business' ? t('pricingBizCurrent', '✓ Business Active') : t('pricingBizSelect', 'Select Business Tier')}
               </button>
             </div>
           </div>
@@ -233,7 +236,7 @@ export const PricingTiersModal: React.FC = () => {
         <div className="p-4 sm:p-5 border-t border-[var(--border-color)] bg-[var(--bg-secondary)] flex flex-col sm:flex-row items-center justify-between gap-3 text-xs">
           <div className="flex items-center gap-2 text-[var(--text-muted)] font-mono">
             <ShieldCheck className="w-4 h-4 text-emerald-400" />
-            <span>Active Case: <strong>{activeCase.title}</strong></span>
+            <span>{t('pricingActiveCase', 'Active Case: {caseTitle}').replace('{caseTitle}', activeCase.title)}</span>
           </div>
 
           <button
@@ -244,7 +247,7 @@ export const PricingTiersModal: React.FC = () => {
             }}
             className="btn-geom px-5 py-2 bg-[var(--bg-card)] border border-[var(--border-color)] text-[var(--text-main)] hover:bg-[var(--bg-hover)] text-xs font-bold uppercase tracking-wider"
           >
-            Done
+            {t('pricingDone', 'Done')}
           </button>
         </div>
       </div>
