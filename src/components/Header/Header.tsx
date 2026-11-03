@@ -155,12 +155,12 @@ export const Header: React.FC = () => {
                 sound.playClick();
                 setIsQuickSearchOpen(true);
               }}
-              className="btn-geom hidden md:flex items-center gap-1.5 px-3 py-2 text-xs bg-[var(--bg-card)] border border-[var(--border-color)] text-[var(--text-muted)] hover:text-[var(--text-main)] hover:border-[var(--accent-gold)] transition-all"
+              id="btn-header-search" className="btn-geom flex items-center gap-1 sm:gap-1.5 px-2 sm:px-3 py-1.5 sm:py-2 text-xs bg-[var(--bg-card)] border border-[var(--border-color)] text-[var(--text-main)] hover:border-[var(--accent-gold)] transition-all shadow-sm shrink-0"
               title="Global Legal Command Palette (Ctrl+K)"
             >
               <Search className="w-3.5 h-3.5 text-[var(--accent-gold)]" />
-              <span>{t('btnSearch', 'Search')}</span>
-              <kbd className="text-[10px] font-mono bg-[var(--bg-secondary)] px-1.5 py-0.5 border border-[var(--border-color)] text-[var(--text-muted)]">
+              <span className="hidden md:inline font-bold">{t('btnSearch', 'Search')}</span>
+              <kbd className="hidden lg:inline-block text-[10px] font-mono bg-[var(--bg-secondary)] px-1.5 py-0.5 border border-[var(--border-color)] text-[var(--text-muted)]">
                 ⌘K
               </kbd>
             </button>

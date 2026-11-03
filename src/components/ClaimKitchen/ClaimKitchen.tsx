@@ -311,7 +311,7 @@ export const ClaimKitchen: React.FC = () => {
             <div className="font-serif font-bold text-sm sm:text-base text-[var(--text-main)] truncate mt-0.5">
               <span className="text-emerald-400 font-semibold">{plaintiff?.name || '[Your Name]'}</span>
               <span className="text-[var(--text-muted)] mx-1.5 font-sans font-normal">vs.</span>
-              <span className="text-amber-400 font-semibold">{defendant?.name || '[Opponent Name]'}</span>
+              <span className="text-amber-400 font-semibold truncate inline-block max-w-full align-bottom">{defendant?.name || '[Opponent Name]'}</span>
             </div>
           </div>
         </div>

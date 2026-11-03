@@ -4423,12 +4423,1697 @@ export const translations: Record<SupportedLanguage, Record<string, string>> = {
 
 };
 
+
+export const DOM_TRANSLATIONS: Record<string, Partial<Record<SupportedLanguage, string>>> = {
+  "Home": {
+    "hi": "होम",
+    "es": "Inicio",
+    "de": "Startseite",
+    "fr": "Accueil",
+    "ja": "ホーム",
+    "zh": "首页"
+  },
+  "Build Case": {
+    "hi": "केस तैयार करें",
+    "es": "Armar Caso",
+    "de": "Fall aufbauen",
+    "fr": "Monter le dossier",
+    "ja": "訴訟案件の構築",
+    "zh": "立案构建"
+  },
+  "Evidence & Proof": {
+    "hi": "सबूत और प्रमाण",
+    "es": "Pruebas y Evidencia",
+    "de": "Beweise & Belege",
+    "fr": "Preuves & Pièces",
+    "ja": "証拠と立証",
+    "zh": "证据与核实"
+  },
+  "Court Papers": {
+    "hi": "अदालती दस्तावेज",
+    "es": "Escritos Judiciales",
+    "de": "Gerichtsschriftsätze",
+    "fr": "Actes de procédure",
+    "ja": "裁判所提出書面",
+    "zh": "法院诉状文书"
+  },
+  "Demand & Settle": {
+    "hi": "मांग और समझौता",
+    "es": "Demanda y Acuerdo",
+    "de": "Forderung & Vergleich",
+    "fr": "Mise en demeure & Accord",
+    "ja": "請求と和解交渉",
+    "zh": "索赔函与和解"
+  },
+  "Case Strategy": {
+    "hi": "केस रणनीति",
+    "es": "Estrategia Legal",
+    "de": "Fallstrategie",
+    "fr": "Stratégie juridique",
+    "ja": "訴訟戦略",
+    "zh": "诉讼策略"
+  },
+  "Legal Aid & Courts": {
+    "hi": "कानूनी सहायता और अदालतें",
+    "es": "Asistencia Legal y Juzgados",
+    "de": "Rechtshilfe & Gerichte",
+    "fr": "Aide juridictionnelle & Tribunaux",
+    "ja": "法律扶助と裁判所",
+    "zh": "法律援助与法院"
+  },
+  "Request Evidence": {
+    "hi": "सबूत का अनुरोध करें",
+    "es": "Solicitar Pruebas",
+    "de": "Beweise anfordern",
+    "fr": "Demande de pièces",
+    "ja": "証拠開示請求",
+    "zh": "调取证据"
+  },
+  "Trial Prep": {
+    "hi": "मुकदमे की तैयारी",
+    "es": "Preparación de Juicio",
+    "de": "Verhandlungsvorbereitung",
+    "fr": "Préparation d'audience",
+    "ja": "公判・審理準備",
+    "zh": "开庭庭审准备"
+  },
+  "SOL Docket": {
+    "hi": "समय-सीमा डॉकेट",
+    "es": "Plazos de Prescripción",
+    "de": "Verjährungsfristen",
+    "fr": "Délais de prescription",
+    "ja": "出訴期限管理",
+    "zh": "诉讼时效卷宗"
+  },
+  "Service & Proof": {
+    "hi": "तामील और प्रमाण",
+    "es": "Notificación y Diligencia",
+    "de": "Zustellung & Nachweis",
+    "fr": "Signification & Justificatif",
+    "ja": "送達と送達証明",
+    "zh": "送达与回执证明"
+  },
+  "Legal Decoder": {
+    "hi": "कानूनी डिकोडर",
+    "es": "Decodificador Legal",
+    "de": "Juristischer Dekodierer",
+    "fr": "Décodeur juridique",
+    "ja": "法律用語デコーダー",
+    "zh": "法言法语解码器"
+  },
+  "Attorney Binder": {
+    "hi": "वकील फ़ोल्डर",
+    "es": "Carpeta del Abogado",
+    "de": "Anwaltsmappe",
+    "fr": "Dossier de l'avocat",
+    "ja": "弁護士共有バインダー",
+    "zh": "律师交接档案夹"
+  },
+  "Security Vault": {
+    "hi": "सुरक्षा वॉल्ट",
+    "es": "Bóveda de Seguridad",
+    "de": "Sicherheits-Tresor",
+    "fr": "Coffre-fort sécurisé",
+    "ja": "セキュリティ保管庫",
+    "zh": "零知识加密保险库"
+  },
+  "Enforcement": {
+    "hi": "फैसले का प्रवर्तन",
+    "es": "Ejecución de Sentencia",
+    "de": "Urteilsvollstreckung",
+    "fr": "Exécution forcée",
+    "ja": "強制執行・債権回収",
+    "zh": "胜诉判决执行"
+  },
+  "Legal Second Opinion & Case Viability Audit": {
+    "hi": "कानूनी दूसरी राय और केस व्यवहार्यता ऑडिट",
+    "es": "Segunda Opinión Legal y Auditoría de Viabilidad",
+    "de": "Zweite juristische Meinung & Fall-Machbarkeitsanalyse",
+    "fr": "Deuxième avis juridique & Audit de viabilité du litige",
+    "ja": "セカンドオピニオン・訴訟勝訴性監査",
+    "zh": "第二法律意见与案件胜诉可行性评估"
+  },
+  "AI Legal Case Evaluator": {
+    "hi": "एआई कानूनी केस मूल्यांकक",
+    "es": "Evaluador Legal de Casos por IA",
+    "de": "KI-Rechtsfallprüfer",
+    "fr": "Évaluateur juridique IA du litige",
+    "ja": "AI法務案件評価エンジン",
+    "zh": "AI法律案件评估专家"
+  },
+  "Objective, non-partisan computational evaluation of your dispute’s evidentiary foundation, defense traps, and recovery likelihood before filing in court.": {
+    "hi": "अदालत में दाखिल करने से पहले आपके विवाद की साक्ष्य नींव, बचाव के जाल और वसूली की संभावना का निष्पक्ष कम्प्यूटेशनल मूल्यांकन।",
+    "es": "Evaluación computacional objetiva e imparcial sobre la base probatoria, trampas de la defensa y probabilidad de cobro antes de litigar.",
+    "de": "Objektive, unparteiische computergestützte Bewertung der Beweisgrundlage, Einwandfallen und Erfolgschancen vor Klageerhebung.",
+    "fr": "Évaluation algorithmique objective et impartiale des preuves, des pièges de la défense et des chances d'indemnisation avant le dépôt au tribunal.",
+    "ja": "裁判所への提訴前に、紛争の証拠的根拠、相手方の抗弁の罠、回収可能性を客観的・中立的に計算・評価します。",
+    "zh": "在向法院正式立案前，对争议证据基础、对方抗辩陷阱及实际索赔受偿概率进行客观中立的算法评估。"
+  },
+  "Objective, non-partisan computational evaluation of your dispute's evidentiary foundation, defense traps, and recovery likelihood before filing in court.": {
+    "hi": "अदालत में दाखिल करने से पहले आपके विवाद की साक्ष्य नींव, बचाव के जाल और वसूली की संभावना का निष्पक्ष कम्प्यूटेशनल मूल्यांकन।",
+    "es": "Evaluación computacional objetiva e imparcial sobre la base probatoria, trampas de la defensa y probabilidad de cobro antes de litigar.",
+    "de": "Objektive, unparteiische computergestützte Bewertung der Beweisgrundlage, Einwandfallen und Erfolgschancen vor Klageerhebung.",
+    "fr": "Évaluation algorithmique objective et impartiale des preuves, des pièges de la défense et des chances d'indemnisation avant le dépôt au tribunal.",
+    "ja": "裁判所への提訴前に、紛争の証拠的根拠、相手方の抗弁の罠、回収可能性を客観的・中立的に計算・評価します。",
+    "zh": "在向法院正式立案前，对争议证据基础、对方抗辩陷阱及实际索赔受偿概率进行客观中立的算法评估。"
+  },
+  "Merit Rating": {
+    "hi": "गुणवत्ता रेटिंग",
+    "es": "Calificación de Mérito",
+    "de": "Erfolgsbewertung",
+    "fr": "Note de solidité",
+    "ja": "案件妥当性格付け",
+    "zh": "案件理据评级"
+  },
+  "Win Probability": {
+    "hi": "जीतने की संभावना",
+    "es": "Probabilidad de Ganar",
+    "de": "Gewinnwahrscheinlichkeit",
+    "fr": "Probabilité de gain",
+    "ja": "勝訴確率",
+    "zh": "胜诉期望概率"
+  },
+  "Consultant Strategic Verdict": {
+    "hi": "सलाहकार का रणनीतिक फैसला",
+    "es": "Veredicto Estratégico del Consultor",
+    "de": "Strategisches Gutachterurteil",
+    "fr": "Verdict stratégique du consultant",
+    "ja": "相談役の戦略的評価意見",
+    "zh": "法律顾问战略评估结论"
+  },
+  "Ask AI Legal Advisor": {
+    "hi": "एआई कानूनी सलाहकार से पूछें",
+    "es": "Consultar al Asesor Legal IA",
+    "de": "KI-Rechtsberater befragen",
+    "fr": "Consulter le conseiller IA",
+    "ja": "AI法律顧問に相談",
+    "zh": "向AI法律顾问提问"
+  },
+  "Ask AI Legal Advisor & Case Consultant": {
+    "hi": "एआई कानूनी सलाहकार और केस परामर्शदाता से पूछें",
+    "es": "Consultar al Asesor Legal IA y Consejero de Caso",
+    "de": "KI-Rechtsberater & Fallberater befragen",
+    "fr": "Interroger le conseiller juridique IA et consultant de dossier",
+    "ja": "AI法律顧問兼訴訟コンサルタントに質問",
+    "zh": "咨询AI法律顾问与案件顾问"
+  },
+  "Strengths & Overview": {
+    "hi": "ताकत और अवलोकन",
+    "es": "Fortalezas y Resumen",
+    "de": "Stärken & Überblick",
+    "fr": "Points forts & Vue d'ensemble",
+    "ja": "強みと全体概要",
+    "zh": "案件优势与总览"
+  },
+  "Risk Checklist": {
+    "hi": "जोखिम चेकलिस्ट",
+    "es": "Lista de Riesgos",
+    "de": "Risiko-Checkliste",
+    "fr": "Liste des risques",
+    "ja": "リスク項目チェックリスト",
+    "zh": "诉讼风险核对表"
+  },
+  "Defense Traps": {
+    "hi": "बचाव के जाल",
+    "es": "Trampas de Defensa",
+    "de": "Verteidigungsfallen",
+    "fr": "Pièges de la défense",
+    "ja": "抗弁の落とし穴",
+    "zh": "对方抗辩陷阱"
+  },
+  "Trial vs Settle Calculator": {
+    "hi": "मुकदमा बनाम समझौता कैलकुलेटर",
+    "es": "Calculadora: Juicio vs Acuerdo",
+    "de": "Prozess vs. Vergleich Rechner",
+    "fr": "Calculateur Procès vs Accord",
+    "ja": "裁判対和解期待値シミュレーター",
+    "zh": "庭审诉讼对比和解期望值计算器"
+  },
+  "Action Roadmap": {
+    "hi": "कार्रवाई रोडमैप",
+    "es": "Hoja de Ruta",
+    "de": "Aktionsplan",
+    "fr": "Feuille de route",
+    "ja": "行動ロードマップ",
+    "zh": "维权行动路线图"
+  },
+  "Copy Summary": {
+    "hi": "सारांश कॉपी करें",
+    "es": "Copiar Resumen",
+    "de": "Zusammenfassung kopieren",
+    "fr": "Copier le résumé",
+    "ja": "概要をコピー",
+    "zh": "复制摘要"
+  },
+  "Print Brief": {
+    "hi": "ब्रीफ प्रिंट करें",
+    "es": "Imprimir Informe",
+    "de": "Kurzbericht drucken",
+    "fr": "Imprimer le mémoire",
+    "ja": "書面を印刷",
+    "zh": "打印案件简报"
+  },
+  "Factual & Grounded": {
+    "hi": "तथ्यात्मक और प्रमाणित",
+    "es": "Fáctico y Fundamentado",
+    "de": "Faktisch & Fundiert",
+    "fr": "Factuel & Fondé",
+    "ja": "事実に基づき検証済み",
+    "zh": "恪守客观事实与证据"
+  },
+  "Matter:": {
+    "hi": "मामला:",
+    "es": "Asunto:",
+    "de": "Sache:",
+    "fr": "Affaire :",
+    "ja": "案件名:",
+    "zh": "案件:"
+  },
+  "Opponent:": {
+    "hi": "विरोधी पक्ष:",
+    "es": "Parte Contraria:",
+    "de": "Gegner:",
+    "fr": "Partie adverse :",
+    "ja": "相手方:",
+    "zh": "对方当事人:"
+  },
+  "1-Tap Instant Case Consultations:": {
+    "hi": "1-टैप त्वरित केस परामर्श:",
+    "es": "Consultas Rápidas en 1 Toque:",
+    "de": "1-Klick Sofort-Fallberatung:",
+    "fr": "Consultations instantanées en 1 clic :",
+    "ja": "ワンタップ即時相談メニュー:",
+    "zh": "一键即时咨询要点:"
+  },
+  "Consult Advisor": {
+    "hi": "सलाहकार से परामर्श लें",
+    "es": "Consultar Asesor",
+    "de": "Berater befragen",
+    "fr": "Consulter le conseiller",
+    "ja": "顧問に相談する",
+    "zh": "获取法律意见"
+  },
+  "Analyzing...": {
+    "hi": "विश्लेषण हो रहा है...",
+    "es": "Analizando...",
+    "de": "Analysiere...",
+    "fr": "Analyse en cours...",
+    "ja": "分析中...",
+    "zh": "分析中..."
+  },
+  "Recent Consultations:": {
+    "hi": "हाल के परामर्श:",
+    "es": "Consultas Recientes:",
+    "de": "Letzte Beratungen:",
+    "fr": "Consultations récentes :",
+    "ja": "最近の相談履歴:",
+    "zh": "近期咨询记录:"
+  },
+  "PRO SE LITIGATION ADVISORY MEMORANDUM": {
+    "hi": "स्वयं-प्रतिनिधित्व मुकदमेबाजी परामर्श ज्ञापन",
+    "es": "MEMORANDO CONSULTIVO DE LITIGIO EN DEFENSA PROPIA",
+    "de": "RECHTLICHES BERATUNGSMEMORANDUM FÜR SELBSTVERTRETER",
+    "fr": "MÉMORANDUM DE CONSEIL JURIDIQUE POUR LITIGE PRO SE",
+    "ja": "本人訴訟支援法律助言覚書",
+    "zh": "本人诉讼法律指导备忘录"
+  },
+  "Copy Advice Memo": {
+    "hi": "परामर्श ज्ञापन कॉपी करें",
+    "es": "Copiar Memorando de Consejo",
+    "de": "Beratungsmemo kopieren",
+    "fr": "Copier le mémo de conseil",
+    "ja": "助言覚書をコピー",
+    "zh": "复制法律指导备忘录"
+  },
+  "Copied Memo!": {
+    "hi": "ज्ञापन कॉपी हो गया!",
+    "es": "¡Memorando Copiado!",
+    "de": "Memo kopiert!",
+    "fr": "Mémo copié !",
+    "ja": "覚書をコピーしました！",
+    "zh": "已复制备忘录！"
+  },
+  "INQUIRY SUBJECT:": {
+    "hi": "जांच विषय:",
+    "es": "TEMA DE CONSULTA:",
+    "de": "BETREFF:",
+    "fr": "OBJET DE LA DEMANDE :",
+    "ja": "諮問事項:",
+    "zh": "咨询要项:"
+  },
+  "DATE GENERATED:": {
+    "hi": "तैयारी तिथि:",
+    "es": "FECHA DE GENERACIÓN:",
+    "de": "ERSTELLT AM:",
+    "fr": "DATE D'ÉMISSION :",
+    "ja": "作成日時:",
+    "zh": "生成日期:"
+  },
+  "1. Executive Legal Viability & Dispute Merit": {
+    "hi": "1. कानूनी व्यवहार्यता और विवाद के आधार",
+    "es": "1. Viabilidad Legal Ejecutiva y Mérito del Litigio",
+    "de": "1. Rechtliche Machbarkeit & Anspruchsberechtigung",
+    "fr": "1. Viabilité juridique exécutive & Fondement du litige",
+    "ja": "1. 法的妥当性と請求の正当性",
+    "zh": "1. 法律可行性与诉由理据总述"
+  },
+  "2. Governing Statutes & Legal Authorities": {
+    "hi": "2. संबंधित कानून और कानूनी अधिकार",
+    "es": "2. Normativa Aplicable y Autoridades Legales",
+    "de": "2. Maßgebliche Gesetze & Rechtsquellen",
+    "fr": "2. Textes de loi applicables & Fondements légaux",
+    "ja": "2. 準拠法規および法的根拠",
+    "zh": "2. 准据实体法与强制性规范"
+  },
+  "3. Factual Case & Evidentiary Application": {
+    "hi": "3. तथ्यात्मक केस और साक्ष्य का अनुप्रयोग",
+    "es": "3. Análisis Fáctico y Aplicación Probatoria",
+    "de": "3. Sachverhalt & Beweismittelanwendung",
+    "fr": "3. Analyse des faits & Application des preuves",
+    "ja": "3. 事実関係の立証と証拠の適用",
+    "zh": "3. 案件事实与证据采信链条"
+  },
+  "4. In-Court Hearing Tactics & Verbatim Rebuttal Script": {
+    "hi": "4. अदालत की रणनीति और सटीक खंडन स्क्रिप्ट",
+    "es": "4. Tácticas de Audiencia y Guión Exacto de Réplica",
+    "de": "4. Taktik für die mündliche Verhandlung & Erwiderungstext",
+    "fr": "4. Tactiques d'audience & Script exact de plaidoirie",
+    "ja": "4. 口頭弁論の法廷戦術と反論スクリプト",
+    "zh": "4. 庭审口头答辩要领与反驳词原稿"
+  },
+  "5. Opposing Defense Traps & Procedural Warnings": {
+    "hi": "5. विरोधी पक्ष के बचाव के जाल और प्रक्रियात्मक चेतावनी",
+    "es": "5. Trampas de la Defensa Contraria y Alertas Procesales",
+    "de": "5. Fallen der gegnerischen Verteidigung & Verfahrenshinweise",
+    "fr": "5. Pièges de la partie adverse & Avertissements procéduraux",
+    "ja": "5. 相手方の抗弁の罠と訴訟手続上の警告",
+    "zh": "5. 对方抗辩陷阱与程序性法律风险警示"
+  },
+  "6. Immediate Action Items Checklist": {
+    "hi": "6. तत्काल कार्रवाई सूची",
+    "es": "6. Lista de Medidas Inmediatas a Tomar",
+    "de": "6. Checkliste für sofortige Folgemaßnahmen",
+    "fr": "6. Liste des démarches immédiates à accomplir",
+    "ja": "6. 直ちに実行すべきアクションリスト",
+    "zh": "6. 现阶段必须完成的要件核查清单"
+  },
+  "Core Case Strengths": {
+    "hi": "केस की मुख्य ताकतें",
+    "es": "Fortalezas Principales del Caso",
+    "de": "Wesentliche Stärken des Falles",
+    "fr": "Forces majeures du dossier",
+    "ja": "案件の核心的強み",
+    "zh": "核心胜诉优势"
+  },
+  "Identified Risk Areas": {
+    "hi": "पहचाने गए जोखिम क्षेत्र",
+    "es": "Áreas de Riesgo Identificadas",
+    "de": "Identifizierte Risikobereiche",
+    "fr": "Zones de risque identifiées",
+    "ja": "特定されたリスク要因",
+    "zh": "识别出的薄弱环节与风险"
+  },
+  "Financial Assessment": {
+    "hi": "वित्तीय मूल्यांकन",
+    "es": "Evaluación Financiera",
+    "de": "Finanzielle Bewertung",
+    "fr": "Évaluation financière",
+    "ja": "経済的損益評価",
+    "zh": "诉讼成本效益与求偿评估"
+  },
+  "Claimed Damages:": {
+    "hi": "दावा किया गया नुकसान:",
+    "es": "Daños Reclamados:",
+    "de": "Geltend gemachter Schaden:",
+    "fr": "Dommages réclamés :",
+    "ja": "請求損害賠償額:",
+    "zh": "诉请赔偿总额:"
+  },
+  "Claimed Damages": {
+    "hi": "दावा किया गया नुकसान",
+    "es": "Daños Reclamados",
+    "de": "Geltend gemachter Schaden",
+    "fr": "Dommages réclamés",
+    "ja": "請求損害賠償額",
+    "zh": "诉请赔偿总额"
+  },
+  "Realistic Recovery:": {
+    "hi": "वास्तविक वसूली:",
+    "es": "Recuperación Realista:",
+    "de": "Realistischer Ertrag:",
+    "fr": "Recouvrement réaliste :",
+    "ja": "現実的回収予測:",
+    "zh": "预期可执行获赔额:"
+  },
+  "Realistic Recovery": {
+    "hi": "वास्तविक वसूली",
+    "es": "Recuperación Realista",
+    "de": "Realistischer Ertrag",
+    "fr": "Recouvrement réaliste",
+    "ja": "現実的回収予測",
+    "zh": "预期可执行获赔额"
+  },
+  "Estimated Court Filing Fee:": {
+    "hi": "अनुमानित कोर्ट फीस:",
+    "es": "Tasa Judicial Estimada:",
+    "de": "Geschätzte Gerichtsgebühr:",
+    "fr": "Frais de justice estimés :",
+    "ja": "概算裁判所手数料:",
+    "zh": "预估案件受理诉讼费:"
+  },
+  "Estimated Court Filing Fee": {
+    "hi": "अनुमानित कोर्ट फीस",
+    "es": "Tasa Judicial Estimada",
+    "de": "Geschätzte Gerichtsgebühr",
+    "fr": "Frais de justice estimés",
+    "ja": "概算裁判所手数料",
+    "zh": "预估案件受理诉讼费"
+  },
+  "Target Settle Floor:": {
+    "hi": "न्यूनतम समझौता सीमा:",
+    "es": "Mínimo Aceptable de Acuerdo:",
+    "de": "Mindest-Vergleichsbetrag:",
+    "fr": "Plancher d'accord recommandé :",
+    "ja": "和解目標下限額:",
+    "zh": "和解底线保护额:"
+  },
+  "Target Settle Floor": {
+    "hi": "न्यूनतम समझौता सीमा",
+    "es": "Mínimo Aceptable de Acuerdo",
+    "de": "Mindest-Vergleichsbetrag",
+    "fr": "Plancher d'accord recommandé",
+    "ja": "和解目標下限額",
+    "zh": "和解底线保护额"
+  },
+  "Consultant Recommendation:": {
+    "hi": "सलाहकार की सिफारिश:",
+    "es": "Recomendación del Consultor:",
+    "de": "Empfehlung des Beraters:",
+    "fr": "Recommandation du consultant :",
+    "ja": "コンサルタントの推奨指针:",
+    "zh": "顾问操作建议:"
+  },
+  "Resolve Checklist →": {
+    "hi": "चेकलिस्ट हल करें →",
+    "es": "Resolver Lista →",
+    "de": "Checkliste abarbeiten →",
+    "fr": "Résoudre la liste →",
+    "ja": "チェックリストを解消 →",
+    "zh": "消减风险清单 →"
+  },
+  "Vulnerability Remediation & Score Booster Checklist": {
+    "hi": "कमजोरी निवारण और स्कोर बूस्टर चेकलिस्ट",
+    "es": "Lista de Subsanación de Vulnerabilidades y Mejora de Puntuación",
+    "de": "Checkliste zur Schwachstellenbehebung & Punktverbesserung",
+    "fr": "Remédiation des vulnérabilités & Amélioration du score",
+    "ja": "弱点補強および勝訴率改善チェックリスト",
+    "zh": "证据弱项补强与胜诉率提升清单"
+  },
+  "Ticking off completed remediation tasks immediately raises your case Merit Rating and Win Probability score.": {
+    "hi": "उपचारात्मक कार्यों को पूरा करने से तुरंत आपके मामले की मेरिट रेटिंग और जीतने की संभावना बढ़ जाती है।",
+    "es": "Marcar tareas completadas aumenta al instante la Calificación de Mérito y Probabilidad de Ganar de su caso.",
+    "de": "Das Abarbeiten von Aufgaben erhöht sofort die Erfolgsbewertung und die Gewinnwahrscheinlichkeit.",
+    "fr": "Cocher les tâches achevées augmente immédiatement la solidité et la probabilité de gain de votre dossier.",
+    "ja": "補強タスクを完了してチェックを入れると、案件評価と勝訴確率が即座に上昇します。",
+    "zh": "逐项落实补充证据并勾选，将直接提高本案的事实理据评分与胜诉概率。"
+  },
+  "Resolved:": {
+    "hi": "हल किया गया:",
+    "es": "Resuelto:",
+    "de": "Erledigt:",
+    "fr": "Résolu :",
+    "ja": "補強完了:",
+    "zh": "已完成补正:"
+  },
+  "Remedy:": {
+    "hi": "उपाय:",
+    "es": "Solución:",
+    "de": "Abhilfe:",
+    "fr": "Remède :",
+    "ja": "補強策:",
+    "zh": "应对补救措施:"
+  },
+  "Anticipated Opposing Defenses & Rebuttals": {
+    "hi": "प्रत्याशित विरोधी बचाव और खंडन",
+    "es": "Defensas Previstas de la Parte Contraria y Réplicas",
+    "de": "Erwartete gegnerische Einwände & Gegenargumente",
+    "fr": "Moyens de défense adverses anticipés & Réfutations",
+    "ja": "想定される相手方の抗弁と反論",
+    "zh": "预判对方主要抗辩与针对性反驳"
+  },
+  "Specific court rebuttals and statutory citations to dismantle defendant arguments.": {
+    "hi": "प्रतिवादी के तर्कों को खारिज करने के लिए विशिष्ट अदालती खंडन और वैधानिक उद्धरण।",
+    "es": "Réplicas judiciales concretas y fundamentos legales para desarmar los argumentos del demandado.",
+    "de": "Konkrete gerichtliche Erwiderungen und gesetzliche Fundstellen zur Entkräftung gegnerischer Thesen.",
+    "fr": "Réfutations judiciaires précises et fondements de droit pour démonter les arguments du défendeur.",
+    "ja": "被告の主張を論破するための具体的な法廷反論と条文の引用。",
+    "zh": "用于击溃被告答辩主张的针对性法庭反驳词与法定条文引用。"
+  },
+  "+ Add Custom Opposing Defense": {
+    "hi": "+ कस्टम विरोधी बचाव जोड़ें",
+    "es": "+ Añadir Defensa Contraria Personalizada",
+    "de": "+ Eigenen gegnerischen Einwand hinzufügen",
+    "fr": "+ Ajouter un moyen de défense adverse",
+    "ja": "+ カスタムの相手方抗弁を追加",
+    "zh": "+ 自定义补充对方抗辩"
+  },
+  "What Defendant Will Argue:": {
+    "hi": "प्रतिवादी क्या तर्क देगा:",
+    "es": "Lo que alegará el demandado:",
+    "de": "Was der Beklagte vorbringen wird:",
+    "fr": "Ce que le défendeur va plaider :",
+    "ja": "相手方が主張すると予想される論点:",
+    "zh": "对方抗辩主张焦点:"
+  },
+  "What Defendant Will Argue": {
+    "hi": "प्रतिवादी क्या तर्क देगा",
+    "es": "Lo que alegará el demandado",
+    "de": "Was der Beklagte vorbringen wird",
+    "fr": "Ce que le défendeur va plaider",
+    "ja": "相手方が主張すると予想される論点",
+    "zh": "对方抗辩主张焦点"
+  },
+  "Your Winning Counter-Rebuttal:": {
+    "hi": "आपका विजयी खंडन:",
+    "es": "Su Réplica Ganadora:",
+    "de": "Ihre schlagkräftige Erwiderung:",
+    "fr": "Votre réplique décisive :",
+    "ja": "勝訴を導く決定打となる反論:",
+    "zh": "反驳与制胜抗辩:"
+  },
+  "Your Winning Counter-Rebuttal": {
+    "hi": "आपका विजयी खंडन",
+    "es": "Su Réplica Ganadora",
+    "de": "Ihre schlagkräftige Erwiderung",
+    "fr": "Votre réplique décisive",
+    "ja": "勝訴を導く決定打となる反論",
+    "zh": "反驳与制胜抗辩"
+  },
+  "Authority:": {
+    "hi": "अधिकार:",
+    "es": "Fundamento Legal:",
+    "de": "Rechtsgrundlage:",
+    "fr": "Autorité juridique :",
+    "ja": "法的権威・条文:",
+    "zh": "权威判例与法条依据:"
+  },
+  "Likelihood": {
+    "hi": "संभावना",
+    "es": "Probabilidad",
+    "de": "Wahrscheinlichkeit",
+    "fr": "Probabilité",
+    "ja": "発生可能性",
+    "zh": "可能性"
+  },
+  "Litigation Expected Value (EV) Decision Engine": {
+    "hi": "मुकदमेबाजी अपेक्षित मूल्य (EV) निर्णय इंजन",
+    "es": "Motor de Decisión: Valor Esperado (EV) del Litigio",
+    "de": "Entscheidungs-Engine für den Prozess-Erwartungswert (EV)",
+    "fr": "Moteur de décision de la valeur attendue (EV) du litige",
+    "ja": "訴訟期待値（EV）意思決定シミュレーター",
+    "zh": "诉讼期望价值（EV）决策分析引擎"
+  },
+  "Pleading & Document Builder": {
+    "hi": "याचिका और दस्तावेज निर्माता",
+    "es": "Generador de Escritos y Documentos Judiciales",
+    "de": "Schriftsatz- & Dokumentengenerator",
+    "fr": "Générateur d'actes et de conclusions judiciaires",
+    "ja": "訴状および法廷書面自動ビルダー",
+    "zh": "民事起诉状与法律文书生成器"
+  },
+  "28-Line State/Federal Pleading Paper, Formal 10-Day Demand Letters & Sworn Affidavits": {
+    "hi": "28-पंक्ति का राज्य/संघीय याचिका पत्र, औपचारिक 10-दिवसीय मांग पत्र और शपथ पत्र",
+    "es": "Papel de alegato de 28 líneas estatal/federal, cartas de demanda formal de 10 días y declaraciones juradas",
+    "de": "28-zeiliges bundes-/landesweites Schriftsatzpapier, formelle 10-Tage-Mahnschreiben & eidesstattliche Versicherungen",
+    "fr": "Papier à lignes 28-Line d'État/Fédéral, lettres de mise en demeure de 10 jours et déclarations sous serment",
+    "ja": "28行罫線付き州/連邦標準訴状用紙、10日間支払催告状、宣誓供述書",
+    "zh": "标准28行式法院诉状文书、10日法定索赔催告函及经宣誓签署的声明书"
+  },
+  "Master Filing Packet (5-in-1)": {
+    "hi": "मास्टर फाइलिंग पैकेट (5-इन-1)",
+    "es": "Paquete Maestro de Presentación (5 en 1)",
+    "de": "Gesamtes Gerichtspaket (5-in-1)",
+    "fr": "Dossier de dépôt complet (5-en-1)",
+    "ja": "裁判所提出マスター書類一式（5点パック）",
+    "zh": "全套诉讼立案与送达卷宗（五合一）"
+  },
+  "Court Complaint (28-Line)": {
+    "hi": "कोर्ट शिकायत (28-पंक्ति)",
+    "es": "Demanda Judicial (28 Líneas)",
+    "de": "Klageerhebung (28 Zeilen)",
+    "fr": "Assignation / Requête (28 lignes)",
+    "ja": "本訴状（28行書式）",
+    "zh": "法院正式起诉状（28行标准格式）"
+  },
+  "10-Day Demand Letter": {
+    "hi": "10-दिवसीय मांग पत्र",
+    "es": "Carta de Demanda de 10 Días",
+    "de": "10-Tage-Aufforderungsschreiben",
+    "fr": "Mise en demeure sous 10 jours",
+    "ja": "10日以内支払催告書",
+    "zh": "限期10日履行索赔函"
+  },
+  "Verification Affidavit": {
+    "hi": "सत्यापन शपथ पत्र",
+    "es": "Declaración Jurada de Verificación",
+    "de": "Eidesstattliche Versicherung",
+    "fr": "Déclaration sous serment",
+    "ja": "事実確認宣誓供述書",
+    "zh": "起诉状事实确认宣誓声明"
+  },
+  "Official Court Forms (SC-100 / N1)": {
+    "hi": "आधिकारिक कोर्ट फॉर्म (SC-100 / N1)",
+    "es": "Formularios Oficiales del Juzgado (SC-100 / N1)",
+    "de": "Offizielle Gerichtsformulare (SC-100 / N1)",
+    "fr": "Formulaires officiels du tribunal (SC-100 / N1)",
+    "ja": "裁判所指定公認書式（SC-100 / N1等）",
+    "zh": "法定小额诉讼标准用表（SC-100 / N1）"
+  },
+  "COURT READY": {
+    "hi": "कोर्ट के लिए तैयार",
+    "es": "LISTO PARA EL JUZGADO",
+    "de": "GERICHTSFERTIG",
+    "fr": "PRÊT POUR LE TRIBUNAL",
+    "ja": "法廷提出可能",
+    "zh": "具备法定立案效力"
+  },
+  "Court Typography:": {
+    "hi": "कोर्ट टाइपोग्राफी:",
+    "es": "Tipografía Judicial:",
+    "de": "Gerichtliche Typografie:",
+    "fr": "Police judiciaire :",
+    "ja": "裁判所指定フォント:",
+    "zh": "法院规制字体标准:"
+  },
+  "Preview Mode": {
+    "hi": "पूर्वावलोकन मोड",
+    "es": "Modo Vista Previa",
+    "de": "Vorschaumodus",
+    "fr": "Mode aperçu",
+    "ja": "プレビュー表示",
+    "zh": "预览排版样式"
+  },
+  "WYSIWYG Edit": {
+    "hi": "संपादक मोड",
+    "es": "Edición WYSIWYG",
+    "de": "Direktbearbeitung",
+    "fr": "Édition visuelle",
+    "ja": "編集モード",
+    "zh": "在线可视化编辑"
+  },
+  "Download Packet (.txt)": {
+    "hi": "पैकेट डाउनलोड करें (.txt)",
+    "es": "Descargar Paquete (.txt)",
+    "de": "Paket herunterladen (.txt)",
+    "fr": "Télécharger le dossier (.txt)",
+    "ja": "書類一式をダウンロード (.txt)",
+    "zh": "导出全套案卷文书 (.txt)"
+  },
+  "✓ Downloaded (.txt)": {
+    "hi": "✓ डाउनलोड हो गया (.txt)",
+    "es": "✓ Descargado (.txt)",
+    "de": "✓ Heruntergeladen (.txt)",
+    "fr": "✓ Téléchargé (.txt)",
+    "ja": "✓ ダウンロード完了 (.txt)",
+    "zh": "✓ 已成功下载 (.txt)"
+  },
+  "Copy Text": {
+    "hi": "टेक्स्ट कॉपी करें",
+    "es": "Copiar Texto",
+    "de": "Text kopieren",
+    "fr": "Copier le texte",
+    "ja": "テキストをコピー",
+    "zh": "复制全文"
+  },
+  "Copy Full Packet": {
+    "hi": "पूरा पैकेट कॉपी करें",
+    "es": "Copiar Paquete Completo",
+    "de": "Vollständiges Paket kopieren",
+    "fr": "Copier le dossier complet",
+    "ja": "書類一式をコピー",
+    "zh": "复制整套案卷内容"
+  },
+  "Copied to Clipboard": {
+    "hi": "क्लिपबोर्ड पर कॉपी किया गया",
+    "es": "Copiado al Portapapeles",
+    "de": "In die Zwischenablage kopiert",
+    "fr": "Copié dans le presse-papiers",
+    "ja": "クリップボードにコピーしました",
+    "zh": "已复制到剪贴板"
+  },
+  "Print / Save PDF": {
+    "hi": "प्रिंट / पीडीएफ सेव करें",
+    "es": "Imprimir / Guardar PDF",
+    "de": "Drucken / PDF speichern",
+    "fr": "Imprimer / Enregistrer en PDF",
+    "ja": "印刷 / PDF保存",
+    "zh": "打印 / 存为PDF"
+  },
+  "Print Complete Packet": {
+    "hi": "पूरा पैकेट प्रिंट करें",
+    "es": "Imprimir Paquete Completo",
+    "de": "Vollständiges Paket drucken",
+    "fr": "Imprimer le dossier complet",
+    "ja": "書類一式を印刷",
+    "zh": "完整打印全套卷宗"
+  },
+  "Plaintiff in Propria Persona": {
+    "hi": "व्यक्तिगत रूप से वादी",
+    "es": "Demandante en Persona Propia",
+    "de": "Kläger in eigener Person",
+    "fr": "Demandeur en personne",
+    "ja": "本人訴訟原告",
+    "zh": "起诉人本人直接出庭（亲自诉讼）"
+  },
+  "DEMAND FOR JURY TRIAL": {
+    "hi": "जूरी ट्रायल की मांग",
+    "es": "DEMANDA DE JUICIO POR JURADO",
+    "de": "ANTRAG AUF GESCHWORENENGERICHT",
+    "fr": "DEMANDE DE PROCÈS DEVANT JURY",
+    "ja": "陪審員裁判の請求",
+    "zh": "正式提出陪审团审理要求"
+  },
+  "COMPLAINT FOR DAMAGES AND STATUTORY PENALTIES": {
+    "hi": "नुकसान और वैधानिक दंड के लिए शिकायत",
+    "es": "DEMANDA POR DAÑOS Y SANCIONES LEGALES",
+    "de": "KLAGE AUF SCHADENERSATZ UND GESETZLICHE STRAFEN",
+    "fr": "DEMANDE EN DOMMAGES-INTÉRÊTS ET SANCTIONS LÉGALES",
+    "ja": "損害賠償および法定付加金請求訴状",
+    "zh": "损害赔偿与法定惩罚性赔偿起诉状"
+  },
+  "Add Paragraph": {
+    "hi": "पैरा जोड़ें",
+    "es": "Añadir Párrafo",
+    "de": "Absatz hinzufügen",
+    "fr": "Ajouter un paragraphe",
+    "ja": "段落を追加",
+    "zh": "新增诉状事实段落"
+  },
+  "Delete": {
+    "hi": "हटाएं",
+    "es": "Eliminar",
+    "de": "Löschen",
+    "fr": "Supprimer",
+    "ja": "削除",
+    "zh": "删除"
+  },
+  "Pre-Litigation Statutory Demand & Opportunity to Cure": {
+    "hi": "मुकदमे से पहले वैधानिक मांग और समाधान का अवसर",
+    "es": "Requerimiento Legal Previo al Litigio y Oportunidad de Subsanar",
+    "de": "Vorgerichtliche Mahnung & Frist zur Nacherfüllung",
+    "fr": "Mise en demeure préalable au litige & Délai de remédiation",
+    "ja": "提訴前法定催告書および履行の是正機会付与通知",
+    "zh": "诉前法定履行催告与补正通知"
+  },
+  "Cure Deadline": {
+    "hi": "समाधान की अंतिम तिथि",
+    "es": "Plazo Límite de Subsanación",
+    "de": "Nachfrist",
+    "fr": "Délai de remédiation",
+    "ja": "是正履行期限",
+    "zh": "催告补正截止期限"
+  },
+  "Bad Faith Proof": {
+    "hi": "दुर्भावना का सबूत",
+    "es": "Prueba de Mala Fe",
+    "de": "Nachweis böser Absicht",
+    "fr": "Preuve de mauvaise foi",
+    "ja": "悪意の証拠",
+    "zh": "恶意抗辩违约证据"
+  },
+  "Certified Mail Tracking #": {
+    "hi": "पंजीकृत डाक ट्रैकिंग नंबर",
+    "es": "Nº de Seguimiento Correo Certificado",
+    "de": "Einschreiben-Sendungsnummer",
+    "fr": "N° de suivi courrier recommandé",
+    "ja": "配達証明郵便追跡番号",
+    "zh": "邮政特快挂号信追踪号"
+  },
+  "Response Deadline Window": {
+    "hi": "प्रतिक्रिया समय-सीमा",
+    "es": "Ventana de Plazo de Respuesta",
+    "de": "Frist für die Beantwortung",
+    "fr": "Délai de réponse accordé",
+    "ja": "回答・履行猶予期間",
+    "zh": "法定答复与履行期限"
+  },
+  "Demand Letter Date": {
+    "hi": "मांग पत्र की तिथि",
+    "es": "Fecha de la Carta de Demanda",
+    "de": "Datum des Mahnschreibens",
+    "fr": "Date de la mise en demeure",
+    "ja": "催告状送付日",
+    "zh": "催告函签发日期"
+  },
+  "FORMAL LEGAL NOTICE & SETTLEMENT DEMAND": {
+    "hi": "औपचारिक कानूनी नोटिस और समझौता मांग",
+    "es": "NOTIFICACIÓN LEGAL FORMAL Y EXIGENCIA DE PAGO",
+    "de": "FORMELLE RECHTLICHE MAHNUNG & ZAHLUNGSAUFFORDERUNG",
+    "fr": "MISE EN DEMEURE FORMELLE ET RÈGLEMENT DU LITIGE",
+    "ja": "正式法的通知兼和解支払請求書",
+    "zh": "正式法定通知书暨债务清偿求偿催告函"
+  },
+  "SENT VIA USPS CERTIFIED MAIL WITH RETURN RECEIPT REQUESTED": {
+    "hi": "वापसी रसीद के साथ प्रमाणित डाक द्वारा भेजा गया",
+    "es": "ENVIADO POR CORREO CERTIFICADO CON ACUSE DE RECIBO",
+    "de": "PER EINSCHREIBEN MIT RÜCKSCHEIN ZUGESTELLT",
+    "fr": "ENVOYÉ PAR COURRIER RECOMMANDÉ AVEC ACCUSÉ DE RÉCEPTION",
+    "ja": "配達証明付き簡易書留郵便にて送付",
+    "zh": "由邮政特快专递双挂号附送达回执正式寄发"
+  },
+  "SENT BY:": {
+    "hi": "प्रेषक:",
+    "es": "REMITENTE:",
+    "de": "ABSENDER:",
+    "fr": "EXPÉDITEUR :",
+    "ja": "差出人:",
+    "zh": "发函人:"
+  },
+  "DELIVERED TO:": {
+    "hi": "प्राप्तकर्ता:",
+    "es": "DESTINATARIO:",
+    "de": "EMPFÄNGER:",
+    "fr": "DESTINATAIRE :",
+    "ja": "受取人:",
+    "zh": "收函当事人:"
+  },
+  "ITEMIZED CLAIM & DEMANDED SETTLEMENT TERMS:": {
+    "hi": "विस्तृत दावा और मांग की गई शर्तें:",
+    "es": "RECLAMACIÓN DETALLADA Y TÉRMINOS EXIGIDOS:",
+    "de": "AUFGLIEDERUNG DER FORDERUNG & ZAHLUNGSBEDINGUNGEN:",
+    "fr": "DÉTAIL DE LA RÉCLAMATION ET TERMES EXIGÉS :",
+    "ja": "請求内訳明細および履行要求条件:",
+    "zh": "索赔项目明细及要求清偿条件:"
+  },
+  "Principal Amount Due:": {
+    "hi": "मूल बकाया राशि:",
+    "es": "Importe Principal Debido:",
+    "de": "Hauptforderungsbetrag:",
+    "fr": "Montant principal dû :",
+    "ja": "未払元金残高:",
+    "zh": "基础欠款本金:"
+  },
+  "Statutory Bad-Faith Penalty": {
+    "hi": "वैधानिक दुर्भावना जुर्माना",
+    "es": "Sanción Legal por Mala Fe",
+    "de": "Gesetzliche Strafe wegen böser Absicht",
+    "fr": "Pénalité légale pour mauvaise foi",
+    "ja": "悪意の不当留保に対する法定付加賠償金",
+    "zh": "法定恶意侵权加倍惩罚金"
+  },
+  "Accrued Prejudgment Interest": {
+    "hi": "अर्जित पूर्व-निर्णय ब्याज",
+    "es": "Intereses Prejudiciales Acumulados",
+    "de": "Aufgelaufene Zinsen vor Urteil",
+    "fr": "Intérêts moratoires accumulés",
+    "ja": "提訴前発生遅延損害金",
+    "zh": "诉前应计法定利息"
+  },
+  "Total Enforceable Demand Sum:": {
+    "hi": "कुल प्रवर्तनीय मांग राशि:",
+    "es": "Suma Total Exigible:",
+    "de": "Durchsetzbare Gesamtforderung:",
+    "fr": "Montant total exigible :",
+    "ja": "法的強制執行可能総請求額:",
+    "zh": "依法主张清偿总金额:"
+  },
+  "Response Deadline:": {
+    "hi": "प्रतिक्रिया समय-सीमा:",
+    "es": "Plazo de Respuesta:",
+    "de": "Rückmeldefrist:",
+    "fr": "Délai de réponse :",
+    "ja": "回答履行期限:",
+    "zh": "答复期限:"
+  },
+  "VERIFICATION UNDER PENALTY OF PERJURY": {
+    "hi": "झूठी गवाही के दंड के तहत सत्यापन",
+    "es": "VERIFICACIÓN BAJO PENA DE PERJURIO",
+    "de": "VERSICHERUNG AN EIDES STATT",
+    "fr": "DÉCLARATION SOUS PEINE DE FAUX TÉMOIGNAGE",
+    "ja": "偽証罪の処罰を承知した真実性の確認宣誓",
+    "zh": "受伪证罪处罚约束之事实真实性宣誓确认"
+  },
+  "Declarant Name": {
+    "hi": "घोषणाकर्ता का नाम",
+    "es": "Nombre del Declarante",
+    "de": "Name des Erklärenden",
+    "fr": "Nom du déclarant",
+    "ja": "宣誓者氏名",
+    "zh": "宣誓人姓名"
+  },
+  "Execution Date": {
+    "hi": "हस्ताक्षर तिथि",
+    "es": "Fecha de Firma",
+    "de": "Datum der Ausfertigung",
+    "fr": "Date de signature",
+    "ja": "作成日付",
+    "zh": "签署生效日期"
+  },
+  "CLERK-READY COMPLETE BUNDLE": {
+    "hi": "क्लर्क के लिए तैयार पूर्ण बंडल",
+    "es": "PAQUETE COMPLETO PARA SECRETARÍA JUDICIAL",
+    "de": "VOLLSTÄNDIGES DOKUMENTENPAKET FÜR DIE GERICHTSKANZLEI",
+    "fr": "DOSSIER COMPLET PRÊT POUR LE GREFFE",
+    "ja": "裁判所書記官受付即応完了パック",
+    "zh": "法院立案审判庭即审立档卷宗"
+  },
+  "DOCUMENT 1 OF 5": {
+    "hi": "दस्तावेज 1/5",
+    "es": "DOCUMENTO 1 DE 5",
+    "de": "DOKUMENT 1 VON 5",
+    "fr": "DOCUMENT 1 SUR 5",
+    "ja": "第1号書類（全5点中）",
+    "zh": "文书 1 / 共 5 份"
+  },
+  "PRAYER FOR RELIEF": {
+    "hi": "राहत की प्रार्थना",
+    "es": "PETICIÓN DE REPARACIÓN (PRAYER FOR RELIEF)",
+    "de": "KLAGEANTRÄGE",
+    "fr": "DISPOSITIF ET DEMANDES EN JUSTICE",
+    "ja": "請求の趣旨（裁判所への救済申立）",
+    "zh": "诉讼请求事项（向法院祈求之判决救济）"
+  },
+  "PARTIES IN THIS DISPUTE": {
+    "hi": "इस विवाद के पक्षकार",
+    "es": "PARTES EN ESTE LITIGIO",
+    "de": "PARTEIEN DIESES RECHTSSTREITS",
+    "fr": "PARTIES AU LITIGE",
+    "ja": "本件紛争の当事者一覧",
+    "zh": "本案诉讼当事人"
+  },
+  "Click to Edit Names": {
+    "hi": "नाम बदलने के लिए क्लिक करें",
+    "es": "Haga clic para editar nombres",
+    "de": "Klicken zum Bearbeiten von Namen",
+    "fr": "Cliquer pour modifier les noms",
+    "ja": "クリックして氏名を編集",
+    "zh": "点击编辑当事人姓名信息"
+  },
+  "Edit Names & Addresses": {
+    "hi": "नाम और पते संपादित करें",
+    "es": "Editar Nombres y Direcciones",
+    "de": "Namen & Adressen bearbeiten",
+    "fr": "Modifier les noms et adresses",
+    "ja": "氏名および送達先住所を編集",
+    "zh": "修改姓名与送达地址"
+  },
+  "Primary Cause of Action": {
+    "hi": "कार्रवाई का प्राथमिक कारण",
+    "es": "Causa Principal de la Demanda",
+    "de": "Hauptklagegrund",
+    "fr": "Cause principale d'action",
+    "ja": "主要な訴訟物（請求の原因）",
+    "zh": "原告主要诉讼理由与案由"
+  },
+  "What You Must Prove to the Judge (Legal Requirements)": {
+    "hi": "आपको जज के सामने क्या साबित करना होगा (कानूनी आवश्यकताएं)",
+    "es": "Lo que debe probar ante el Juez (Requisitos Legales)",
+    "de": "Was Sie vor Gericht beweisen müssen (Rechtliche Voraussetzungen)",
+    "fr": "Ce que vous devez prouver au juge (Exigences légales)",
+    "ja": "裁判官に立証すべき要件（法律上の構成要件）",
+    "zh": "依法必须向法官完成举证的核心法律要件"
+  },
+  "Plain English Guide": {
+    "hi": "सरल भाषा मार्गदर्शिका",
+    "es": "Guía en Lenguaje Claro",
+    "de": "Leicht verständlicher Leitfaden",
+    "fr": "Guide en langage clair",
+    "ja": "わかりやすい解説ガイド",
+    "zh": "通俗释法指引"
+  },
+  "Reload Standards": {
+    "hi": "मानक पुनः लोड करें",
+    "es": "Recargar Requisitos",
+    "de": "Standards neu laden",
+    "fr": "Recharger les critères",
+    "ja": "法定基準を再読込",
+    "zh": "重载法定构成要件"
+  },
+  "+ Element": {
+    "hi": "+ तत्व जोड़ें",
+    "es": "+ Elemento",
+    "de": "+ Tatbestandsmerkmal",
+    "fr": "+ Élément",
+    "ja": "+ 要件を追加",
+    "zh": "+ 添加证明要件"
+  },
+  "Small Claims Dollar Limit:": {
+    "hi": "छोटे दावों की सीमा:",
+    "es": "Límite de Demandas Menores:",
+    "de": "Streitwertgrenze für Kleinforderungen:",
+    "fr": "Plafond des litiges de proximité :",
+    "ja": "少額訴訟限度額:",
+    "zh": "小额法庭受案标的限额:"
+  },
+  "Statutory Return Window:": {
+    "hi": "वैधानिक वापसी अवधि:",
+    "es": "Plazo Legal de Devolución:",
+    "de": "Gesetzliche Rückzahlungsfrist:",
+    "fr": "Délai légal de restitution :",
+    "ja": "法定返還猶予期限:",
+    "zh": "法定退还截止期限:"
+  },
+  "Security Deposit Bad Faith": {
+    "hi": "जमानत राशि में दुर्भावना",
+    "es": "Mala Fe en Fianza de Alquiler",
+    "de": "Böswillige Kautionseinbehaltung",
+    "fr": "Mauvaise foi sur dépôt de garantie",
+    "ja": "敷金・保証金の悪意による不当留保",
+    "zh": "押金恶意扣留或拒不退还"
+  },
+  "Breach of Contract": {
+    "hi": "अनुबंध का उल्लंघन",
+    "es": "Incumplimiento de Contrato",
+    "de": "Vertragsverletzung",
+    "fr": "Rupture de contrat",
+    "ja": "契約違反・債務不履行",
+    "zh": "合同违约索赔"
+  },
+  "Consumer Protection / Fraud": {
+    "hi": "उपभोक्ता संरक्षण / धोखाधड़ी",
+    "es": "Protección al Consumidor / Fraude",
+    "de": "Verbraucherschutz / Betrug",
+    "fr": "Protection du consommateur / Fraude",
+    "ja": "消費者保護違反 / 詐欺的取引",
+    "zh": "消费者权益侵权与欺诈"
+  },
+  "Property Damage & Trespass": {
+    "hi": "संपत्ति को नुकसान और अतिक्रमण",
+    "es": "Daños a la Propiedad e Invasión",
+    "de": "Sachbeschädigung & Hausfriedensbruch",
+    "fr": "Dégâts matériels & Atteinte aux biens",
+    "ja": "物的損害および不法侵入",
+    "zh": "财产损害与侵权侵占"
+  },
+  "Wage Theft & Unpaid Wages": {
+    "hi": "वेतन चोरी और अवैतनिक मजदूरी",
+    "es": "Robo de Salarios y Pagos No Abonados",
+    "de": "Lohndiebstahl & Unbezahlte Löhne",
+    "fr": "Vol de salaire & Salaires impayés",
+    "ja": "賃金未払いおよび不当控除",
+    "zh": "欠薪与克扣劳动报酬"
+  },
+  "Tort & Negligence": {
+    "hi": "अपकृत्य और लापरवाही",
+    "es": "Responsabilidad Extracontractual y Negligencia",
+    "de": "Unerlaubte Handlung & Fahrlässigkeit",
+    "fr": "Responsabilité civile & Négligence",
+    "ja": "不法行為および過失責任",
+    "zh": "民事侵权与过失侵权"
+  },
+  "HOA & Neighbor Dispute": {
+    "hi": "एचओए और पड़ोसी विवाद",
+    "es": "Litigio de Comunidad (HOA) y Vecinos",
+    "de": "Streit mit Hausverwaltung (HOA) & Nachbarn",
+    "fr": "Litige de copropriété & Voisinage",
+    "ja": "管理組合（HOA）および近隣紛争",
+    "zh": "物业纠纷与邻里侵权"
+  },
+  "Image PII Redaction Canvas": {
+    "hi": "छवि व्यक्तिगत डेटा छिपाने का कैनवास",
+    "es": "Lienzo de Censura de Datos Personales (PII)",
+    "de": "Leinwand zur Schwärzung personenbezogener Daten",
+    "fr": "Zone de caviardage des données personnelles (PII)",
+    "ja": "個人情報黒塗り・マスキングキャンバス",
+    "zh": "隐私信息与敏感个人数据遮盖画布"
+  },
+  "SHA-256 Cryptographic Digest": {
+    "hi": "SHA-256 क्रिप्टोग्राफिक डाइजेस्ट",
+    "es": "Resumen Criptográfico SHA-256",
+    "de": "Kryptografischer SHA-256 Prüfwert",
+    "fr": "Empreinte cryptographique SHA-256",
+    "ja": "SHA-256 暗号学的ハッシュダイジェスト",
+    "zh": "SHA-256 密码学防篡改数字摘要"
+  },
+  "Original File": {
+    "hi": "मूल फ़ाइल",
+    "es": "Archivo Original",
+    "de": "Originaldatei",
+    "fr": "Fichier d'origine",
+    "ja": "原本ファイル",
+    "zh": "原始文件"
+  },
+  "Custodian": {
+    "hi": "संरक्षक (कस्टोडियन)",
+    "es": "Custodio",
+    "de": "Verwahrer",
+    "fr": "Dépositaire",
+    "ja": "証拠保管責任者",
+    "zh": "保管人"
+  },
+  "Filter exhibits by name, tag, or type...": {
+    "hi": "नाम, टैग या प्रकार द्वारा साक्ष्य फ़िल्टर करें...",
+    "es": "Filtrar pruebas por nombre, etiqueta o tipo...",
+    "de": "Beweisstücke nach Name, Tag oder Typ filtern...",
+    "fr": "Filtrer les pièces par nom, étiquette ou type...",
+    "ja": "証拠を名称、タグ、種別で絞り込み...",
+    "zh": "按名称、证据标签或文件类型筛选..."
+  },
+  "Estimated Legal Fee Savings:": {
+    "hi": "अनुमानित कानूनी शुल्क बचत:",
+    "es": "Ahorro Estimado en Honorarios de Abogado:",
+    "de": "Geschätzte Ersparnis an Anwaltshonoraren:",
+    "fr": "Économies estimées sur les frais d'avocat :",
+    "ja": "想定弁護士報酬節減額:",
+    "zh": "预估为您节省的律师费开支:"
+  },
+  "Direct Value For Your Case": {
+    "hi": "आपके केस के लिए सीधा मूल्य",
+    "es": "Valor Directo para su Caso",
+    "de": "Direkter Mehrwert für Ihren Fall",
+    "fr": "Valeur directe pour votre dossier",
+    "ja": "あなたの案件にもたらす直接的な価値",
+    "zh": "本档案夹对您案件的直接减负价值"
+  },
+  "Opposing Counsel Intelligence & Posture Tracker": {
+    "hi": "विरोधी वकील की जानकारी और मुद्रा ट्रैकर",
+    "es": "Inteligencia y Seguimiento del Abogado Contrario",
+    "de": "Profil & Verhandlungsstil des gegnerischen Anwalts",
+    "fr": "Renseignements et posture de l'avocat adverse",
+    "ja": "相手方代理人弁護士の動向・交渉姿勢分析",
+    "zh": "对方代理律师背景情报与谈判态势记录"
+  },
+  "Attorney Name": {
+    "hi": "वकील का नाम",
+    "es": "Nombre del Abogado",
+    "de": "Name des Anwalts",
+    "fr": "Nom de l'avocat",
+    "ja": "弁護士氏名",
+    "zh": "对方律师姓名"
+  },
+  "Law Firm / Organization": {
+    "hi": "लॉ फर्म / संगठन",
+    "es": "Bufete / Organización",
+    "de": "Kanzlei / Organisation",
+    "fr": "Cabinet d'avocats / Organisation",
+    "ja": "所属法律事務所 / 組織",
+    "zh": "执业律师事务所 / 机构名称"
+  },
+  "State Bar License Number": {
+    "hi": "स्टेट बार लाइसेंस नंबर",
+    "es": "Nº de Colegiado / Licencia",
+    "de": "Zulassungsnummer der Rechtsanwaltskammer",
+    "fr": "N° de licence au barreau",
+    "ja": "弁護士会登録番号",
+    "zh": "执业律师执照编号"
+  },
+  "Settlement & Negotiation Posture": {
+    "hi": "समझौता और बातचीत का रुख",
+    "es": "Postura de Negociación y Acuerdo",
+    "de": "Verhandlungs- & Einigungsbereitschaft",
+    "fr": "Posture de négociation et de règlement",
+    "ja": "和解交渉に対する姿勢",
+    "zh": "和解谈判倾向与诉讼策略作风"
+  },
+  "Direct Email Address": {
+    "hi": "सीधा ईमेल पता",
+    "es": "Correo Electrónico Directo",
+    "de": "Direkte E-Mail-Adresse",
+    "fr": "Adresse e-mail directe",
+    "ja": "直通メールアドレス",
+    "zh": "直接电子邮箱"
+  },
+  "Direct Phone Number": {
+    "hi": "सीधा फोन नंबर",
+    "es": "Teléfono Directo",
+    "de": "Direkte Telefonnummer",
+    "fr": "Numéro de téléphone direct",
+    "ja": "直通電話番号",
+    "zh": "直接联系电话"
+  },
+  "Counsel Tactics & Notes": {
+    "hi": "वकील की रणनीतियां और नोट्स",
+    "es": "Tácticas del Abogado y Notas",
+    "de": "Taktiken des Anwalts & Notizen",
+    "fr": "Tactiques de l'avocat & Notes",
+    "ja": "相手方弁護士の戦術と特記事項",
+    "zh": "对方出招作风与策略备忘"
+  },
+  "Granular Litigation Intake & Drafting Task Calculator": {
+    "hi": "विस्तृत मुकदमेबाजी इनटेक और ड्राफ्टिंग टास्क कैलकुलेटर",
+    "es": "Calculadora Detallada de Tareas de Preparación y Redacción",
+    "de": "Detaillierter Rechner für Fallaufnahme & Schriftsatzerstellung",
+    "fr": "Calculateur détaillé des tâches de préparation et de rédaction",
+    "ja": "訴訟初期調査・起案工数詳細計算機",
+    "zh": "诉前取证梳理与起诉状文书起草工时折算法律成本计算器"
+  },
+  "Print Binder Sections:": {
+    "hi": "फ़ोल्डर अनुभाग प्रिंट करें:",
+    "es": "Secciones de la Carpeta a Imprimir:",
+    "de": "Zu druckende Abschnitte der Mappe:",
+    "fr": "Sections du dossier à imprimer :",
+    "ja": "印刷対象のバインダー項目:",
+    "zh": "选择打印案卷组成章节:"
+  },
+  "CONFIDENTIAL ATTORNEY INTAKE DOSSIER": {
+    "hi": "गोपनीय वकील इनटेक डोजियर",
+    "es": "DOSSIER CONFIDENCIAL DE RECEPCIÓN PARA EL ABOGADO",
+    "de": "VERTRAULICHES MANDANTEN-DOSSIER FÜR DEN ANWALT",
+    "fr": "DOSSIER CONFIDENTIEL D'OUVERTURE POUR L'AVOCAT",
+    "ja": "弁護士委任用機密受任資料一式",
+    "zh": "委托律师保密交接档案卷宗"
+  },
+  "SECTION 1: CASE OVERVIEW (WHO IS INVOLVED)": {
+    "hi": "अनुभाग 1: केस अवलोकन (कौन शामिल है)",
+    "es": "SECCIÓN 1: RESUMEN DEL CASO (PARTES INVOLUCRADAS)",
+    "de": "ABSCHNITT 1: FALLÜBERSICHT (BETEILIGTE PARTEIEN)",
+    "fr": "SECTION 1 : VUE D'ENSEMBLE DU LITIGE (PARTIES IMPLIQUÉES)",
+    "ja": "第1節: 案件総括（当事者関係図）",
+    "zh": "第 1 节：案件总览（原被告涉案主体）"
+  },
+  "SECTION 2: THE OTHER PARTY'S LAWYER OR CONTACT INFO": {
+    "hi": "अनुभाग 2: विरोधी पक्ष के वकील या संपर्क जानकारी",
+    "es": "SECCIÓN 2: ABOGADO O CONTACTO DE LA PARTE CONTRARIA",
+    "de": "ABSCHNITT 2: GEGNERISCHER ANWALT ODER KONTAKTDATEN",
+    "fr": "SECTION 2 : AVOCAT OU COORDONNÉES DE LA PARTIE ADVERSE",
+    "ja": "第2節: 相手方弁護士または連絡先情報",
+    "zh": "第 2 节：对方委托代理人及有效联系途径"
+  },
+  "SECTION 3: WHAT YOU HAVE TO PROVE (LEGAL CLAIM ELEMENTS)": {
+    "hi": "अनुभाग 3: आपको क्या साबित करना है (कानूनी दावे के तत्व)",
+    "es": "SECCIÓN 3: LO QUE DEBE PROBAR (ELEMENTOS DE LA PRETENSIÓN)",
+    "de": "ABSCHNITT 3: WAS SIE BEWEISEN MÜSSEN (TATBESTANDSMERKMALE)",
+    "fr": "SECTION 3 : CE QUE VOUS DEVEZ PROUVER (ÉLÉMENTS DU RECOURS)",
+    "ja": "第3節: 立証責任の対象（法的請求要件）",
+    "zh": "第 3 节：法定举证证明要项（诉由成立构成要件）"
+  },
+  "SECTION 4: MONEY OWED (ITEMIZED DAMAGES TABLE)": {
+    "hi": "अनुभाग 4: बकाया राशि (मदवार नुकसान तालिका)",
+    "es": "SECCIÓN 4: CANTIDADES DEBIDAS (TABLA DETALLADA DE DAÑOS)",
+    "de": "ABSCHNITT 4: GESCHULDETE GELDER (AUFSTELLUNG DER SCHÄDEN)",
+    "fr": "SECTION 4 : SOMMES DUES (TABLEAU DÉTAILLÉ DES PRÉJUDICES)",
+    "ja": "第4節: 請求金額（損害賠償内訳対照表）",
+    "zh": "第 4 节：应付未付款项明细（损害赔偿清单表）"
+  },
+  "SECTION 5: EVIDENCE & RECEIPTS (WITH DIGITAL FRAUD PROTECTION)": {
+    "hi": "अनुभाग 5: सबूत और रसीदें (डिजिटल धोखाधड़ी संरक्षण के साथ)",
+    "es": "SECCIÓN 5: PRUEBAS Y RECIBOS (CON PROTECCIÓN DIGITAL ANTIFRAUDE)",
+    "de": "ABSCHNITT 5: BEWEISE & BELEGE (MIT DIGITALEM FÄLSCHUNGSSCHUTZ)",
+    "fr": "SECTION 5 : PIÈCES & REÇUS (AVEC PROTECTION NUMÉRIQUE ANTI-FRAUDE)",
+    "ja": "第5節: 証拠および領収証（暗号化改ざん防止検証済）",
+    "zh": "第 5 节：客观证据与交易发票（密码学防篡改存证）"
+  },
+  "SECTION 6: FORMAL QUESTIONS TO ASK THE OTHER PARTY (DISCOVERY)": {
+    "hi": "अनुभाग 6: विरोधी पक्ष से पूछने के लिए औपचारिक प्रश्न (डिस्कवरी)",
+    "es": "SECCIÓN 6: PREGUNTAS FORMALES A LA CONTRARIA (DISCOVERY)",
+    "de": "ABSCHNITT 6: FORMELLE FRAGEN AN DIE GEGNERPARTEI (AUSKUNFTSVERLANGEN)",
+    "fr": "SECTION 6 : QUESTIONS FORMELLES À LA PARTIE ADVERSE (DISCOVERY)",
+    "ja": "第6節: 相手方に対する公式質問事項（証拠開示尋問）",
+    "zh": "第 6 节：正式向对方当事人要求书面答复的审问要点（开示调查）"
+  },
+  "CIVIL DISPUTE SUITE": {
+    "hi": "नागरिक विवाद सुइट",
+    "es": "SUITE DE LITIGIOS CIVILES",
+    "de": "ZIVILSTREITIGKEITEN-SUITE",
+    "fr": "SUITE DE LITIGES CIVILS",
+    "ja": "民事紛争総合解決スイート",
+    "zh": "民事争议解决套件"
+  },
+  "Edit Parties": {
+    "hi": "पक्षकार संपादित करें",
+    "es": "Editar Partes",
+    "de": "Parteien bearbeiten",
+    "fr": "Modifier les parties",
+    "ja": "当事者を編集",
+    "zh": "编辑当事人"
+  },
+  "Search": {
+    "hi": "खोजें",
+    "es": "Buscar",
+    "de": "Suchen",
+    "fr": "Rechercher",
+    "ja": "検索",
+    "zh": "搜索"
+  },
+  "Tour Guide": {
+    "hi": "टूर गाइड",
+    "es": "Guía Guiada",
+    "de": "Tour",
+    "fr": "Visite guidée",
+    "ja": "ツアー案内",
+    "zh": "新手引导"
+  },
+  "Pro Tiers": {
+    "hi": "प्रो टियर",
+    "es": "Planes Pro",
+    "de": "Pro-Tarife",
+    "fr": "Formules Pro",
+    "ja": "Proプラン",
+    "zh": "专业版方案"
+  },
+  "Select Language": {
+    "hi": "भाषा चुनें",
+    "es": "Seleccionar Idioma",
+    "de": "Sprache wählen",
+    "fr": "Choisir la langue",
+    "ja": "言語を選択",
+    "zh": "选择界面语言"
+  },
+  "Settings": {
+    "hi": "सेटिंग्स",
+    "es": "Ajustes",
+    "de": "Einstellungen",
+    "fr": "Paramètres",
+    "ja": "設定",
+    "zh": "设置"
+  },
+  "100% Client-Side Privacy": {
+    "hi": "100% क्लाइंट-साइड गोपनीयता",
+    "es": "100% Privacidad en el Dispositivo",
+    "de": "100% Datenschutz auf dem Endgerät",
+    "fr": "100% Confidentialité sur l'appareil",
+    "ja": "100% 端末内プライバシー保護",
+    "zh": "100% 纯本地隐私安全"
+  },
+  "UPL Notice": {
+    "hi": "यूपीएल सूचना",
+    "es": "Aviso UPL",
+    "de": "UPL-Hinweis",
+    "fr": "Avis UPL",
+    "ja": "弁護士法コンプライアンス告知",
+    "zh": "非代办非执业法律合规告知"
+  },
+  "Legal Savings": {
+    "hi": "कानूनी बचत",
+    "es": "Ahorro Legal",
+    "de": "Rechtskostenersparnis",
+    "fr": "Économies juridiques",
+    "ja": "節減法律費用",
+    "zh": "节省律师费"
+  },
+  "Legal Savings:": {
+    "hi": "कानूनी बचत:",
+    "es": "Ahorro Legal:",
+    "de": "Rechtskostenersparnis:",
+    "fr": "Économies juridiques :",
+    "ja": "節減法律費用:",
+    "zh": "节省律师费:"
+  },
+  "Claimed:": {
+    "hi": "दावा किया:",
+    "es": "Reclamado:",
+    "de": "Gefordert:",
+    "fr": "Réclamé :",
+    "ja": "請求額:",
+    "zh": "标的金额:"
+  },
+  "Hide Stage": {
+    "hi": "स्टेज छुपाएं",
+    "es": "Ocultar Escenario",
+    "de": "Bühne ausblenden",
+    "fr": "Masquer la scène",
+    "ja": "アニメーションを非表示",
+    "zh": "收起动效舞台"
+  },
+  "Show Stage": {
+    "hi": "स्टेज दिखाएं",
+    "es": "Mostrar Escenario",
+    "de": "Bühne anzeigen",
+    "fr": "Afficher la scène",
+    "ja": "アニメーションを表示",
+    "zh": "展开动效舞台"
+  },
+  "Immediate Next Action": {
+    "hi": "तत्काल अगली कार्रवाई",
+    "es": "Acción Inmediata Siguiente",
+    "de": "Nächste unmittelbare Maßnahme",
+    "fr": "Action immédiate suivante",
+    "ja": "直ちに実行すべき次の一手",
+    "zh": "紧接着的下一步行动"
+  },
+  "Immediate Next Action:": {
+    "hi": "तत्काल अगली कार्रवाई:",
+    "es": "Acción Inmediata Siguiente:",
+    "de": "Nächste unmittelbare Maßnahme:",
+    "fr": "Action immédiate suivante :",
+    "ja": "直ちに実行すべき次の一手:",
+    "zh": "紧接着的下一步行动:"
+  },
+  "Litigation Step Tracker": {
+    "hi": "मुकदमेबाजी चरण ट्रैकर",
+    "es": "Rastreador de Pasos del Litigio",
+    "de": "Schrittverlauf des Rechtsstreits",
+    "fr": "Suivi des étapes du litige",
+    "ja": "訴訟進行ステップトラッカー",
+    "zh": "诉讼维权进度跟踪器"
+  },
+  "Filing Deadlines & SOL": {
+    "hi": "फाइलिंग समय-सीमा और सीमा कानून",
+    "es": "Plazos de Presentación y Prescripción",
+    "de": "Klagefristen & Verjährung",
+    "fr": "Délais de recours & Prescription",
+    "ja": "提訴期限と出訴時効",
+    "zh": "立案起诉期限与时效预警"
+  },
+  "Opposing Party": {
+    "hi": "विरोधी पक्ष",
+    "es": "Parte Contraria",
+    "de": "Gegnerische Partei",
+    "fr": "Partie adverse",
+    "ja": "相手方当事者",
+    "zh": "对方涉案主体"
+  },
+  "Tap to Edit": {
+    "hi": "संपादित करने के लिए टैप करें",
+    "es": "Tocar para Editar",
+    "de": "Tippen zum Bearbeiten",
+    "fr": "Appuyer pour modifier",
+    "ja": "タップして編集",
+    "zh": "点击进行编辑"
+  },
+  "What this means for you": {
+    "hi": "आपके लिए इसका क्या अर्थ है",
+    "es": "Qué significa esto para usted",
+    "de": "Was das für Sie bedeutet",
+    "fr": "Ce que cela signifie pour vous",
+    "ja": "あなたにとっての意味・実質的効果",
+    "zh": "本条款对您的切身权益影响"
+  },
+  "Official Legal Terms & Citations": {
+    "hi": "आधिकारिक कानूनी शर्तें और उद्धरण",
+    "es": "Términos Legales Oficiales y Fundamentos",
+    "de": "Offizielle Rechtstermini & Gesetzestexte",
+    "fr": "Termes légaux officiels & Références",
+    "ja": "正式条文および判例・法令引用",
+    "zh": "官方实体法律条文与判例依据"
+  },
+  "Read Full Clause": {
+    "hi": "पूरा खंड पढ़ें",
+    "es": "Leer Cláusula Completa",
+    "de": "Vollständige Klausel lesen",
+    "fr": "Lire la clause complète",
+    "ja": "条文全文を表示",
+    "zh": "查看法条文书原文"
+  },
+  "Hide Legal Terms": {
+    "hi": "कानूनी शर्तें छुपाएं",
+    "es": "Ocultar Términos Legales",
+    "de": "Rechtstext ausblenden",
+    "fr": "Masquer les termes juridiques",
+    "ja": "条文全文を隠す",
+    "zh": "收起条文原文"
+  },
+  "Copy Citation": {
+    "hi": "उद्धरण कॉपी करें",
+    "es": "Copiar Fundamento",
+    "de": "Fundstelle kopieren",
+    "fr": "Copier la citation",
+    "ja": "条文引用をコピー",
+    "zh": "复制法条引用"
+  },
+  "Citation Copied!": {
+    "hi": "उद्धरण कॉपी किया गया!",
+    "es": "¡Fundamento Copiado!",
+    "de": "Fundstelle kopiert!",
+    "fr": "Citation copiée !",
+    "ja": "条文引用をコピーしました！",
+    "zh": "法条引用已复制！"
+  },
+  "Burden of Proof:": {
+    "hi": "सबूत का भार:",
+    "es": "Carga de la Prueba:",
+    "de": "Beweislast:",
+    "fr": "Charge de la preuve :",
+    "ja": "立証責任の所在:",
+    "zh": "举证责任与标准:"
+  },
+  "Burden of Proof": {
+    "hi": "सबूत का भार",
+    "es": "Carga de la Prueba",
+    "de": "Beweislast",
+    "fr": "Charge de la preuve",
+    "ja": "立証責任の所在",
+    "zh": "举证责任与标准"
+  },
+  "Preponderance Standard": {
+    "hi": "साक्ष्य की प्रधानता मानक",
+    "es": "Estándar de Preponderancia",
+    "de": "Überwiegende Wahrscheinlichkeit",
+    "fr": "Prépondérance de la preuve",
+    "ja": "証拠の優越基準（51％超）",
+    "zh": "高度盖然性证据优势标准（大于51%）"
+  },
+  "Service Window": {
+    "hi": "तामील की समय-सीमा",
+    "es": "Plazo de Notificación",
+    "de": "Zustellungsfrist",
+    "fr": "Délai de signification",
+    "ja": "送達猶予期間",
+    "zh": "诉状法定送达期限"
+  },
+  "Total Demanded": {
+    "hi": "कुल मांग",
+    "es": "Total Exigido",
+    "de": "Gesamtforderung",
+    "fr": "Total réclamé",
+    "ja": "請求総額",
+    "zh": "诉请主张总额"
+  },
+  "Compensatory Relief": {
+    "hi": "मुआवजा राहत",
+    "es": "Reparación Compensatoria",
+    "de": "Schadensersatz",
+    "fr": "Réparation compensatoire",
+    "ja": "補償的損害賠償",
+    "zh": "填补性直接损失赔偿"
+  },
+  "Bad-Faith Multipliers": {
+    "hi": "दुर्भावना गुणक",
+    "es": "Multiplicadores por Mala Fe",
+    "de": "Strafmultiplikatoren für böse Absicht",
+    "fr": "Multiplicateurs pour mauvaise foi",
+    "ja": "悪意の倍額加算ペナルティ",
+    "zh": "法定恶意侵权加倍赔偿乘数"
+  },
+  "Statutory Penalties & Costs Requested": {
+    "hi": "वैधानिक दंड और लागत की मांग",
+    "es": "Sanciones Legales y Costas Solicitadas",
+    "de": "Beantragte gesetzliche Strafen & Kosten",
+    "fr": "Sanctions légales et dépens sollicités",
+    "ja": "請求した法定付加金および訴訟費用",
+    "zh": "主张的惩罚性法定加倍赔偿及全部诉讼费"
+  },
+  "Expand Full 28-Line Legal Drafting Paper": {
+    "hi": "पूर्ण 28-पंक्ति का कानूनी ड्राफ्टिंग पेपर देखें",
+    "es": "Expandir Papel Completo de Redacción Legal de 28 Líneas",
+    "de": "Vollständiges 28-zeiliges Schriftsatzpapier ausklappen",
+    "fr": "Développer le papier de procédure officiel à 28 lignes",
+    "ja": "28行罫線正式訴状用紙を展開表示",
+    "zh": "展开查看标准28行式法院诉状书写用纸"
+  },
+  "Hide 28-Line Paper (Summary View)": {
+    "hi": "28-पंक्ति का पेपर छुपाएं (सारांश दृश्य)",
+    "es": "Ocultar Papel de 28 Líneas (Vista Resumida)",
+    "de": "28-zeiliges Papier ausblenden (Kompaktansicht)",
+    "fr": "Masquer le papier à 28 lignes (Vue synthétique)",
+    "ja": "28行用紙を閉じる（要約表示）",
+    "zh": "收起28行用纸（切换至精简要目视图）"
+  }
+};
+
+let domObserver: MutationObserver | null = null;
+let isTranslating = false;
+
+function translateTextNode(node: Text, lang: SupportedLanguage): void {
+  if (lang === 'en') {
+    if ((node as any).__origText !== undefined) {
+      node.nodeValue = (node as any).__origText;
+    }
+    return;
+  }
+
+  const raw = node.nodeValue;
+  if (!raw || !raw.trim()) return;
+
+  if ((node as any).__origText === undefined) {
+    (node as any).__origText = raw;
+  }
+
+  const orig = (node as any).__origText;
+  const trimmed = orig.trim();
+
+  // Direct exact match
+  if (DOM_TRANSLATIONS[trimmed] && DOM_TRANSLATIONS[trimmed][lang]) {
+    const tr = DOM_TRANSLATIONS[trimmed][lang];
+    node.nodeValue = orig.replace(trimmed, tr);
+    return;
+  }
+
+  // Match without trailing colon or colon-space
+  if (trimmed.endsWith(':') && DOM_TRANSLATIONS[trimmed.slice(0, -1)]) {
+    const base = trimmed.slice(0, -1);
+    const tr = DOM_TRANSLATIONS[base][lang];
+    if (tr) {
+      node.nodeValue = orig.replace(trimmed, tr + ':');
+      return;
+    }
+  }
+
+  // Substring / partial key matching for common labels
+  for (const [enKey, map] of Object.entries(DOM_TRANSLATIONS)) {
+    if (enKey.length >= 8 && trimmed.includes(enKey) && map[lang]) {
+      node.nodeValue = orig.replace(enKey, map[lang]);
+      return;
+    }
+  }
+}
+
+function walkAndTranslate(root: Node, lang: SupportedLanguage): void {
+  if (root.nodeType === Node.TEXT_NODE) {
+    translateTextNode(root as Text, lang);
+    return;
+  }
+
+  if (root.nodeType === Node.ELEMENT_NODE) {
+    const el = root as HTMLElement;
+    const tag = el.tagName.toLowerCase();
+    if (tag === 'script' || tag === 'style' || tag === 'code' || tag === 'pre') return;
+
+    // Translate placeholder if present
+    if (el instanceof HTMLInputElement || el instanceof HTMLTextAreaElement) {
+      if ((el as any).__origPlaceholder === undefined) {
+        (el as any).__origPlaceholder = el.placeholder;
+      }
+      const pOrig = (el as any).__origPlaceholder;
+      if (pOrig) {
+        if (lang === 'en') {
+          el.placeholder = pOrig;
+        } else if (DOM_TRANSLATIONS[pOrig] && DOM_TRANSLATIONS[pOrig][lang]) {
+          el.placeholder = DOM_TRANSLATIONS[pOrig][lang];
+        }
+      }
+    }
+
+    // Translate title if present
+    if (el.title) {
+      if ((el as any).__origTitle === undefined) {
+        (el as any).__origTitle = el.title;
+      }
+      const tOrig = (el as any).__origTitle;
+      if (tOrig) {
+        if (lang === 'en') {
+          el.title = tOrig;
+        } else if (DOM_TRANSLATIONS[tOrig] && DOM_TRANSLATIONS[tOrig][lang]) {
+          el.title = DOM_TRANSLATIONS[tOrig][lang];
+        }
+      }
+    }
+
+    // Recursively walk children
+    const children = Array.from(el.childNodes);
+    for (const child of children) {
+      walkAndTranslate(child, lang);
+    }
+  }
+}
+
 export class I18nService {
   private static currentLanguage: SupportedLanguage = 'en';
 
   public static init(lang?: SupportedLanguage): void {
     if (lang) {
       this.currentLanguage = lang;
+      this.applyDomTranslations(lang);
       return;
     }
     const saved = typeof window !== 'undefined' ? localStorage.getItem('suechef_language') as SupportedLanguage : null;
@@ -4444,6 +6129,7 @@ export class I18nService {
       else if (browserLang.startsWith('zh')) this.currentLanguage = 'zh';
       else this.currentLanguage = 'en';
     }
+    this.applyDomTranslations(this.currentLanguage);
   }
 
   public static getLanguage(): SupportedLanguage {
@@ -4456,12 +6142,19 @@ export class I18nService {
       if (typeof window !== 'undefined') {
         localStorage.setItem('suechef_language', lang);
       }
+      this.applyDomTranslations(lang);
     }
   }
 
   public static t(key: string, fallback?: string): string {
     const dict = translations[this.currentLanguage] || translations.en;
     if (dict[key]) return dict[key];
+    const domTr = DOM_TRANSLATIONS[key]?.[this.currentLanguage];
+    if (domTr) return domTr;
+    if (fallback) {
+      const fbTr = DOM_TRANSLATIONS[fallback]?.[this.currentLanguage];
+      if (fbTr) return fbTr;
+    }
     if (translations.en[key]) return translations.en[key];
     return fallback || key;
   }
@@ -4476,5 +6169,42 @@ export class I18nService {
 
   public static getLanguages(): LanguageInfo[] {
     return SUPPORTED_LANGUAGES;
+  }
+
+  public static applyDomTranslations(targetLang?: SupportedLanguage): void {
+    if (typeof window === 'undefined' || typeof document === 'undefined') return;
+    const lang = targetLang || this.currentLanguage;
+
+    if (isTranslating) return;
+    isTranslating = true;
+
+    try {
+      if (domObserver) {
+        domObserver.disconnect();
+        domObserver = null;
+      }
+
+      walkAndTranslate(document.body, lang);
+
+      // Keep observing newly mounted nodes (like tab switches and modals)
+      if (lang !== 'en') {
+        domObserver = new MutationObserver((mutations) => {
+          if (isTranslating) return;
+          isTranslating = true;
+          try {
+            for (const mut of mutations) {
+              for (const node of Array.from(mut.addedNodes)) {
+                walkAndTranslate(node, lang);
+              }
+            }
+          } finally {
+            isTranslating = false;
+          }
+        });
+        domObserver.observe(document.body, { childList: true, subtree: true });
+      }
+    } finally {
+      isTranslating = false;
+    }
   }
 }

@@ -138,9 +138,9 @@ const WorkstationRouter: React.FC = () => {
       <CourtAtmosphereCanvas />
       <Header />
       
-      <main className="flex-1 pb-32 sm:pb-36 p-3 sm:p-4 md:p-6 max-w-7xl w-full mx-auto space-y-5">
+      <main className="flex-1 pb-32 sm:pb-36 p-3 sm:p-4 md:p-6 max-w-7xl w-full mx-auto space-y-5 overflow-x-hidden">
         {/* Interactive Live Theme Animation Banner */}
-        {showLiveTheme && (
+        {showLiveTheme && activeWorkstation === 'home' && (
           <div className="animate-in fade-in duration-300">
             {theme === 'parchment-ink' ? (
               <ParchmentBookAnimation />

@@ -483,7 +483,7 @@ export const AttorneyDossier: React.FC = () => {
             </div>
           </div>
 
-          <div className="max-w-4xl mx-auto pleading-paper-container p-8 md:p-12 text-slate-900 border border-slate-300 rounded-sm shadow-2xl space-y-8 font-pleading text-xs leading-relaxed bg-white">
+          <div className="max-w-4xl w-full mx-auto pleading-paper-container p-4 sm:p-8 md:p-12 text-slate-900 border border-slate-300 rounded-sm shadow-2xl space-y-8 font-pleading text-xs leading-relaxed bg-white overflow-x-hidden">
             {/* Binder Cover Header */}
             <div className="text-center border-b-2 border-slate-900 pb-6 space-y-2">
               <div className="flex justify-center mb-2">
@@ -577,7 +577,7 @@ export const AttorneyDossier: React.FC = () => {
                   <span>TOTAL: {countryInfo.currencySymbol}{totalDamages.toLocaleString()}</span>
                 </div>
                 <div className="overflow-x-auto w-full -mx-1 px-1">
-                  <table className="w-full min-w-[520px] border-collapse text-[11px]">
+                  <table className="w-full sm:min-w-[520px] border-collapse text-[10px] sm:text-[11px]">
                     <thead>
                       <tr className="bg-slate-200 border border-slate-300 text-slate-800 text-left">
                         <th className="p-2">Description</th>
@@ -612,7 +612,7 @@ export const AttorneyDossier: React.FC = () => {
                   SECTION 5: EVIDENCE & RECEIPTS (WITH DIGITAL FRAUD PROTECTION)
                 </div>
                 <div className="overflow-x-auto w-full -mx-1 px-1">
-                  <table className="w-full min-w-[550px] border-collapse text-[10px] font-mono">
+                  <table className="w-full sm:min-w-[550px] border-collapse text-[9px] sm:text-[10px] font-mono">
                     <thead>
                       <tr className="bg-slate-200 border border-slate-300 text-slate-800 text-left">
                         <th className="p-1.5">Exhibit</th>

@@ -165,6 +165,11 @@ export const SueChefProvider: React.FC<{ children: ReactNode }> = ({ children })
     }
   }, [activeCase.id, activeCase.country]);
 
+  // Apply live multilingual DOM translations when language or workstation changes
+  useEffect(() => {
+    I18nService.applyDomTranslations(language);
+  }, [language, activeWorkstation, activeCase.id]);
+
   // Apply theme classes to document root
   useEffect(() => {
     const root = document.documentElement;

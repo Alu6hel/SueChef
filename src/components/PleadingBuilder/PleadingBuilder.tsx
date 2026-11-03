@@ -460,8 +460,8 @@ export const PleadingBuilder: React.FC = () => {
       </div>
 
       {/* Toolbar: Font Selection, Mode Toggle, Export/Copy */}
-      <div className="flex flex-wrap items-center justify-between gap-3 p-3 card-geom bg-[var(--bg-card)] border border-[var(--border-color)]">
-        <div className="flex items-center gap-3">
+      <div className="flex flex-wrap items-center justify-between gap-3 p-3 card-geom bg-[var(--bg-card)] border border-[var(--border-color)] max-w-full overflow-hidden">
+        <div className="flex flex-wrap items-center gap-2 max-w-full min-w-0">
           <label className="text-xs font-mono text-[var(--text-muted)] flex items-center gap-1">
             <Scale className="w-3.5 h-3.5 text-[var(--accent-gold)]" />
             Court Typography:
@@ -472,7 +472,7 @@ export const PleadingBuilder: React.FC = () => {
               sound.playClick();
               setSelectedFont(e.target.value as typeof selectedFont);
             }}
-            className="input-geom bg-[var(--bg-secondary)] border border-[var(--border-color)] text-xs text-[var(--text-main)] px-2 py-1"
+            className="input-geom bg-[var(--bg-secondary)] border border-[var(--border-color)] text-xs text-[var(--text-main)] px-2 py-1 max-w-[220px] sm:max-w-none truncate"
           >
             <option value="Century Schoolbook">Century Schoolbook (California Rule 2.105)</option>
             <option value="Times New Roman">Times New Roman</option>
@@ -1165,7 +1165,7 @@ export const PleadingBuilder: React.FC = () => {
                 const tabLetter = String.fromCharCode(65 + index);
                 return (
                   <div key={e.id} className="border border-slate-300 p-3 bg-slate-50 rounded-sm flex flex-col md:flex-row items-start md:items-center justify-between gap-3">
-                    <div className="flex items-center gap-3">
+                    <div className="flex flex-wrap items-center gap-2 max-w-full min-w-0">
                       <div className="px-2.5 py-1 bg-slate-900 text-amber-300 font-mono font-bold text-xs rounded-sm">
                         TAB {tabLetter}
                       </div>

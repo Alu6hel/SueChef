@@ -75,8 +75,8 @@ export const TwoTierLegalClause: React.FC<TwoTierLegalClauseProps> = ({
           </div>
 
           {statutoryCitation && (
-            <div className="flex items-center gap-1.5 shrink-0">
-              <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-[var(--badge-bg)] text-[var(--accent-gold)] border border-[var(--badge-border)]">
+            <div className="flex items-center gap-1.5 min-w-0 max-w-full">
+              <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-[var(--badge-bg)] text-[var(--accent-gold)] border border-[var(--badge-border)] truncate max-w-[240px] sm:max-w-none">
                 {statutoryCitation}
               </span>
               <button
